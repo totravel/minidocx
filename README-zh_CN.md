@@ -10,7 +10,7 @@
 
 minidocx 是一个跨平台且易于使用的 C++ 库，用于创建 Microsoft Word 文档 (.docx)。它被设计为足够精简和小巧。因此，你只需将它的两个文件与你的项目的其他源文件一同编译即可。
 
-## 环境要求
+## 要求
 
 要使用 minidocx，你需要一个支持 C++ 11 的编译器和下列两个第三方库：
 
@@ -22,7 +22,7 @@ minidocx 是一个跨平台且易于使用的 C++ 库，用于创建 Microsoft W
 - Visual Studio 16 2019
 - GNU 8.2.0
 
-## 参考文献
+## 参考
 
 要处理 `.docx` 文档，你需要了解下列概念：
 
@@ -105,7 +105,7 @@ target_link_libraries(myapp PRIVATE minidocx)
 - `PUGIXML_DIR` pugixml 项目的根目录
 - `MINIDOCX_DIR` minidocx 项目的根目录
 
-## 用户指南
+## 指南
 
 使用 minidocx 的程序只需包含头文件 `minidocx.hpp`。minidocx 提供的类和函数都定义在命名空间 `docx` 中。
 
@@ -228,8 +228,8 @@ auto text = p5r3.GetText(); // "Hello, World!你好，世界！你好，World!"
 ```cpp
 p5r3.SetFontSize(14);
 p5r3.SetFont("Times New Roman");
-p5r3.SetFontStyle(Run::Bold | Run::Italic); // 还可以用 Run::Underline 和
-                                            // Run::Strikethrough
+p5r3.SetFontStyle(Run::Bold | Run::Italic); // 加粗、倾斜
+                                            // 还可以用下划线 Run::Underline 和删除线 Run::Strikethrough
 p5r3.SetCharacterSpacing(Pt2Twip(2));
 ```
 
@@ -238,8 +238,33 @@ p5r3.SetCharacterSpacing(Pt2Twip(2));
 下列方法用于遍历段落的文本段：
 
 ```cpp
-auto p5r1 = p5.FirstRun(); // 没有 LastRun() 方法
-auto p5r2 = p5r1.Next();   // 没有 Prev() 方法
+auto p4r1 = p4.FirstRun(); // 没有 LastRun() 方法
+auto p4r2 = p4r1.Next(); // 没有 Prev() 方法
+```
+
+可以移除文本段：
+
+```cpp
+p4r2.Remove();
+```
+
+#### 换行
+
+可以添加换行符到文本段中：
+
+```cpp
+auto r = p.AppendRun();
+r.AppendText("This is");
+r.AppendLineBreak();
+r.AppendText("a simple sentence.");
+```
+
+#### 分页
+
+分页符是特殊的文本段，只能通过调用 `AppendPageBreak()` 函数将分页符添加到段落中。
+
+```cpp
+auto r = p.AppendPageBreak();
 ```
 
 ### 分节

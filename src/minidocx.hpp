@@ -45,10 +45,10 @@ namespace docx
   class Run
   {
   public:
-    Run(pugi::xml_node p): r_(p.append_child("w:r")), 
-                           rPr_(r_.append_child("w:rPr")) {}
-    Run(pugi::xml_node r, 
-        pugi::xml_node rPr): r_(r), 
+    Run(pugi::xml_node p, 
+        pugi::xml_node r, 
+        pugi::xml_node rPr): p_(p), 
+                             r_(r), 
                              rPr_(rPr) {}
 
     // text
@@ -56,8 +56,6 @@ namespace docx
     std::string GetText();
     void ClearText();
     void AppendLineBreak();
-    void AsPageBreak();
-    bool IsPageBreak();
 
     // text formatting
     using FontStyle = unsigned int;
@@ -82,11 +80,16 @@ namespace docx
     void SetCharacterSpacing(const int characterSpacing);
     int GetCharacterSpacing();
 
+    // Run
+    void Remove();
+    bool IsPageBreak();
+
     // traverse
     Run Next();
     operator bool();
 
   private:
+    pugi::xml_node p_;
     pugi::xml_node r_;
     pugi::xml_node rPr_;
   }; // class Run
@@ -166,9 +169,6 @@ namespace docx
                                    p_(p), 
                                    pPr_(pPr) {}
 
-    enum class Type { Text, Image, PageBreak, SectionBreak };
-    Type GetType();
-
     // run
     Run FirstRun();
 
@@ -180,8 +180,7 @@ namespace docx
                   const double fontSize, 
                   const std::string fontAscii, 
                   const std::string fontEastAsia = "");
-    void AsPageBreak();
-    bool IsPageBreak();
+    Run AppendPageBreak();
 
     // paragraph formatting
     enum class Alignment { Left, Centered, Right, Justified, Distributed };

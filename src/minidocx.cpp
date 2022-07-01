@@ -255,7 +255,7 @@ namespace docx
   Paragraph Document::AppendPageBreak()
   {
     auto p = AppendParagraph();
-    p.AsPageBreak();
+    p.AppendPageBreak();
     return p;
   }
 
@@ -268,29 +268,18 @@ namespace docx
 
 
   // class Paragraph
-  Paragraph::Type Paragraph::GetType()
-  {
-    if (IsPageBreak()) {
-      return Type::PageBreak;
-    }
-    if (HasSectionBreak()) {
-      return Type::SectionBreak;
-    }
-    return Type::Text;
-  }
-
   Run Paragraph::FirstRun()
   {
     auto r = p_.child("w:r");
     auto rPr = r.child("w:rPr");
-    return Run(r, rPr);
+    return Run(p_, r, rPr);
   }
 
   Run Paragraph::AppendRun()
   {
     auto r = p_.append_child("w:r");
     auto rPr = r.append_child("w:rPr");
-    return Run(r, rPr);
+    return Run(p_, r, rPr);
   }
 
   Run Paragraph::AppendRun(const std::string text)
@@ -324,20 +313,12 @@ namespace docx
     return r;
   }
 
-  void Paragraph::AsPageBreak()
+  Run Paragraph::AppendPageBreak()
   {
-    if (IsPageBreak()) return;
-    AppendRun().AsPageBreak();
-  }
-
-  bool Paragraph::IsPageBreak()
-  {
-    for (auto r = FirstRun(); r; r = r.Next()) {
-      if (r.IsPageBreak()) {
-        return true;
-      }
-    }
-    return false;
+    auto r = p_.append_child("w:r");
+    auto br = r.append_child("w:br");
+    br.append_attribute("w:type") = "page";
+    return Run(p_, r, br);
   }
 
   void Paragraph::SetAlignment(Alignment alignment)
@@ -929,17 +910,6 @@ namespace docx
     r_.append_child("w:br");
   }
 
-  void Run::AsPageBreak()
-  {
-    if (IsPageBreak()) return;
-    r_.append_child("w:br").append_attribute("w:type") = "page";
-  }
-
-  bool Run::IsPageBreak()
-  {
-    return r_.find_child_by_attribute("w:br", "w:type", "page");
-  }
-
   void Run::SetFontSize(const double fontSize)
   {
     auto sz = rPr_.child("w:sz");
@@ -1060,11 +1030,21 @@ namespace docx
     return rPr_.child("w:spacing").attribute("w:val").as_int();
   }
 
+  bool Run::IsPageBreak()
+  {
+    return r_.find_child_by_attribute("w:br", "w:type", "page");
+  }
+
+  void Run::Remove()
+  {
+    p_.remove_child(r_);
+  }
+
   Run Run::Next()
   {
     auto r = r_.next_sibling("w:r");
     auto rPr = r.child("w:rPr");
-    return Run(r, rPr);
+    return Run(p_, r, rPr);
   }
 
   Run::operator bool()

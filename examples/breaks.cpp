@@ -13,8 +13,7 @@ int main()
   r.AppendText("This is");
   r.AppendLineBreak();
   r.AppendText("a simple sentence.");
-
-  auto pageBreak = doc.AppendPageBreak();
+  p.AppendPageBreak();
 
   doc.AppendParagraph("see you next page.");
 

@@ -42,8 +42,5 @@ install(TARGETS paragraph)
 add_executable(section examples/section.cpp)
 install(TARGETS section)
 
-add_executable(paragraph_type examples/paragraph_type.cpp)
-install(TARGETS paragraph_type)
-
 add_executable(run examples/run.cpp)
 install(TARGETS run)

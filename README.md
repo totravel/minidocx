@@ -195,7 +195,7 @@ auto p4r2 = p4.AppendRun("你好，世界！");
 auto p4r3 = p4.AppendRun("你好，World!");
 ```
 
-When you create new a paragraph by providing text to the `AppendParagraph()` method, it gets put into a single run.
+When you create a new paragraph by providing text to the `AppendParagraph()` method, it gets put into a single run.
 
 ```cpp
 auto p5 = doc.AppendParagraph("Hello, World!");
@@ -242,8 +242,33 @@ Helper function `Pt2Twip()` can be used to specify a character spacing in points
 It is easy to get each run in a paragraph:
 
 ```cpp
-auto p5r1 = p5.FirstRun(); // no LastRun()
-auto p5r2 = p5r1.Next(); // no Prev()
+auto p4r1 = p4.FirstRun(); // no LastRun()
+auto p4r2 = p4r1.Next(); // no Prev()
+```
+
+Run can be removed:
+
+```cpp
+p4r2.Remove();
+```
+
+#### Line Break
+
+You can append a line break into a run. 
+
+```cpp
+auto r = p.AppendRun();
+r.AppendText("This is");
+r.AppendLineBreak();
+r.AppendText("a simple sentence.");
+```
+
+#### Page Break
+
+Page breaks are special run that can only be appended to a paragraph by calling `AppendPageBreak()`.
+
+```cpp
+auto r = p.AppendPageBreak();
 ```
 
 ### Section

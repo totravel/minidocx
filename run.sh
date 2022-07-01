@@ -9,5 +9,4 @@ set -e
 ./build/install/bin/spacing_indent
 ./build/install/bin/paragraph
 ./build/install/bin/section
-./build/install/bin/paragraph_type
 ./build/install/bin/run
