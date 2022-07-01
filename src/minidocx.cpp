@@ -1,4 +1,5 @@
 
+#include <cstring>
 #include <cmath>
 #include "minidocx.hpp"
 #include "zip.h"
@@ -114,11 +115,11 @@ namespace docx
     }
   };
 
-  pugi::xml_node GetLastChild(pugi::xml_node node, std::string name)
+  pugi::xml_node GetLastChild(pugi::xml_node node, const char *name)
   {
     pugi::xml_node child = node.last_child();
-    while (name.compare(child.name()) != 0 && !name.empty()) {
-      child = child.previous_sibling(name.c_str());
+    while (!child.empty() && strcmp(name, child.name()) != 0) {
+      child = child.previous_sibling(name);
     }
     return child;
   }

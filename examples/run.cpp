@@ -5,7 +5,7 @@
 
 int main()
 {
-  docx::Document doc("./h.docx");
+  docx::Document doc("./g.docx");
 
   auto p = doc.AppendParagraph();
   auto r = p.AppendRun("你好，World!", 16, "Times New Roman", "Microsoft YaHei UI");
@@ -28,7 +28,6 @@ int main()
   std::cout << "Font Ascii: "     << fontAscii << std::endl;
   std::cout << "Font East Asia: " << fontEastAsia << std::endl;
 
-  std::cout << doc.GetFormatedBody();
   doc.Save();
   return 0;
 }

@@ -17,7 +17,6 @@ int main()
 
   doc.AppendParagraph("see you next page.");
 
-  std::cout << doc.GetFormatedBody();
   doc.Save();
   return 0;
 }
