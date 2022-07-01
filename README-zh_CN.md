@@ -180,9 +180,9 @@ auto p2 = p3.Prev(); // 还可以用 Next() 方法
 p3.Remove();
 ```
 
-### 文本
+### 文本段
 
-向一个段落添加文本
+向一个段落添加文本段：
 
 ```cpp
 auto p4 = doc.AppendParagraph();
@@ -191,7 +191,7 @@ auto p4r2 = p4.AppendRun("你好，世界！");
 auto p4r3 = p4.AppendRun("你好，World!");
 ```
 
-可以在新建段落的同时添加文本：
+可以在新建段落的同时添加文本段：
 
 ```cpp
 auto p5 = doc.AppendParagraph("Hello, World!");
@@ -200,7 +200,7 @@ auto p5 = doc.AppendParagraph();
 auto p5r1 = p5.AppendRun("Hello, World!");
 ```
 
-添加文本时可以指定字号和字体：
+添加文本段时可以指定字号和字体：
 
 ```cpp
 auto p5r2 = p5.AppendRun("Hello, World!", 12, "Times New Roman");
@@ -208,13 +208,19 @@ auto p5r2 = p5.AppendRun("Hello, World!", 12, "Times New Roman");
 
 字号以磅为单位。
 
-可以创建空的文本，之后再添加文本。
+可以创建空的文本段。文本段在创建之后都可以再添加更多文本。
 
 ```cpp
 auto p5r3 = p5.AppendRun();
 p5r3.AppendText("Hello, World!");
 p5r3.AppendText("你好，世界！");
 p5r3.AppendText("你好，World!");
+```
+
+可以获取文本段包含的文本：
+
+```cpp
+auto text = p5r3.GetText(); // "Hello, World!你好，世界！你好，World!"
 ```
 
 设置字体格式:
@@ -229,7 +235,7 @@ p5r3.SetCharacterSpacing(Pt2Twip(2));
 
 要以磅为单位指定字间距，可用辅助函数 `Pt2Twip()`。
 
-下列方法用于遍历段落的文本：
+下列方法用于遍历段落的文本段：
 
 ```cpp
 auto p5r1 = p5.FirstRun(); // 没有 LastRun() 方法

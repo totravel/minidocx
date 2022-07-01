@@ -221,6 +221,12 @@ p5r3.AppendText("你好，世界！");
 p5r3.AppendText("你好，World!");
 ```
 
+You can get the text contained in the run:
+
+```cpp
+auto text = p5r3.GetText(); // "Hello, World!你好，世界！你好，World!"
+```
+
 You can set character formatting for a run after it is created.
 
 ```cpp
