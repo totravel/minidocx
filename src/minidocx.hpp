@@ -228,6 +228,7 @@ namespace docx
     Paragraph Next();
     Paragraph Prev();
     operator bool();
+    bool operator==(Paragraph &p);
 
     // section
     Section GetSection();

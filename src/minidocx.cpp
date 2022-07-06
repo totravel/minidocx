@@ -609,6 +609,11 @@ namespace docx
     return p_;
   }
 
+  bool Paragraph::operator==(Paragraph &p)
+  {
+    return p_ == p.p_;
+  }
+
   Section Paragraph::GetSection()
   {
     return Section(body_, p_, pPr_);
@@ -844,7 +849,7 @@ namespace docx
 
   Paragraph Section::FirstParagraph()
   {
-    return Paragraph(body_, pLast_, pPrLast_);
+    return Prev().LastParagraph().Next();
   }
 
   Paragraph Section::LastParagraph()
