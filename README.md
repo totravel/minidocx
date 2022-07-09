@@ -9,7 +9,7 @@
 
 English | [简体中文](./README-zh_CN.md)
 
-minidocx is a portable and easy-to-use C++ library for creating Microsoft Word Document (.docx). It is designed to be simple and small enough. So, you can grab these 2 files and compile them into your project.
+minidocx is a portable and easy-to-use C++ library for creating Microsoft Word Document (.docx) from scratch. It is designed to be simple and small enough. So, you can grab these 2 files and compile them into your project.
 
 ## Requirements
 
@@ -25,11 +25,11 @@ It is tested with the following IDE/toolchains versions:
 
 ## References
 
-To manipulate a docx file, you need to understand the following concepts:
+To manipulate a docx file, you need to understand at least the following three concepts:
 
-- `Paragraph` Text with the same paragraph formatting 
-- `Run` Text with the same font formatting. Paragraph contain 
-- `Section` A division of a document having the same page layout settings, such as margins and page orientation
+- `Paragraph` Text with the same paragraph formatting.
+- `Run` Text with the same font formatting.
+- `Section` A division of a document having the same page layout settings, such as margins and page orientation.
 
 Documents contain sections, you can have multiple sections per document. This simple example will only contain one section. More informations are available in [this site](http://officeopenxml.com/).
 
@@ -185,6 +185,14 @@ Paragraphs can be removed:
 p.Remove();
 ```
 
+You can check if two `Paragraph` instances represent the same paragraph:
+
+```cpp
+if (p1 == p2) {
+  std::cout << "They're the same paragraph\n";
+}
+```
+
 ### Run
 
 You can add multiple runs in paragraph:
@@ -309,6 +317,14 @@ You can get the first/last paragraph of a section.
 
 ```cpp
 auto p1 = s1.FirstParagraph();
+```
+
+You can check if two `Section` instances represent the same section:
+
+```cpp
+if (s1 == s2) {
+  std::cout << "They're the same Section\n";
+}
 ```
 
 You can set page formatting for a section.
