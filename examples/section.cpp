@@ -30,6 +30,11 @@ int main()
   std::cout << s3.LastParagraph().GetText() << std::endl;
   std::cout << s4.LastParagraph().GetText() << std::endl;
 
+  auto firstSection = doc.FirstSection();
+  if (s1 == firstSection) {
+    std::cout << "They're the same Section\n";
+  }
+
   for (auto s = doc.LastSection(); s; s = s.Prev()) {
     std::cout << s.LastParagraph().GetText() << std::endl;
   }

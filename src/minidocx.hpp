@@ -144,6 +144,7 @@ namespace docx
     Section Next();
     Section Prev();
     operator bool();
+    bool operator==(Section &s);
 
   private:
     pugi::xml_node body_;
