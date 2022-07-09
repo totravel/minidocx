@@ -11,7 +11,7 @@
 
 minidocx 是一个跨平台且易于使用的 C++ 库，用于从零开始创建 Microsoft Word 文档 (.docx)。它被设计为足够精简和小巧。因此，你只需将它的两个文件与你的项目的其他源文件一同编译即可。
 
-## 要求
+## 环境要求
 
 要使用 minidocx，你需要一个支持 C++ 11 的编译器和下列两个第三方库：
 
@@ -23,7 +23,7 @@ minidocx 是一个跨平台且易于使用的 C++ 库，用于从零开始创建
 - Visual Studio 16 2019
 - GNU 8.2.0
 
-## 参考
+## 参考文献
 
 要处理 `.docx` 文档，你至少要了解下列 3 个概念：
 
@@ -159,7 +159,7 @@ doc.Save();
 
 ### 段落
 
-类 `Paragraph` 表示一个段落。有两种方法可以新建段落：
+类 `Paragraph` 表示一个段落。有三种方法可以新建段落：
 
 ```cpp
 auto p1 = doc.AppendParagraph(); // 向文档追加新段落
@@ -209,7 +209,7 @@ auto p5 = doc.AppendParagraph();
 auto p5r1 = p5.AppendRun("Hello, World!");
 ```
 
-添加富文本时可以指定字号和字体：
+添加富文本时可以指定字号和字体（西文和中文字体可以分别设置）：
 
 ```cpp
 auto p5r2 = p5.AppendRun("Hello, World!", 12, "Times New Roman");
@@ -278,7 +278,7 @@ auto r = p.AppendPageBreak();
 
 ### 分节
 
-任何文档都至少包含一节并且不可删除。
+任何文档都至少包含一个分节且不可删除。
 
 新建分节需要插入分节符。分节符需要插入到某个段落中：
 
@@ -286,9 +286,9 @@ auto r = p.AppendPageBreak();
 p3.InsertSectionBreak();
 ```
 
-包含分节符的段落将成为新节的最后一个段落。
+包含分节符的段落将成为分节的最后一个段落。
 
-可以检查一个段落是否包含为分节符：
+可以检查一个段落是否包含分节符：
 
 ```cpp
 if (p3.HasSectionBreak()) {
@@ -296,7 +296,7 @@ if (p3.HasSectionBreak()) {
 }
 ```
 
-移除段落中的分节符：
+段落中的分节符可以被移除：
 
 ```cpp
 p3.RemoveSectionBreak();
