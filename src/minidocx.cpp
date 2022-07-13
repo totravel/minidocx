@@ -887,6 +887,11 @@ namespace docx
     return sectPr_;
   }
 
+  bool Section::operator==(Section &s)
+  {
+    return sectPr_ == s.sectPr_;
+  }
+
 
   // class Run
   void Run::AppendText(const std::string text)

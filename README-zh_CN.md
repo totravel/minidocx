@@ -9,9 +9,9 @@
 
 [English](./README.md) | 简体中文
 
-minidocx 是一个跨平台且易于使用的 C++ 库，用于创建 Microsoft Word 文档 (.docx)。它被设计为足够精简和小巧。因此，你只需将它的两个文件与你的项目的其他源文件一同编译即可。
+minidocx 是一个跨平台且易于使用的 C++ 库，用于从零开始创建 Microsoft Word 文档 (.docx)。它被设计为足够精简和小巧。因此，你只需将它的两个文件与你的项目的其他源文件一同编译即可。
 
-## 要求
+## 环境要求
 
 要使用 minidocx，你需要一个支持 C++ 11 的编译器和下列两个第三方库：
 
@@ -23,13 +23,13 @@ minidocx 是一个跨平台且易于使用的 C++ 库，用于创建 Microsoft W
 - Visual Studio 16 2019
 - GNU 8.2.0
 
-## 参考
+## 参考文献
 
-要处理 `.docx` 文档，你需要了解下列概念：
+要处理 `.docx` 文档，你至少要了解下列 3 个概念：
 
-- `Paragraph` 具有相同段落格式的文本
-- `Run` 具有相同字体格式的文本
-- `Section` 具有相同页面设置的一个或多个页面
+- `Paragraph` 段落，具有相同段落格式的文本
+- `Run` 富文本，段落中具有相同字体格式的文本
+- `Section` 分节，具有相同页面设置的一个或多个页面
 
 更多信息见 [此网站](http://officeopenxml.com/)。
 
@@ -159,7 +159,7 @@ doc.Save();
 
 ### 段落
 
-类 `Paragraph` 表示一个段落。有两种方法可以新建段落：
+类 `Paragraph` 表示一个段落。有三种方法可以新建段落：
 
 ```cpp
 auto p1 = doc.AppendParagraph(); // 向文档追加新段落
@@ -175,15 +175,23 @@ auto p3 = doc.LastParagraph();
 auto p2 = p3.Prev(); // 还可以用 Next() 方法
 ```
 
-可以移除段落：
+段落可以被移除：
 
 ```cpp
 p3.Remove();
 ```
 
-### 文本段
+可以检查两个 `Paragraph` 对象是否是同一个段落：
 
-向一个段落添加文本段：
+```cpp
+if (p1 == p2) {
+  std::cout << "They're the same paragraph\n";
+}
+```
+
+### 富文本
+
+向一个段落添加富文本：
 
 ```cpp
 auto p4 = doc.AppendParagraph();
@@ -192,7 +200,7 @@ auto p4r2 = p4.AppendRun("你好，世界！");
 auto p4r3 = p4.AppendRun("你好，World!");
 ```
 
-可以在新建段落的同时添加文本段：
+可以在新建段落的同时添加富文本：
 
 ```cpp
 auto p5 = doc.AppendParagraph("Hello, World!");
@@ -201,7 +209,7 @@ auto p5 = doc.AppendParagraph();
 auto p5r1 = p5.AppendRun("Hello, World!");
 ```
 
-添加文本段时可以指定字号和字体：
+添加富文本时可以指定字号和字体（西文和中文字体可以分别设置）：
 
 ```cpp
 auto p5r2 = p5.AppendRun("Hello, World!", 12, "Times New Roman");
@@ -209,7 +217,7 @@ auto p5r2 = p5.AppendRun("Hello, World!", 12, "Times New Roman");
 
 字号以磅为单位。
 
-可以创建空的文本段。文本段在创建之后都可以再添加更多文本。
+可以创建空的富文本。富文本在创建之后都可以继续添加更多文本。
 
 ```cpp
 auto p5r3 = p5.AppendRun();
@@ -218,7 +226,7 @@ p5r3.AppendText("你好，世界！");
 p5r3.AppendText("你好，World!");
 ```
 
-可以获取文本段包含的文本：
+可以获取富文本包含的文本：
 
 ```cpp
 auto text = p5r3.GetText(); // "Hello, World!你好，世界！你好，World!"
@@ -236,14 +244,14 @@ p5r3.SetCharacterSpacing(Pt2Twip(2));
 
 要以磅为单位指定字间距，可用辅助函数 `Pt2Twip()`。
 
-下列方法用于遍历段落的文本段：
+下列方法用于遍历段落的富文本：
 
 ```cpp
 auto p4r1 = p4.FirstRun(); // 没有 LastRun() 方法
 auto p4r2 = p4r1.Next(); // 没有 Prev() 方法
 ```
 
-可以移除文本段：
+富文本可以被移除：
 
 ```cpp
 p4r2.Remove();
@@ -251,7 +259,7 @@ p4r2.Remove();
 
 #### 换行
 
-可以添加换行符到文本段中：
+可以添加换行符到富文本中：
 
 ```cpp
 auto r = p.AppendRun();
@@ -262,7 +270,7 @@ r.AppendText("a simple sentence.");
 
 #### 分页
 
-分页符是特殊的文本段，只能通过调用 `AppendPageBreak()` 函数将分页符添加到段落中。
+分页符是特殊的富文本，只能通过调用 `AppendPageBreak()` 函数将分页符添加到段落中。
 
 ```cpp
 auto r = p.AppendPageBreak();
@@ -270,7 +278,7 @@ auto r = p.AppendPageBreak();
 
 ### 分节
 
-任何文档都至少包含一节并且不可删除。
+任何文档都至少包含一个分节且不可删除。
 
 新建分节需要插入分节符。分节符需要插入到某个段落中：
 
@@ -278,9 +286,9 @@ auto r = p.AppendPageBreak();
 p3.InsertSectionBreak();
 ```
 
-包含分节符的段落将成为新节的最后一个段落。
+包含分节符的段落将成为分节的最后一个段落。
 
-可以检查一个段落是否包含为分节符：
+可以检查一个段落是否包含分节符：
 
 ```cpp
 if (p3.HasSectionBreak()) {
@@ -288,7 +296,7 @@ if (p3.HasSectionBreak()) {
 }
 ```
 
-移除段落中的分节符：
+段落中的分节符可以被移除：
 
 ```cpp
 p3.RemoveSectionBreak();
@@ -305,6 +313,14 @@ auto s2 = s1.Next(); // 还可以用 Prev() 方法
 
 ```cpp
 auto p1 = s1.FirstParagraph();
+```
+
+可以检查两个 `Section` 对象是否是同一分节：
+
+```cpp
+if (s1 == s2) {
+  std::cout << "They're the same Section\n";
+}
 ```
 
 可以设置分节的页面格式：
