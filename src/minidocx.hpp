@@ -282,6 +282,7 @@ namespace docx
     std::string        path_;
     pugi::xml_document doc_;
     pugi::xml_node     body_;
+    pugi::xml_node     sectPr_;
   }; // class Document
 
 

@@ -129,6 +129,7 @@ namespace docx
   {
     doc_.load_buffer(DOCUMENT_XML, strlen(DOCUMENT_XML));
     body_ = doc_.child("w:document").child("w:body");
+    sectPr_ = body_.child("w:sectPr");
   }
 
   void Document::Save()
@@ -191,7 +192,7 @@ namespace docx
 
   Paragraph Document::AppendParagraph()
   {
-    auto p = body_.append_child("w:p");
+    auto p = body_.insert_child_before("w:p", sectPr_);
     auto pPr = p.append_child("w:pPr");
     return Paragraph(body_, p, pPr);
   }
