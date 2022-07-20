@@ -13,6 +13,32 @@
 
 namespace docx
 {
+  const int PPI = 72;
+
+  const double A2_W = 16.5;
+  const double A2_H = 23.4;
+
+  const double A3_W = 11.7;
+  const double A3_H = 16.5;
+
+  const double A4_W = 8.3;
+  const double A4_H = 11.7;
+
+  const double A5_W = 5.8;
+  const double A5_H = 8.3;
+
+  const double A2_COLS = A2_W * PPI;
+  const double A2_ROWS = A2_H * PPI;
+
+  const double A3_COLS = A3_W * PPI;
+  const double A3_ROWS = A3_H * PPI;
+
+  const double A4_COLS = A4_W * PPI;
+  const double A4_ROWS = A4_H * PPI;
+
+  const double A5_COLS = A5_W * PPI;
+  const double A5_ROWS = A5_H * PPI;
+
   void GetCharLen(std::string text, int &ascii, int &eastAsia);
   int GetCharLen(std::string s);
   
