@@ -12,7 +12,7 @@
 
 namespace docx
 {
-  void GetCharLen(std::string text, int &ascii, int &eastAsia)
+  void GetCharLen(const std::string text, int &ascii, int &eastAsia)
   {
     ascii = eastAsia = 0;
     for (int i = 0; i < text.length(); i++) {
@@ -25,7 +25,7 @@ namespace docx
     }
   }
 
-  int GetCharLen(std::string s)
+  int GetCharLen(const std::string s)
   {
     int c = 0;
     for (int i = 0; i < s.length(); i++) {
@@ -161,7 +161,8 @@ namespace docx
     zip_close(zip);
   }
 
-  std::string Document::GetFormatedBody() {
+  std::string Document::GetFormatedBody()
+  {
     xml_string_writer writer;
     body_.print(writer, " ");
     return writer.result;
@@ -323,7 +324,7 @@ namespace docx
     return Run(p_, r, br);
   }
 
-  void Paragraph::SetAlignment(Alignment alignment)
+  void Paragraph::SetAlignment(const Alignment alignment)
   {
     const char *val;
     switch (alignment) {
@@ -369,7 +370,7 @@ namespace docx
     }
   }
 
-  void Paragraph::SetLineSpacingLines(double at)
+  void Paragraph::SetLineSpacingLines(const double at)
   {
     // A normal single-spaced paragaph has a w:line value of 240, or 12 points.
     // 
@@ -378,7 +379,7 @@ namespace docx
     SetLineSpacing(at * 240, "auto");
   }
 
-  void Paragraph::SetLineSpacingAtLeast(int at)
+  void Paragraph::SetLineSpacingAtLeast(const int at)
   {
     // If the value of the lineRule attribute is atLeast or exactly, 
     // then the value of the line attribute is interpreted as 240th of a point.
@@ -386,12 +387,12 @@ namespace docx
     SetLineSpacing(at, "atLeast");
   }
 
-  void Paragraph::SetLineSpacingExactly(int at)
+  void Paragraph::SetLineSpacingExactly(const int at)
   {
     SetLineSpacing(at, "exact");
   }
 
-  void Paragraph::SetLineSpacing(int at, const char *lineRule)
+  void Paragraph::SetLineSpacing(const int at, const char *lineRule)
   {
     auto spacing = pPr_.child("w:spacing");
     if (!spacing) {
@@ -436,29 +437,29 @@ namespace docx
     spacingAuto.set_value("true");
   }
 
-  void Paragraph::SetBeforeSpacingLines(double beforeSpacing)
+  void Paragraph::SetBeforeSpacingLines(const double beforeSpacing)
   {
     // To specify units in hundreths of a line, 
     // use attributes 'afterLines'/'beforeLines'.
     SetSpacing(beforeSpacing * 100, "w:beforeAutospacing", "w:beforeLines");
   }
 
-  void Paragraph::SetAfterSpacingLines(double afterSpacing)
+  void Paragraph::SetAfterSpacingLines(const double afterSpacing)
   {
     SetSpacing(afterSpacing * 100, "w:afterAutospacing", "w:afterLines");
   }
 
-  void Paragraph::SetBeforeSpacing(int beforeSpacing)
+  void Paragraph::SetBeforeSpacing(const int beforeSpacing)
   {
     SetSpacing(beforeSpacing, "w:beforeAutospacing", "w:before");
   }
 
-  void Paragraph::SetAfterSpacing(int afterSpacing)
+  void Paragraph::SetAfterSpacing(const int afterSpacing)
   {
     SetSpacing(afterSpacing, "w:afterAutospacing", "w:after");
   }
 
-  void Paragraph::SetSpacing(int twip, const char *attrNameAuto, const char *attrName)
+  void Paragraph::SetSpacing(const int twip, const char *attrNameAuto, const char *attrName)
   {
     auto elemSpacing = pPr_.child("w:spacing");
     if (!elemSpacing) {
@@ -477,50 +478,50 @@ namespace docx
     attrSpacing.set_value(twip);
   }
 
-  void Paragraph::SetLeftIndentChars(double leftIndent)
+  void Paragraph::SetLeftIndentChars(const double leftIndent)
   {
     // To specify units in hundreths of a character, 
     // use attributes leftChars/endChars, rightChars/endChars, etc. 
     SetIndent(leftIndent * 100, "w:leftChars");
   }
 
-  void Paragraph::SetRightIndentChars(double rightIndent)
+  void Paragraph::SetRightIndentChars(const double rightIndent)
   {
     SetIndent(rightIndent * 100, "w:rightChars");
   }
 
-  void Paragraph::SetLeftIndent(int leftIndent)
+  void Paragraph::SetLeftIndent(const int leftIndent)
   {
     SetIndent(leftIndent, "w:left");
   }
 
-  void Paragraph::SetRightIndent(int rightIndent)
+  void Paragraph::SetRightIndent(const int rightIndent)
   {
     SetIndent(rightIndent, "w:right");
   }
 
-  void Paragraph::SetFirstLineChars(double indent)
+  void Paragraph::SetFirstLineChars(const double indent)
   {
     SetIndent(indent * 100, "w:firstLineChars");
   }
 
-  void Paragraph::SetHangingChars(double indent)
+  void Paragraph::SetHangingChars(const double indent)
   {
     SetIndent(indent * 100, "w:hangingChars");
   }
 
-  void Paragraph::SetFirstLine(int indent)
+  void Paragraph::SetFirstLine(const int indent)
   {
     SetIndent(indent, "w:firstLine");
   }
 
-  void Paragraph::SetHanging(int indent)
+  void Paragraph::SetHanging(const int indent)
   {
     SetIndent(indent, "w:hanging");
     SetLeftIndent(indent);
   }
 
-  void Paragraph::SetIndent(int indent, const char *attrName)
+  void Paragraph::SetIndent(const int indent, const char *attrName)
   {
     auto elemIndent = pPr_.child("w:ind");
     if (!elemIndent) {
@@ -549,7 +550,7 @@ namespace docx
     }
   }
 
-  void Paragraph::SetFontStyle(Run::FontStyle fontStyle)
+  void Paragraph::SetFontStyle(const Run::FontStyle fontStyle)
   {
     for (auto r = FirstRun(); r; r = r.Next()) {
       r.SetFontStyle(fontStyle);
@@ -610,7 +611,7 @@ namespace docx
     return p_;
   }
 
-  bool Paragraph::operator==(Paragraph &p)
+  bool Paragraph::operator==(const Paragraph &p)
   {
     return p_ == p.p_;
   }
@@ -719,7 +720,7 @@ namespace docx
     h = pgSzH.as_int();
   }
 
-  void Section::SetPageOrient(Orientation orient)
+  void Section::SetPageOrient(const Orientation orient)
   {
     auto pgSz = sectPr_.child("w:pgSz");
     if (!pgSz) {
@@ -887,7 +888,7 @@ namespace docx
     return sectPr_;
   }
 
-  bool Section::operator==(Section &s)
+  bool Section::operator==(const Section &s)
   {
     return sectPr_ == s.sectPr_;
   }
@@ -979,7 +980,7 @@ namespace docx
     if (rFontsEastAsia) fontEastAsia = rFontsEastAsia.value();
   }
 
-  void Run::SetFontStyle(FontStyle f)
+  void Run::SetFontStyle(const FontStyle f)
   {
     auto b = rPr_.child("w:b");
     if (f & Bold) {
@@ -1015,12 +1016,10 @@ namespace docx
   Run::FontStyle Run::GetFontStyle()
   {
     FontStyle fontStyle = 0;
-
     if (rPr_.child("w:b")) fontStyle |= Bold;
     if (rPr_.child("w:i")) fontStyle |= Italic;
     if (rPr_.child("w:u")) fontStyle |= Underline;
     if (rPr_.child("w:strike")) fontStyle |= Strikethrough;
-
     return fontStyle;
   }
 
