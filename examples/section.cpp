@@ -39,7 +39,7 @@ int main()
     std::cout << s.LastParagraph().GetText() << std::endl;
   }
 
-  s1.SetPageSize(docx::MM2Twip(297), docx::MM2Twip(420)); // A3
+  s1.SetPageSize(docx::Inch2Twip(docx::A3_W), docx::Inch2Twip(docx::A3_H)); // A3
   s3.SetPageOrient(docx::Section::Orientation::Landscape);
 
   int w, h;
