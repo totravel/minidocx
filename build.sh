@@ -6,31 +6,24 @@ if [ "$OSTYPE" == "msys" ]; then
 else
   script_dir=$(dirname $(readlink -f $0))
 fi
-parent_dir=$(dirname $script_dir)
+sources_dir=$script_dir
 
 if [ "$OSTYPE" == "msys" ]; then
-  build_dir=$script_dir/build-win
+  build_dir=$sources_dir/build-win
 else
-  build_dir=$script_dir/build-linux
+  build_dir=$sources_dir/build-linux
 fi
 
-build_type=Release
-build_shared_libs=ON
-# Windows
-host=x64 # x64 or x86
-arch=x64 # x64 or Win32
-# Linux
-build_x86=OFF
+build_type=Release # Release or Debug
 
-zip_dir=$parent_dir/3rd_party/zip-0.2.1
-pugixml_dir=$parent_dir/3rd_party/pugixml-1.12.1
-minidocx_dir=$script_dir
+minidocx_dir=$sources_dir
+zip_dir=$sources_dir/../3rd_party/zip-0.2.1
+pugixml_dir=$sources_dir/../3rd_party/pugixml-1.12.1
 
 options="
-  -DBUILD_SHARED_LIBS=$build_shared_libs
+  -DMINIDOCX_DIR=$minidocx_dir
   -DZIP_DIR=$zip_dir
-  -DPUGIXML_DIR=$pugixml_dir
-  -DMINIDOCX_DIR=$minidocx_dir"
+  -DPUGIXML_DIR=$pugixml_dir"
 
 echo -e "\e[36mBuilding...\e[0m"
 
@@ -39,9 +32,29 @@ if [ ! -d "$build_dir" ]; then
 fi
 
 if [ "$OSTYPE" == "msys" ]; then
-  cmake -S $script_dir -B $build_dir -Thost=$host -A $arch $options
-  cmake --build $build_dir --config $build_type -- -m:4
+  cmake -S $sources_dir -B $build_dir $options
+  cmake --build $build_dir --config $build_type -j4
 else
-  cmake -S $script_dir -B $build_dir -DCMAKE_BUILD_TYPE=$build_type -DBUILD_X86=$build_x86 $options
-  cmake --build $build_dir -- -j4
+  cmake -S $sources_dir -B $build_dir -DCMAKE_BUILD_TYPE=$build_type $options
+  cmake --build $build_dir -j4
+fi
+
+echo -e "\e[36mRunning...\e[0m"
+
+if [ "$OSTYPE" == "msys" ]; then
+  $build_dir/$build_type/basic
+  $build_dir/$build_type/traverse
+  $build_dir/$build_type/breaks
+  $build_dir/$build_type/spacing_indent
+  $build_dir/$build_type/paragraph
+  $build_dir/$build_type/section
+  $build_dir/$build_type/run
+else
+  $build_dir/basic
+  $build_dir/traverse
+  $build_dir/breaks
+  $build_dir/spacing_indent
+  $build_dir/paragraph
+  $build_dir/section
+  $build_dir/run
 fi

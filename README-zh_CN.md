@@ -15,13 +15,14 @@ minidocx 是一个跨平台且易于使用的 C++ 库，用于从零开始创建
 
 要使用 minidocx，你需要一个支持 C++ 11 的编译器和下列两个第三方库：
 
-- [zip](https://github.com/kuba--/zip) 0.2.1
-- [pugixml](https://github.com/zeux/pugixml) 1.12.1
+- [zip](https://github.com/kuba--/zip) <= 0.2.1
+- [pugixml](https://github.com/zeux/pugixml) >= 1.12.1
 
 已测试的开发环境：
 
+- CMake 3.21
 - Visual Studio 16 2019
-- GNU 8.2.0
+- GCC 8.2.0
 
 ## 参考文献
 
@@ -77,6 +78,13 @@ minidocx 包含 2 个文件——一个源文件 `minidocx.cpp` 和一个头文�
 ```cmake
 project(myproj VERSION 0.1.0 LANGUAGES C CXX) # C needed by zip.c
 
+add_library(minidocx INTERFACE)
+set_target_properties(minidocx PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${MINIDOCX_DIR}/src"
+  INTERFACE_SOURCES             "${MINIDOCX_DIR}/src/minidocx.cpp"
+  INTERFACE_COMPILE_OPTIONS     "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>"
+)
+
 add_library(zip INTERFACE)
 set_target_properties(zip PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${ZIP_DIR}/src"
@@ -89,14 +97,7 @@ set_target_properties(pugixml PROPERTIES
   INTERFACE_SOURCES             "${PUGIXML_DIR}/src/pugixml.cpp"
 )
 
-add_library(minidocx INTERFACE)
-set_target_properties(minidocx PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${MINIDOCX_DIR}/src"
-  INTERFACE_SOURCES             "${MINIDOCX_DIR}/src/minidocx.cpp"
-  INTERFACE_COMPILE_OPTIONS     "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>"
-  INTERFACE_LINK_LIBRARIES      "zip;pugixml"
-)
-
+target_link_libraries(minidocx INTERFACE zip pugixml)
 target_link_libraries(myapp PRIVATE minidocx)
 ```
 
@@ -330,7 +331,7 @@ s1.SetPageSize(MM2Twip(297), MM2Twip(420));        // 纸张大小为 A3
 s1.SetPageOrient(Section::Orientation::Landscape); // 纸张方向为横向
 ```
 
-## 联系
+## 反馈
 
 有任何疑问，可随时在 [此处](https://github.com/totravel/minidocx/issues) 提问。
 

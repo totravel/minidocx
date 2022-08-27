@@ -15,13 +15,14 @@ minidocx is a portable and easy-to-use C++ library for creating Microsoft Word D
 
 To build minidocx you'll need a C++11 compiler and the following libraries:
 
-- [zip](https://github.com/kuba--/zip) 0.2.1
-- [pugixml](https://github.com/zeux/pugixml) 1.12.1
+- [zip](https://github.com/kuba--/zip) <= 0.2.1
+- [pugixml](https://github.com/zeux/pugixml) >= 1.12.1
 
 It is tested with the following IDE/toolchains versions:
 
+- CMake 3.21
 - Visual Studio 16 2019
-- GNU 8.2.0
+- GCC 8.2.0
 
 ## References
 
@@ -77,6 +78,13 @@ The easiest way to build minidocx is to compile the source file, `minidocx.cpp`,
 ```cmake
 project(myproj VERSION 0.1.0 LANGUAGES C CXX) # C needed by zip.c
 
+add_library(minidocx INTERFACE)
+set_target_properties(minidocx PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${MINIDOCX_DIR}/src"
+  INTERFACE_SOURCES             "${MINIDOCX_DIR}/src/minidocx.cpp"
+  INTERFACE_COMPILE_OPTIONS     "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>"
+)
+
 add_library(zip INTERFACE)
 set_target_properties(zip PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${ZIP_DIR}/src"
@@ -89,14 +97,7 @@ set_target_properties(pugixml PROPERTIES
   INTERFACE_SOURCES             "${PUGIXML_DIR}/src/pugixml.cpp"
 )
 
-add_library(minidocx INTERFACE)
-set_target_properties(minidocx PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${MINIDOCX_DIR}/src"
-  INTERFACE_SOURCES             "${MINIDOCX_DIR}/src/minidocx.cpp"
-  INTERFACE_COMPILE_OPTIONS     "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>"
-  INTERFACE_LINK_LIBRARIES      "zip;pugixml"
-)
-
+target_link_libraries(minidocx INTERFACE zip pugixml)
 target_link_libraries(myapp PRIVATE minidocx)
 ```
 
