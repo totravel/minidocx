@@ -12,29 +12,6 @@
 
 namespace docx
 {
-  void GetCharLen(const std::string text, int &ascii, int &eastAsia)
-  {
-    ascii = eastAsia = 0;
-    for (int i = 0; i < text.length(); i++) {
-      if (text[i] < 0) {
-        i += 2;
-        eastAsia++;
-        continue;
-      }
-      ascii++;
-    }
-  }
-
-  int GetCharLen(const std::string s)
-  {
-    int c = 0;
-    for (int i = 0; i < s.length(); i++) {
-      if (s[i] < 0) i += 2;
-      c++;
-    }
-    return c;
-  }
-
   int Pt2Twip(const double pt)
   {
     return pt * 20;

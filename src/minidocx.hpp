@@ -74,9 +74,6 @@ namespace docx
 
   const double Tabloid_COLS = 792;
   const double Tabloid_ROWS = 1224;
-
-  void GetCharLen(const std::string text, int &ascii, int &eastAsia);
-  int GetCharLen(const std::string s);
   
   int Pt2Twip(const double pt);
   double Twip2Pt(const int twip);
