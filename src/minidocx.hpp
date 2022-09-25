@@ -15,7 +15,8 @@ namespace docx
 {
   const int PPI = 72;
 
-  const double A0_W = 33.1; // inches
+  // inches
+  const double A0_W = 33.1;
   const double A0_H = 46.8;
 
   const double A1_W = 23.4;
@@ -36,44 +37,45 @@ namespace docx
   const double A6_W = 4.1;
   const double A6_H = 5.8;
 
-  const double Letter_W = 8.5;
-  const double Letter_H = 11;
+  const double LETTER_W = 8.5;
+  const double LETTER_H = 11;
 
-  const double Legal_W = 8.5;
-  const double Legal_H = 14;
+  const double LEGAL_W = 8.5;
+  const double LEGAL_H = 14;
 
-  const double Tabloid_W = 11;
-  const double Tabloid_H = 17;
+  const double TABLOID_W = 11;
+  const double TABLOID_H = 17;
 
-  const double A0_COLS = 2384; // pixels
-  const double A0_ROWS = 3370;
+  // pixels
+  const unsigned int A0_COLS = 2384;
+  const unsigned int A0_ROWS = 3370;
 
-  const double A1_COLS = 1684;
-  const double A1_ROWS = 2384;
+  const unsigned int A1_COLS = 1684;
+  const unsigned int A1_ROWS = 2384;
 
-  const double A2_COLS = 1191;
-  const double A2_ROWS = 1684;
+  const unsigned int A2_COLS = 1191;
+  const unsigned int A2_ROWS = 1684;
 
-  const double A3_COLS = 842;
-  const double A3_ROWS = 1190;
+  const unsigned int A3_COLS = 842;
+  const unsigned int A3_ROWS = 1190;
 
-  const double A4_COLS = 595;
-  const double A4_ROWS = 842;
+  const unsigned int A4_COLS = 595;
+  const unsigned int A4_ROWS = 842;
 
-  const double A5_COLS = 420;
-  const double A5_ROWS = 595;
+  const unsigned int A5_COLS = 420;
+  const unsigned int A5_ROWS = 595;
 
-  const double A6_COLS = 297;
-  const double A6_ROWS = 420;
+  const unsigned int A6_COLS = 297;
+  const unsigned int A6_ROWS = 420;
 
-  const double Letter_COLS = 612;
-  const double Letter_ROWS = 792;
+  const unsigned int LETTER_COLS = 612;
+  const unsigned int LETTER_ROWS = 792;
 
-  const double Legal_COLS = 612;
-  const double Legal_ROWS = 1008;
+  const unsigned int LEGAL_COLS = 612;
+  const unsigned int LEGAL_ROWS = 1008;
 
-  const double Tabloid_COLS = 792;
-  const double Tabloid_ROWS = 1224;
+  const unsigned int TABLOID_COLS = 792;
+  const unsigned int TABLOID_ROWS = 1224;
   
   int Pt2Twip(const double pt);
   double Twip2Pt(const int twip);
