@@ -1,4 +1,4 @@
-
+﻿
 #include <cstring>
 #include <cmath>
 #include "minidocx.hpp"

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * minidocx - C++ library for creating Microsoft Word Document (.docx).
  * 
  * Copyright (C) 2022 Xie Zequn <totravel@foxmail.com>

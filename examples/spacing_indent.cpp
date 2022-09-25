@@ -1,4 +1,4 @@
-
+﻿
 #include "minidocx.hpp"
 
 #define text1 "I feel that there is much to be said for the Celtic belief that the souls of those whom we have lost are held captive in some inferior being, in an animal, in a plant, in some inanimate object, and so effectively lost to us until the day (which to many never comes) when we happen to pass by the tree or to obtain possession of the object which forms their prison."
