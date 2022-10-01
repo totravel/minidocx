@@ -48,18 +48,18 @@ int main()
   Document doc("./a.docx");
 
   auto p1 = doc.AppendParagraph("Hello, World!", 12, "Times New Roman");
-  auto p2 = doc.AppendParagraph("你好，世界！", 14, "宋体");
-  auto p3 = doc.AppendParagraph("你好，World!", 16, "Times New Roman", "宋体");
-  
+  auto p2 = doc.AppendParagraph(u8"你好，世界！", 14, u8"宋体");
+  auto p3 = doc.AppendParagraph(u8"你好，World!", 16, "Times New Roman", u8"宋体");
+
   auto p4 = doc.AppendParagraph();
   p4.SetAlignment(Paragraph::Alignment::Centered);
 
   auto p4r1 = p4.AppendRun("This is a simple sentence. ", 12, "Arial");
   p4r1.SetCharacterSpacing(Pt2Twip(2));
 
-  auto p4r2 = p4.AppendRun("这是一个简单的句子。");
+  auto p4r2 = p4.AppendRun(u8"这是一个简单的句子。");
   p4r2.SetFontSize(14);
-  p4r2.SetFont("黑体");
+  p4r2.SetFont(u8"黑体");
   p4r2.SetFontStyle(Run::Bold | Run::Italic);
 
   doc.Save();
@@ -69,43 +69,19 @@ int main()
 
 See other [examples](./examples).
 
-## Building From Source
+## Build Instructions
 
-The minidocx source consists of 2 files - one source file, `minidocx.cpp`, and one header file, `minidocx.hpp`.
+```bash
+# Windows
+cmake -S . -B build -DBUILD_EXAMPLES=ON -DWITH_STATIC_CRT=OFF
+cmake --build build -j4 --config Release
+cmake --install build --prefix install --config Release
 
-The easiest way to build minidocx is to compile the source file, `minidocx.cpp`, along with the existing library/executable. If you’re using CMake, just add the following commands to the `CMakeLists.txt` file in your projects.
-
-```cmake
-project(myproj VERSION 0.1.0 LANGUAGES C CXX) # C needed by zip.c
-
-add_library(minidocx INTERFACE)
-set_target_properties(minidocx PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${MINIDOCX_DIR}/src"
-  INTERFACE_SOURCES             "${MINIDOCX_DIR}/src/minidocx.cpp"
-  INTERFACE_COMPILE_OPTIONS     "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>"
-)
-
-add_library(zip INTERFACE)
-set_target_properties(zip PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${ZIP_DIR}/src"
-  INTERFACE_SOURCES             "${ZIP_DIR}/src/zip.c"
-)
-
-add_library(pugixml INTERFACE)
-set_target_properties(pugixml PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${PUGIXML_DIR}/src"
-  INTERFACE_SOURCES             "${PUGIXML_DIR}/src/pugixml.cpp"
-)
-
-target_link_libraries(minidocx INTERFACE zip pugixml)
-target_link_libraries(myapp PRIVATE minidocx)
+# Linux
+cmake -S . -B build -DBUILD_EXAMPLES=ON -DWITH_STATIC_CRT=OFF -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j4
+cmake --install build --prefix install
 ```
-
-When running CMake to configure the build tree, the following variables need to be set correctly:
-
-- `ZIP_DIR` zip directory
-- `PUGIXML_DIR` pugixml directory
-- `MINIDOCX_DIR` minidocx directory
 
 ## User Guide
 
@@ -168,8 +144,8 @@ doc.Save();
 
 ```cpp
 auto p1 = doc.AppendParagraph(); // Append a new document to the document
-auto p3 = p1.InsertAfter();      // Insert a new document after p1
-auto p2 = p3.InsertBefore();     // Insert a new document before p3
+auto p3 = doc.InsertParagraphAfter(p1);  // Insert a new document after p1
+auto p2 = doc.InsertParagraphBefore(p3); // Insert a new document before p3
 ```
 
 It is easy to get every paragraph of the document:
@@ -183,7 +159,7 @@ auto p2 = p3.Prev(); // Next() also available
 Paragraphs can be removed:
 
 ```cpp
-p.Remove();
+doc.RemoveParagraph(p3); // Remove p3
 ```
 
 You can check if two `Paragraph` instances represent the same paragraph:
@@ -201,8 +177,8 @@ You can add multiple runs in paragraph:
 ```cpp
 auto p4 = doc.AppendParagraph();
 auto p4r1 = p4.AppendRun("Hello, World!");
-auto p4r2 = p4.AppendRun("你好，世界！");
-auto p4r3 = p4.AppendRun("你好，World!");
+auto p4r2 = p4.AppendRun(u8"你好，世界！");
+auto p4r3 = p4.AppendRun(u8"你好，World!");
 ```
 
 When you create a new paragraph by providing text to the `AppendParagraph()` method, it gets put into a single run.
@@ -227,8 +203,8 @@ You can create an empty run and add text to it later.
 ```cpp
 auto p5r3 = p5.AppendRun();
 p5r3.AppendText("Hello, World!");
-p5r3.AppendText("你好，世界！");
-p5r3.AppendText("你好，World!");
+p5r3.AppendText(u8"你好，世界！");
+p5r3.AppendText(u8"你好，World!");
 ```
 
 You can get the text contained in the run:

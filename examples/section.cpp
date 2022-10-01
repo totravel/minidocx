@@ -58,7 +58,7 @@ int main()
                    docx::CM2Twip(3.175), docx::CM2Twip(3.175));
   s4.SetPageMargin(docx::CM2Twip(1.5),   docx::CM2Twip(1.75));
 
-  std::cout << doc.GetFormatedBody();
+  std::cout << doc;
 
   s2.Merge();
   std::cout << s2.LastParagraph().GetText() << std::endl;

@@ -1,11 +1,9 @@
 ﻿
-#include <cstring>
-#include <cmath>
 #include "minidocx.hpp"
+#include <cstring> // std::strlen(), std::strcmp()
+#include <cstdlib> // std::free()
 #include "zip.h"
 
-// template of parts (a .xml file) of a package (a .docx/.zip file) 
-// used to create a new package
 #define _RELS R"(<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>)"
 #define DOCUMENT_XML R"(<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:cx="http://schemas.microsoft.com/office/drawing/2014/chartex" xmlns:cx1="http://schemas.microsoft.com/office/drawing/2015/9/8/chartex" xmlns:cx2="http://schemas.microsoft.com/office/drawing/2015/10/21/chartex" xmlns:cx3="http://schemas.microsoft.com/office/drawing/2016/5/9/chartex" xmlns:cx4="http://schemas.microsoft.com/office/drawing/2016/5/10/chartex" xmlns:cx5="http://schemas.microsoft.com/office/drawing/2016/5/11/chartex" xmlns:cx6="http://schemas.microsoft.com/office/drawing/2016/5/12/chartex" xmlns:cx7="http://schemas.microsoft.com/office/drawing/2016/5/13/chartex" xmlns:cx8="http://schemas.microsoft.com/office/drawing/2016/5/14/chartex" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:aink="http://schemas.microsoft.com/office/drawing/2016/ink" xmlns:am3d="http://schemas.microsoft.com/office/drawing/2017/model3d" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:oel="http://schemas.microsoft.com/office/2019/extlst" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex" xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml" xmlns:w16sdtdh="http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 w15 w16se w16cid w16 w16cex w16sdtdh wp14"><w:body><w:sectPr><w:pgSz w:w="11906" w:h="16838" /><w:pgMar w:top="1440" w:right="1800" w:bottom="1440" w:left="1800" w:header="851" w:footer="992" w:gutter="0" /><w:cols w:space="425" /><w:docGrid w:type="lines" w:linePitch="312" /></w:sectPr></w:body></w:document>)"
 #define CONTENT_TYPES_XML R"(<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>)"
@@ -95,68 +93,91 @@ namespace docx
   pugi::xml_node GetLastChild(pugi::xml_node node, const char *name)
   {
     pugi::xml_node child = node.last_child();
-    while (!child.empty() && strcmp(name, child.name()) != 0) {
+    while (!child.empty() && std::strcmp(name, child.name()) != 0) {
       child = child.previous_sibling(name);
     }
     return child;
   }
 
+  std::ostream& operator<<(std::ostream &out, const Document &doc)
+  {
+    xml_string_writer writer;
+    doc.w_body_.print(writer, "  ");
+    out << writer.result;
+    return out;
+  }
+
   // class Document
   Document::Document(const std::string path): path_(path)
   {
-    doc_.load_buffer(DOCUMENT_XML, strlen(DOCUMENT_XML));
-    body_ = doc_.child("w:document").child("w:body");
-    sectPr_ = body_.child("w:sectPr");
+    doc_.load_buffer(DOCUMENT_XML, std::strlen(DOCUMENT_XML), pugi::parse_declaration);
+    w_body_ = doc_.child("w:document").child("w:body");
+    w_sectPr_ = w_body_.child("w:sectPr");
   }
 
-  void Document::Save()
+  bool Document::Save()
   {
-    // <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-    pugi::xml_node decl = doc_.prepend_child(pugi::node_declaration);
-    decl.append_attribute("version")    = "1.0";
-    decl.append_attribute("encoding")   = "UTF-8";
-    decl.append_attribute("standalone") = "yes";
-
     xml_string_writer writer;
     doc_.save(writer, "", pugi::format_raw);
     const char *buf = writer.result.c_str();
 
     struct zip_t *zip = zip_open(path_.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'w');
+    if (zip == nullptr) {
+      return false;
+    }
 
     zip_entry_open(zip, "_rels/.rels");
-    zip_entry_write(zip, _RELS, strlen(_RELS));
+    zip_entry_write(zip, _RELS, std::strlen(_RELS));
     zip_entry_close(zip);
-    
+
     zip_entry_open(zip, "word/document.xml");
-    zip_entry_write(zip, buf, strlen(buf));
+    zip_entry_write(zip, buf, std::strlen(buf));
     zip_entry_close(zip);
-    
+
     zip_entry_open(zip, "[Content_Types].xml");
-    zip_entry_write(zip, CONTENT_TYPES_XML, strlen(CONTENT_TYPES_XML));
+    zip_entry_write(zip, CONTENT_TYPES_XML, std::strlen(CONTENT_TYPES_XML));
     zip_entry_close(zip);
 
     zip_close(zip);
+    return true;
   }
 
-  std::string Document::GetFormatedBody()
+  bool Document::Open(const std::string path)
   {
-    xml_string_writer writer;
-    body_.print(writer, " ");
-    return writer.result;
+    struct zip_t *zip = zip_open(path.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'r');
+    if (zip == nullptr) {
+      return false;
+    }
+
+    if (zip_entry_open(zip, "word/document.xml") < 0) {
+      zip_close(zip);
+      return false;
+    }
+    void *buf = nullptr;
+    size_t bufsize;
+    zip_entry_read(zip, &buf, &bufsize);
+    zip_entry_close(zip);
+    zip_close(zip);
+
+    doc_.load_buffer(buf, bufsize, pugi::parse_declaration);
+    w_body_ = doc_.child("w:document").child("w:body");
+    w_sectPr_ = w_body_.child("w:sectPr");
+    std::free(buf);
+    return true;
   }
 
   Paragraph Document::FirstParagraph()
   {
-    auto p = body_.child("w:p");
-    auto pPr = p.child("w:pPr");
-    return Paragraph(body_, p, pPr);
+    auto w_p = w_body_.child("w:p");
+    auto w_pPr = w_p.child("w:pPr");
+    return Paragraph(w_body_, w_p, w_pPr);
   }
 
   Paragraph Document::LastParagraph()
   {
-    auto p = GetLastChild(body_, "w:p");
-    auto pPr = p.child("w:pPr");
-    return Paragraph(body_, p, pPr);
+    auto w_p = GetLastChild(w_body_, "w:p");
+    auto w_pPr = w_p.child("w:pPr");
+    return Paragraph(w_body_, w_p, w_pPr);
   }
 
   Section Document::FirstSection()
@@ -170,9 +191,9 @@ namespace docx
 
   Paragraph Document::AppendParagraph()
   {
-    auto p = body_.insert_child_before("w:p", sectPr_);
-    auto pPr = p.append_child("w:pPr");
-    return Paragraph(body_, p, pPr);
+    auto w_p = w_body_.insert_child_before("w:p", w_sectPr_);
+    auto w_pPr = w_p.append_child("w:pPr");
+    return Paragraph(w_body_, w_p, w_pPr);
   }
 
   Paragraph Document::AppendParagraph(const std::string text)
@@ -202,9 +223,9 @@ namespace docx
 
   Paragraph Document::PrependParagraph()
   {
-    auto p = body_.prepend_child("w:p");
-    auto pPr = p.append_child("w:pPr");
-    return Paragraph(body_, p, pPr);
+    auto w_p = w_body_.prepend_child("w:p");
+    auto w_pPr = w_p.append_child("w:pPr");
+    return Paragraph(w_body_, w_p, w_pPr);
   }
 
   Paragraph Document::PrependParagraph(const std::string text)
@@ -232,6 +253,25 @@ namespace docx
     return p;
   }
 
+  Paragraph Document::InsertParagraphBefore(Paragraph &p)
+  {
+    auto w_p = w_body_.insert_child_before("w:p", p.w_p_);
+    auto w_pPr = w_p.append_child("w:pPr");
+    return Paragraph(w_body_, w_p, w_pPr);
+  }
+
+  Paragraph Document::InsertParagraphAfter(Paragraph &p)
+  {
+    auto w_p = w_body_.insert_child_after("w:p", p.w_p_);
+    auto w_pPr = w_p.append_child("w:pPr");
+    return Paragraph(w_body_, w_p, w_pPr);
+  }
+
+  bool Document::RemoveParagraph(Paragraph &p)
+  {
+    return w_body_.remove_child(p.w_p_);
+  }
+
   Paragraph Document::AppendPageBreak()
   {
     auto p = AppendParagraph();
@@ -248,18 +288,36 @@ namespace docx
 
 
   // class Paragraph
+  Paragraph::Paragraph()
+  {
+  }
+
+  Paragraph::Paragraph(pugi::xml_node w_body, 
+                       pugi::xml_node w_p, 
+                       pugi::xml_node w_pPr): w_body_(w_body), 
+                                              w_p_(w_p), 
+                                              w_pPr_(w_pPr)
+  {
+  }
+
+  Paragraph::Paragraph(pugi::xml_node w_body): w_body_(w_body)
+  {
+    w_p_ = w_body.append_child("w:p");
+    w_pPr_ = w_p_.append_child("w:pPr");
+  }
+
   Run Paragraph::FirstRun()
   {
-    auto r = p_.child("w:r");
-    auto rPr = r.child("w:rPr");
-    return Run(p_, r, rPr);
+    auto w_r = w_p_.child("w:r");
+    auto w_rPr = w_r.child("w:rPr");
+    return Run(w_p_, w_r, w_rPr);
   }
 
   Run Paragraph::AppendRun()
   {
-    auto r = p_.append_child("w:r");
-    auto rPr = r.append_child("w:rPr");
-    return Run(p_, r, rPr);
+    auto w_r = w_p_.append_child("w:r");
+    auto w_rPr = w_r.append_child("w:rPr");
+    return Run(w_p_, w_r, w_rPr);
   }
 
   Run Paragraph::AppendRun(const std::string text)
@@ -295,10 +353,10 @@ namespace docx
 
   Run Paragraph::AppendPageBreak()
   {
-    auto r = p_.append_child("w:r");
-    auto br = r.append_child("w:br");
-    br.append_attribute("w:type") = "page";
-    return Run(p_, r, br);
+    auto w_r = w_p_.append_child("w:r");
+    auto w_br = w_r.append_child("w:br");
+    w_br.append_attribute("w:type") = "page";
+    return Run(w_p_, w_r, w_br);
   }
 
   void Paragraph::SetAlignment(const Alignment alignment)
@@ -322,9 +380,9 @@ namespace docx
         break;
     }
 
-    auto jc = pPr_.child("w:jc");
+    auto jc = w_pPr_.child("w:jc");
     if (!jc) {
-      jc = pPr_.append_child("w:jc");
+      jc = w_pPr_.append_child("w:jc");
     }
     auto jcVal = jc.attribute("w:val");
     if (!jcVal) {
@@ -335,7 +393,7 @@ namespace docx
 
   void Paragraph::SetLineSpacingSingle()
   {
-    auto spacing = pPr_.child("w:spacing");
+    auto spacing = w_pPr_.child("w:spacing");
     if (!spacing) return;
     auto spacingLineRule = spacing.attribute("w:lineRule");
     if (spacingLineRule) {
@@ -371,9 +429,9 @@ namespace docx
 
   void Paragraph::SetLineSpacing(const int at, const char *lineRule)
   {
-    auto spacing = pPr_.child("w:spacing");
+    auto spacing = w_pPr_.child("w:spacing");
     if (!spacing) {
-      spacing = pPr_.append_child("w:spacing");
+      spacing = w_pPr_.append_child("w:spacing");
     }
 
     auto spacingLineRule = spacing.attribute("w:lineRule");
@@ -402,9 +460,9 @@ namespace docx
 
   void Paragraph::SetSpacingAuto(const char *attrNameAuto)
   {
-    auto spacing = pPr_.child("w:spacing");
+    auto spacing = w_pPr_.child("w:spacing");
     if (!spacing) {
-      spacing = pPr_.append_child("w:spacing");
+      spacing = w_pPr_.append_child("w:spacing");
     }
     auto spacingAuto = spacing.attribute(attrNameAuto);
     if (!spacingAuto) {
@@ -438,9 +496,9 @@ namespace docx
 
   void Paragraph::SetSpacing(const int twip, const char *attrNameAuto, const char *attrName)
   {
-    auto elemSpacing = pPr_.child("w:spacing");
+    auto elemSpacing = w_pPr_.child("w:spacing");
     if (!elemSpacing) {
-      elemSpacing = pPr_.append_child("w:spacing");
+      elemSpacing = w_pPr_.append_child("w:spacing");
     }
 
     auto attrSpacingAuto = elemSpacing.attribute(attrNameAuto);
@@ -500,9 +558,9 @@ namespace docx
 
   void Paragraph::SetIndent(const int indent, const char *attrName)
   {
-    auto elemIndent = pPr_.child("w:ind");
+    auto elemIndent = w_pPr_.child("w:ind");
     if (!elemIndent) {
-      elemIndent = pPr_.append_child("w:ind");
+      elemIndent = w_pPr_.append_child("w:ind");
     }
 
     auto attrIndent = elemIndent.attribute(attrName);
@@ -550,57 +608,38 @@ namespace docx
     return text;
   }
 
-  Paragraph Paragraph::InsertBefore()
-  {
-    auto p = body_.insert_child_before("w:p", p_);
-    auto pPr = p.append_child("w:pPr");
-    return Paragraph(body_, p, pPr);
-  }
-
-  Paragraph Paragraph::InsertAfter()
-  {
-    auto p = body_.insert_child_after("w:p", p_);
-    auto pPr = p.append_child("w:pPr");
-    return Paragraph(body_, p, pPr);
-  }
-
-  void Paragraph::Remove()
-  {
-    body_.remove_child(p_);
-  }
-
   Paragraph Paragraph::Next()
   {
-    auto p = p_.next_sibling("w:p");
-    auto pPr = p.child("w:pPr");
-    return Paragraph(body_, p, pPr);
+    auto w_p = w_p_.next_sibling("w:p");
+    auto w_pPr = w_p.child("w:pPr");
+    return Paragraph(w_body_, w_p, w_pPr);
   }
 
   Paragraph Paragraph::Prev()
   {
-    auto p = p_.previous_sibling("w:p");
-    auto pPr = p.child("w:pPr");
-    return Paragraph(body_, p, pPr);
+    auto w_p = w_p_.previous_sibling("w:p");
+    auto w_pPr = w_p.child("w:pPr");
+    return Paragraph(w_body_, w_p, w_pPr);
   }
 
   Paragraph::operator bool()
   {
-    return p_;
+    return w_p_;
   }
 
   bool Paragraph::operator==(const Paragraph &p)
   {
-    return p_ == p.p_;
+    return w_p_ == p.w_p_;
   }
 
   Section Paragraph::GetSection()
   {
-    return Section(body_, p_, pPr_);
+    return Section(w_body_, w_p_, w_pPr_);
   }
 
   Section Paragraph::InsertSectionBreak()
   {
-    auto s = Section(body_, p_, pPr_);
+    auto s = Section(w_body_, w_p_, w_pPr_);
     // this paragraph will be the last paragraph of the new section
     s.Split();
     return s;
@@ -608,7 +647,7 @@ namespace docx
 
   Section Paragraph::RemoveSectionBreak()
   {
-    auto s = Section(body_, p_, pPr_);
+    auto s = Section(w_body_, w_p_, w_pPr_);
     if (s.IsSplit()) s.Merge();
     return s;
   }
@@ -620,57 +659,71 @@ namespace docx
 
 
   // class Section
-  Section::Section(pugi::xml_node body, 
-                   pugi::xml_node p, 
-                   pugi::xml_node pPr): body_(body), 
-                                        p_(p), 
-                                        pPr_(pPr)
+  Section::Section()
+  {}
+
+  Section::Section(pugi::xml_node w_body, 
+                   pugi::xml_node w_p, 
+                   pugi::xml_node w_pPr): w_body_(w_body), 
+                                          w_p_(w_p), 
+                                          w_pPr_(w_pPr)
   {
     GetSectPr();
   }
 
+  Section::Section(pugi::xml_node w_body, 
+                   pugi::xml_node w_p, 
+                   pugi::xml_node w_pPr, 
+                   pugi::xml_node w_sectPr): w_body_(w_body), 
+                                             w_p_(w_p), 
+                                             w_p_last_(w_p), 
+                                             w_pPr_(w_pPr), 
+                                             w_pPr_last_(w_pPr), 
+                                             w_sectPr_(w_sectPr)
+  {}
+
   void Section::GetSectPr()
   {
-    pugi::xml_node pNext = p_, p, pPr, sectPr;
+    pugi::xml_node w_p_next = w_p_, w_p, w_pPr, w_sectPr;
     do {
-      p = pNext;
-      pPr = p.child("w:pPr");
-      sectPr = pPr.child("w:sectPr");
-      pNext = p.next_sibling();
-    } while (sectPr.empty() && !pNext.empty());
+      w_p = w_p_next;
+      w_pPr = w_p.child("w:pPr");
+      w_sectPr = w_pPr.child("w:sectPr");
+      w_p_next = w_p.next_sibling();
+    } while (w_sectPr.empty() && !w_p_next.empty());
 
-    pLast_         = p;
-    pPrLast_       = pPr;
-    sectPr_        = sectPr;
+    w_p_last_   = w_p;
+    w_pPr_last_ = w_pPr;
+    w_sectPr_   = w_sectPr;
 
-    if (sectPr_.empty()) sectPr_ = body_.child("w:sectPr");
+    if (w_sectPr_.empty()) w_sectPr_ = w_body_.child("w:sectPr");
   }
 
   void Section::Split()
   {
     if (IsSplit()) return;
-    pLast_ = p_;
-    pPrLast_ = pPr_;
-    sectPr_ = pPr_.append_copy(sectPr_);
+    w_p_last_ = w_p_;
+    w_pPr_last_ = w_pPr_;
+    w_sectPr_ = w_pPr_.append_copy(w_sectPr_);
   }
 
   bool Section::IsSplit()
   {
-    return pPr_.child("w:sectPr");
+    return w_pPr_.child("w:sectPr");
   }
 
   void Section::Merge()
   {
-    if (pPr_.child("w:sectPr").empty()) return;
-    pPrLast_.remove_child(sectPr_);
+    if (w_pPr_.child("w:sectPr").empty()) return;
+    w_pPr_last_.remove_child(w_sectPr_);
     GetSectPr();
   }
 
   void Section::SetPageSize(const int w, const int h)
   {
-    auto pgSz = sectPr_.child("w:pgSz");
+    auto pgSz = w_sectPr_.child("w:pgSz");
     if (!pgSz) {
-      pgSz = sectPr_.append_child("w:pgSz");
+      pgSz = w_sectPr_.append_child("w:pgSz");
     }
     auto pgSzW = pgSz.attribute("w:w");
     if (!pgSzW) {
@@ -687,7 +740,7 @@ namespace docx
   void Section::GetPageSize(int &w, int &h)
   {
     w = h = 0;
-    auto pgSz = sectPr_.child("w:pgSz");
+    auto pgSz = w_sectPr_.child("w:pgSz");
     if (!pgSz) return;
     auto pgSzW = pgSz.attribute("w:w");
     if (!pgSzW) return;
@@ -699,9 +752,9 @@ namespace docx
 
   void Section::SetPageOrient(const Orientation orient)
   {
-    auto pgSz = sectPr_.child("w:pgSz");
+    auto pgSz = w_sectPr_.child("w:pgSz");
     if (!pgSz) {
-      pgSz = sectPr_.append_child("w:pgSz");
+      pgSz = w_sectPr_.append_child("w:pgSz");
     }
     auto pgSzH = pgSz.attribute("w:h");
     if (!pgSzH) {
@@ -736,7 +789,7 @@ namespace docx
   Section::Orientation Section::GetPageOrient()
   {
     Orientation orient = Orientation::Portrait;
-    auto pgSz = sectPr_.child("w:pgSz");
+    auto pgSz = w_sectPr_.child("w:pgSz");
     if (!pgSz) return orient;
     auto pgSzOrient = pgSz.attribute("w:orient");
     if (!pgSzOrient) return orient;
@@ -749,9 +802,9 @@ namespace docx
   void Section::SetPageMargin(const int top, const int bottom, 
                               const int left, const int right)
   {
-    auto pgMar = sectPr_.child("w:pgMar");
+    auto pgMar = w_sectPr_.child("w:pgMar");
     if (!pgMar) {
-      pgMar = sectPr_.append_child("w:pgMar");
+      pgMar = w_sectPr_.append_child("w:pgMar");
     }
     auto pgMarTop = pgMar.attribute("w:top");
     if (!pgMarTop) {
@@ -779,7 +832,7 @@ namespace docx
                               int &left, int &right)
   {
     top = bottom = left = right = 0;
-    auto pgMar = sectPr_.child("w:pgMar");
+    auto pgMar = w_sectPr_.child("w:pgMar");
     if (!pgMar) return;
     auto pgMarTop = pgMar.attribute("w:top");
     if (!pgMarTop) return;
@@ -797,9 +850,9 @@ namespace docx
 
   void Section::SetPageMargin(const int header, const int footer)
   {
-    auto pgMar = sectPr_.child("w:pgMar");
+    auto pgMar = w_sectPr_.child("w:pgMar");
     if (!pgMar) {
-      pgMar = sectPr_.append_child("w:pgMar");
+      pgMar = w_sectPr_.append_child("w:pgMar");
     }
     auto pgMarHeader = pgMar.attribute("w:header");
     if (!pgMarHeader) {
@@ -816,7 +869,7 @@ namespace docx
   void Section::GetPageMargin(int &header, int &footer)
   {
     header = footer = 0;
-    auto pgMar = sectPr_.child("w:pgMar");
+    auto pgMar = w_sectPr_.child("w:pgMar");
     if (!pgMar) return;
     auto pgMarHeader = pgMar.attribute("w:header");
     if (!pgMarHeader) return;
@@ -833,48 +886,55 @@ namespace docx
 
   Paragraph Section::LastParagraph()
   {
-    return Paragraph(body_, pLast_, pPrLast_);
+    return Paragraph(w_body_, w_p_last_, w_pPr_last_);
   }
 
   Section Section::Next()
   {
-    auto p = pLast_.next_sibling();
-    if (p.empty()) return Section();
-    return Section(body_, p, p.child("w:pPr"));
+    auto w_p = w_p_last_.next_sibling();
+    if (w_p.empty()) return Section();
+    return Section(w_body_, w_p, w_p.child("w:pPr"));
   }
 
   Section Section::Prev()
   {
-    pugi::xml_node pPrev, p, pPr, sectPr;
+    pugi::xml_node w_p_prev, w_p, w_pPr, w_sectPr;
 
-    pPrev = p_.previous_sibling();
-    if (pPrev.empty()) return Section();
+    w_p_prev = w_p_.previous_sibling();
+    if (w_p_prev.empty()) return Section();
 
     do {
-      p = pPrev;
-      pPr = p.child("w:pPr");
-      sectPr = pPr.child("w:sectPr");
-      pPrev = p.previous_sibling();
-    } while (sectPr.empty() && !pPrev.empty());
+      w_p = w_p_prev;
+      w_pPr = w_p.child("w:pPr");
+      w_sectPr = w_pPr.child("w:sectPr");
+      w_p_prev = w_p.previous_sibling();
+    } while (w_sectPr.empty() && !w_p_prev.empty());
 
-    return Section(body_, p, pPr, sectPr);
+    return Section(w_body_, w_p, w_pPr, w_sectPr);
   }
 
   Section::operator bool()
   {
-    return sectPr_;
+    return w_sectPr_;
   }
 
   bool Section::operator==(const Section &s)
   {
-    return sectPr_ == s.sectPr_;
+    return w_sectPr_ == s.w_sectPr_;
   }
 
 
   // class Run
+  Run::Run(pugi::xml_node w_p, 
+           pugi::xml_node w_r, 
+           pugi::xml_node w_rPr): w_p_(w_p), 
+                                  w_r_(w_r), 
+                                  w_rPr_(w_rPr)
+  {}
+
   void Run::AppendText(const std::string text)
   {
-    auto t = r_.append_child("w:t");
+    auto t = w_r_.append_child("w:t");
     if (isspace(text.front()) || isspace(text.back())) {
       t.append_attribute("xml:space") = "preserve";
     }
@@ -884,7 +944,7 @@ namespace docx
   std::string Run::GetText()
   {
     std::string text;
-    for (auto t = r_.child("w:t"); t; t = t.next_sibling("w:t")) {
+    for (auto t = w_r_.child("w:t"); t; t = t.next_sibling("w:t")) {
       text += t.text().get();
     }
     return text;
@@ -892,19 +952,19 @@ namespace docx
 
   void Run::ClearText()
   {
-    r_.remove_children();
+    w_r_.remove_children();
   }
 
   void Run::AppendLineBreak()
   {
-    r_.append_child("w:br");
+    w_r_.append_child("w:br");
   }
 
   void Run::SetFontSize(const double fontSize)
   {
-    auto sz = rPr_.child("w:sz");
+    auto sz = w_rPr_.child("w:sz");
     if (!sz) {
-      sz = rPr_.append_child("w:sz");
+      sz = w_rPr_.append_child("w:sz");
     }
     auto szVal = sz.attribute("w:val");
     if (!szVal) {
@@ -916,7 +976,7 @@ namespace docx
 
   double Run::GetFontSize()
   {
-    auto sz = rPr_.child("w:sz");
+    auto sz = w_rPr_.child("w:sz");
     if (!sz) return 0;
     auto szVal = sz.attribute("w:val");
     if (!szVal) return 0;
@@ -926,9 +986,9 @@ namespace docx
   void Run::SetFont(const std::string fontAscii, 
                     const std::string fontEastAsia)
   {
-    auto rFonts = rPr_.child("w:rFonts");
+    auto rFonts = w_rPr_.child("w:rFonts");
     if (!rFonts) {
-      rFonts = rPr_.append_child("w:rFonts");
+      rFonts = w_rPr_.append_child("w:rFonts");
     }
     auto rFontsAscii = rFonts.attribute("w:ascii");
     if (!rFontsAscii) {
@@ -947,7 +1007,7 @@ namespace docx
   void Run::GetFont(std::string &fontAscii, 
                     std::string &fontEastAsia)
   {
-    auto rFonts = rPr_.child("w:rFonts");
+    auto rFonts = w_rPr_.child("w:rFonts");
     if (!rFonts) return;
 
     auto rFontsAscii = rFonts.attribute("w:ascii");
@@ -959,52 +1019,52 @@ namespace docx
 
   void Run::SetFontStyle(const FontStyle f)
   {
-    auto b = rPr_.child("w:b");
+    auto b = w_rPr_.child("w:b");
     if (f & Bold) {
-      if (b.empty()) rPr_.append_child("w:b");
+      if (b.empty()) w_rPr_.append_child("w:b");
     } else {
-      rPr_.remove_child(b);
+      w_rPr_.remove_child(b);
     }
 
-    auto i = rPr_.child("w:i");
+    auto i = w_rPr_.child("w:i");
     if (f & Italic) {
-      if (i.empty()) rPr_.append_child("w:i");
+      if (i.empty()) w_rPr_.append_child("w:i");
     } else {
-      rPr_.remove_child(i);
+      w_rPr_.remove_child(i);
     }
 
-    auto u = rPr_.child("w:u");
+    auto u = w_rPr_.child("w:u");
     if (f & Underline) {
       if (u.empty())
-        rPr_.append_child("w:u").append_attribute("w:val") = "single";
+        w_rPr_.append_child("w:u").append_attribute("w:val") = "single";
     } else {
-      rPr_.remove_child(u);
+      w_rPr_.remove_child(u);
     }
 
-    auto strike = rPr_.child("w:strike");
+    auto strike = w_rPr_.child("w:strike");
     if (f & Strikethrough) {
       if (strike.empty())
-        rPr_.append_child("w:strike").append_attribute("w:val") = "true";
+        w_rPr_.append_child("w:strike").append_attribute("w:val") = "true";
     } else {
-      rPr_.remove_child(strike);
+      w_rPr_.remove_child(strike);
     }
   }
 
   Run::FontStyle Run::GetFontStyle()
   {
     FontStyle fontStyle = 0;
-    if (rPr_.child("w:b")) fontStyle |= Bold;
-    if (rPr_.child("w:i")) fontStyle |= Italic;
-    if (rPr_.child("w:u")) fontStyle |= Underline;
-    if (rPr_.child("w:strike")) fontStyle |= Strikethrough;
+    if (w_rPr_.child("w:b")) fontStyle |= Bold;
+    if (w_rPr_.child("w:i")) fontStyle |= Italic;
+    if (w_rPr_.child("w:u")) fontStyle |= Underline;
+    if (w_rPr_.child("w:strike")) fontStyle |= Strikethrough;
     return fontStyle;
   }
 
   void Run::SetCharacterSpacing(const int characterSpacing)
   {
-    auto spacing = rPr_.child("w:spacing");
+    auto spacing = w_rPr_.child("w:spacing");
     if (!spacing) {
-      spacing = rPr_.append_child("w:spacing");
+      spacing = w_rPr_.append_child("w:spacing");
     }
     auto spacingVal = spacing.attribute("w:val");
     if (!spacingVal) {
@@ -1015,29 +1075,29 @@ namespace docx
 
   int Run::GetCharacterSpacing()
   {
-    return rPr_.child("w:spacing").attribute("w:val").as_int();
+    return w_rPr_.child("w:spacing").attribute("w:val").as_int();
   }
 
   bool Run::IsPageBreak()
   {
-    return r_.find_child_by_attribute("w:br", "w:type", "page");
+    return w_r_.find_child_by_attribute("w:br", "w:type", "page");
   }
 
   void Run::Remove()
   {
-    p_.remove_child(r_);
+    w_p_.remove_child(w_r_);
   }
 
   Run Run::Next()
   {
-    auto r = r_.next_sibling("w:r");
-    auto rPr = r.child("w:rPr");
-    return Run(p_, r, rPr);
+    auto w_r = w_r_.next_sibling("w:r");
+    auto w_rPr = w_r.child("w:rPr");
+    return Run(w_p_, w_r, w_rPr);
   }
 
   Run::operator bool()
   {
-    return r_;
+    return w_r_;
   }
 
 

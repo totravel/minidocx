@@ -13,7 +13,7 @@ minidocx 是一个跨平台且易于使用的 C++ 库，用于从零开始创建
 
 ## 环境要求
 
-要使用 minidocx，你需要一个支持 C++ 11 的编译器和下列两个第三方库：
+要构建 minidocx，你需要一个支持 C++ 11 的编译器和下列两个第三方库：
 
 - [zip](https://github.com/kuba--/zip) <= 0.2.1
 - [pugixml](https://github.com/zeux/pugixml) >= 1.12.1
@@ -48,18 +48,18 @@ int main()
   Document doc("./a.docx");
 
   auto p1 = doc.AppendParagraph("Hello, World!", 12, "Times New Roman");
-  auto p2 = doc.AppendParagraph("你好，世界！", 14, "宋体");
-  auto p3 = doc.AppendParagraph("你好，World!", 16, "Times New Roman", "宋体");
-  
+  auto p2 = doc.AppendParagraph(u8"你好，世界！", 14, u8"宋体");
+  auto p3 = doc.AppendParagraph(u8"你好，World!", 16, "Times New Roman", u8"宋体");
+
   auto p4 = doc.AppendParagraph();
   p4.SetAlignment(Paragraph::Alignment::Centered);
 
   auto p4r1 = p4.AppendRun("This is a simple sentence. ", 12, "Arial");
   p4r1.SetCharacterSpacing(Pt2Twip(2));
 
-  auto p4r2 = p4.AppendRun("这是一个简单的句子。");
+  auto p4r2 = p4.AppendRun(u8"这是一个简单的句子。");
   p4r2.SetFontSize(14);
-  p4r2.SetFont("黑体");
+  p4r2.SetFont(u8"黑体");
   p4r2.SetFontStyle(Run::Bold | Run::Italic);
 
   doc.Save();
@@ -69,43 +69,19 @@ int main()
 
 更多示例见 [examples](./examples) 文件夹。
 
-## 构建
+## 构建命令
 
-minidocx 包含 2 个文件——一个源文件 `minidocx.cpp` 和一个头文件 `minidocx.hpp`。
+```bash
+# Windows
+cmake -S . -B build -DBUILD_EXAMPLES=ON -DWITH_STATIC_CRT=OFF
+cmake --build build -j4 --config Release
+cmake --install build --prefix install --config Release
 
-构建 minidocx 最简单的方式是将它的源文件与你的项目的其他源文件一同编译。如果你在使用 CMake，只需将下列命令添加到项目的 `CMakeLists.txt` 文件中。
-
-```cmake
-project(myproj VERSION 0.1.0 LANGUAGES C CXX) # C needed by zip.c
-
-add_library(minidocx INTERFACE)
-set_target_properties(minidocx PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${MINIDOCX_DIR}/src"
-  INTERFACE_SOURCES             "${MINIDOCX_DIR}/src/minidocx.cpp"
-  INTERFACE_COMPILE_OPTIONS     "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>"
-)
-
-add_library(zip INTERFACE)
-set_target_properties(zip PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${ZIP_DIR}/src"
-  INTERFACE_SOURCES             "${ZIP_DIR}/src/zip.c"
-)
-
-add_library(pugixml INTERFACE)
-set_target_properties(pugixml PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${PUGIXML_DIR}/src"
-  INTERFACE_SOURCES             "${PUGIXML_DIR}/src/pugixml.cpp"
-)
-
-target_link_libraries(minidocx INTERFACE zip pugixml)
-target_link_libraries(myapp PRIVATE minidocx)
+# Linux
+cmake -S . -B build -DBUILD_EXAMPLES=ON -DWITH_STATIC_CRT=OFF -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j4
+cmake --install build --prefix install
 ```
-
-首次运行 CMake 时，需要正确设置下列变量：
-
-- `ZIP_DIR` zip 项目的根目录
-- `PUGIXML_DIR` pugixml 项目的根目录
-- `MINIDOCX_DIR` minidocx 项目的根目录
 
 ## 指南
 
@@ -116,6 +92,8 @@ target_link_libraries(myapp PRIVATE minidocx)
 
 using namespace docx;
 ```
+
+下文将介绍常用 API。如需了解所有 API，请查阅头文件。
 
 ### 单位
 
@@ -144,6 +122,8 @@ double CM2Inch(const double cm);    // cm to inches
 double Inch2CM(const double inch);  // inches to cm
 ```
 
+有关单位转换的更多信息，请参阅 [Lars Corneliussen 的博文](https://startbigthinksmall.wordpress.com/2010/01/04/points-inches-and-emus-measuring-units-in-office-open-xml/)。
+
 ### 文档
 
 类 `Document` 表示一个 Microsoft Word 文档。
@@ -160,12 +140,12 @@ doc.Save();
 
 ### 段落
 
-类 `Paragraph` 表示一个段落。有三种方法可以新建段落：
+类 `Paragraph` 表示一个段落。有多种方法可以新建段落：
 
 ```cpp
-auto p1 = doc.AppendParagraph(); // 向文档追加新段落
-auto p3 = p1.InsertAfter();      // 在 p1 之后插入新段落
-auto p2 = p3.InsertBefore();     // 在 p1 之前插入新段落
+auto p1 = doc.AppendParagraph();         // 在文档结尾追加新段落
+auto p3 = doc.InsertParagraphAfter(p1);  // 在 p1 之后插入新段落
+auto p2 = doc.InsertParagraphBefore(p3); // 在 p3 之前插入新段落
 ```
 
 下列方法用于遍历文档的段落：
@@ -179,7 +159,7 @@ auto p2 = p3.Prev(); // 还可以用 Next() 方法
 段落可以被移除：
 
 ```cpp
-p3.Remove();
+doc.RemoveParagraph(p3); // 移除 p3
 ```
 
 可以检查两个 `Paragraph` 对象是否是同一个段落：
@@ -197,8 +177,8 @@ if (p1 == p2) {
 ```cpp
 auto p4 = doc.AppendParagraph();
 auto p4r1 = p4.AppendRun("Hello, World!");
-auto p4r2 = p4.AppendRun("你好，世界！");
-auto p4r3 = p4.AppendRun("你好，World!");
+auto p4r2 = p4.AppendRun(u8"你好，世界！");
+auto p4r3 = p4.AppendRun(u8"你好，World!");
 ```
 
 可以在新建段落的同时添加富文本：
@@ -223,8 +203,8 @@ auto p5r2 = p5.AppendRun("Hello, World!", 12, "Times New Roman");
 ```cpp
 auto p5r3 = p5.AppendRun();
 p5r3.AppendText("Hello, World!");
-p5r3.AppendText("你好，世界！");
-p5r3.AppendText("你好，World!");
+p5r3.AppendText(u8"你好，世界！");
+p5r3.AppendText(u8"你好，World!");
 ```
 
 可以获取富文本包含的文本：

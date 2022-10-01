@@ -8,6 +8,7 @@
  *   One point is equal to 1/72 inch, e.g. 72 points = 1 inch.
  */
 
+#include <iostream>
 #include <string>
 #include "pugixml.hpp"
 
@@ -106,11 +107,10 @@ namespace docx
   class Run
   {
   public:
-    Run(pugi::xml_node p, 
-        pugi::xml_node r, 
-        pugi::xml_node rPr): p_(p), 
-                             r_(r), 
-                             rPr_(rPr) {}
+    // constructs run from existing xml node
+    Run(pugi::xml_node w_p, 
+        pugi::xml_node w_r, 
+        pugi::xml_node w_rPr);
 
     // text
     void AppendText(const std::string text);
@@ -150,28 +150,26 @@ namespace docx
     operator bool();
 
   private:
-    pugi::xml_node p_;
-    pugi::xml_node r_;
-    pugi::xml_node rPr_;
+    pugi::xml_node w_p_;
+    pugi::xml_node w_r_;
+    pugi::xml_node w_rPr_;
   }; // class Run
 
 
   class Section
   {
   public:
-    Section() {};
-    Section(pugi::xml_node body, 
-            pugi::xml_node p, 
-            pugi::xml_node pPr);
-    Section(pugi::xml_node body, 
-            pugi::xml_node p, 
-            pugi::xml_node pPr, 
-            pugi::xml_node sectPr): body_(body), 
-                                    p_(p), 
-                                    pLast_(p), 
-                                    pPr_(pPr), 
-                                    pPrLast_(pPr), 
-                                    sectPr_(sectPr) {}
+    // constructs an empty section
+    Section();
+    // constructs a new section
+    Section(pugi::xml_node w_body, 
+            pugi::xml_node w_p, 
+            pugi::xml_node w_pPr);
+    // constructs section from existing xml node
+    Section(pugi::xml_node w_body, 
+            pugi::xml_node w_p, 
+            pugi::xml_node w_pPr, 
+            pugi::xml_node w_sectPr);
 
     // section
     void Split();
@@ -208,12 +206,12 @@ namespace docx
     bool operator==(const Section &s);
 
   private:
-    pugi::xml_node body_;
-    pugi::xml_node p_;     // current paragraph
-    pugi::xml_node pLast_; // the last paragraph of the section
-    pugi::xml_node pPr_;
-    pugi::xml_node pPrLast_;
-    pugi::xml_node sectPr_;
+    pugi::xml_node w_body_;
+    pugi::xml_node w_p_;      // current paragraph
+    pugi::xml_node w_p_last_; // the last paragraph of the section
+    pugi::xml_node w_pPr_;
+    pugi::xml_node w_pPr_last_;
+    pugi::xml_node w_sectPr_;
 
     void GetSectPr();
   }; // class Section
@@ -221,19 +219,23 @@ namespace docx
 
   class Paragraph
   {
-  public:
-    Paragraph(pugi::xml_node body): body_(body), 
-                                    p_(body.append_child("w:p")), 
-                                    pPr_(p_.append_child("w:pPr")) {}
-    Paragraph(pugi::xml_node body, 
-              pugi::xml_node p, 
-              pugi::xml_node pPr): body_(body), 
-                                   p_(p), 
-                                   pPr_(pPr) {}
+    friend class Document;
+    friend class Section;
 
-    // run
+  public:
+    // constructs an empty paragraph
+    Paragraph();
+    // constructs a new paragraph
+    Paragraph(pugi::xml_node w_body);
+    // constructs paragraph from existing xml node
+    Paragraph(pugi::xml_node w_body, 
+              pugi::xml_node w_p, 
+              pugi::xml_node w_pPr);
+
+    // get run
     Run FirstRun();
 
+    // add run
     Run AppendRun();
     Run AppendRun(const std::string text);
     Run AppendRun(const std::string text, 
@@ -281,12 +283,7 @@ namespace docx
     void SetCharacterSpacing(const int characterSpacing);
     std::string GetText();
 
-    // paragraph
-    Paragraph InsertBefore();
-    Paragraph InsertAfter();
-    void Remove();
-
-    // traverse
+    // traverse paragraph
     Paragraph Next();
     Paragraph Prev();
     operator bool();
@@ -299,28 +296,28 @@ namespace docx
     bool HasSectionBreak();
 
   private:
-    pugi::xml_node body_;
-    pugi::xml_node p_;
-    pugi::xml_node pPr_;
+    pugi::xml_node w_body_;
+    pugi::xml_node w_p_;
+    pugi::xml_node w_pPr_;
   }; // class Paragraph
 
 
   class Document
   {
   public:
+    // constructs an empty document
     Document(const std::string path);
-    void Save();
+    // save document to file
+    bool Save();
+    bool Open(const std::string path);
 
-    std::string GetFormatedBody();
-    
-    // paragraph
+    friend std::ostream& operator<<(std::ostream &out, const Document &doc);
+
+    // get paragraph
     Paragraph FirstParagraph();
     Paragraph LastParagraph();
 
-    // section
-    Section FirstSection();
-    Section LastSection();
-
+    // add paragraph
     Paragraph AppendParagraph();
     Paragraph AppendParagraph(const std::string text);
     Paragraph AppendParagraph(const std::string text, 
@@ -337,14 +334,25 @@ namespace docx
                                const double fontSize, 
                                const std::string fontAscii, 
                                const std::string fontEastAsia = "");
+
+    Paragraph InsertParagraphBefore(Paragraph &p);
+    Paragraph InsertParagraphAfter(Paragraph &p);
+    bool RemoveParagraph(Paragraph &p);
+
     Paragraph AppendPageBreak();
+
+    // get section
+    Section FirstSection();
+    Section LastSection();
+
+    // add section
     Paragraph AppendSectionBreak();
 
   private:
     std::string        path_;
     pugi::xml_document doc_;
-    pugi::xml_node     body_;
-    pugi::xml_node     sectPr_;
+    pugi::xml_node     w_body_;
+    pugi::xml_node     w_sectPr_;
   }; // class Document
 
 

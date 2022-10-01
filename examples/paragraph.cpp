@@ -1,5 +1,4 @@
 ﻿
-#include <iostream>
 #include "minidocx.hpp"
 
 int main()
@@ -24,8 +23,9 @@ int main()
   std::cout << p4.GetText() << std::endl;
   std::cout << p5.GetText() << std::endl;
 
-  p4.InsertBefore().AppendRun("New paragraph before the 4th paragraph.");
-  p4.InsertAfter().AppendRun("New paragraph after the 4th paragraph.");
+  doc.RemoveParagraph(p2);
+  doc.InsertParagraphBefore(p4).AppendRun("New paragraph before the 4th paragraph.");
+  doc.InsertParagraphAfter(p4).AppendRun("New paragraph after the 4th paragraph.");
 
   doc.Save();
   return 0;

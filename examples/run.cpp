@@ -8,7 +8,7 @@ int main()
   docx::Document doc("./g.docx");
 
   auto p = doc.AppendParagraph();
-  auto r = p.AppendRun("你好，World!", 16, "Times New Roman", "Microsoft YaHei UI");
+  auto r = p.AppendRun(u8"你好，World!", 16, "Times New Roman", "Microsoft YaHei UI");
 
   r.SetCharacterSpacing(docx::Pt2Twip(2));
 
