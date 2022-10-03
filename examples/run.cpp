@@ -5,7 +5,7 @@
 
 int main()
 {
-  docx::Document doc("./g.docx");
+  docx::Document doc("./run.docx");
 
   auto p = doc.AppendParagraph();
   auto r = p.AppendRun(u8"你好，World!", 16, "Times New Roman", "Microsoft YaHei UI");

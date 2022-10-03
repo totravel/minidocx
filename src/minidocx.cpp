@@ -184,6 +184,7 @@ namespace docx
   {
     return FirstParagraph().GetSection();
   }
+
   Section Document::LastSection()
   {
     return LastParagraph().GetSection();
@@ -286,6 +287,18 @@ namespace docx
     return p;
   }
 
+  Table Document::AppendTable(const int rows, const int cols)
+  {
+    auto w_tbl = w_body_.insert_child_before("w:tbl", w_sectPr_);
+    auto w_tblPr = w_tbl.append_child("w:tblPr");
+    auto w_tblGrid = w_tbl.append_child("w:tblGrid");
+    auto tbl = Table(w_body_, w_tbl, w_tblPr, w_tblGrid);
+    tbl.SetGrid(rows, cols);
+    tbl.SetWidthPercent(100);
+    tbl.SetAllBorders();
+    return tbl;
+  }
+
 
   // class Paragraph
   Paragraph::Paragraph()
@@ -298,12 +311,6 @@ namespace docx
                                               w_p_(w_p), 
                                               w_pPr_(w_pPr)
   {
-  }
-
-  Paragraph::Paragraph(pugi::xml_node w_body): w_body_(w_body)
-  {
-    w_p_ = w_body.append_child("w:p");
-    w_pPr_ = w_p_.append_child("w:pPr");
   }
 
   Run Paragraph::FirstRun()
@@ -1100,5 +1107,339 @@ namespace docx
     return w_r_;
   }
 
+  // class Table
+  Table::Table(pugi::xml_node w_body, 
+               pugi::xml_node w_tbl, 
+               pugi::xml_node w_tblPr, 
+               pugi::xml_node w_tblGrid): w_body_(w_body),
+                                          w_tbl_(w_tbl), 
+                                          w_tblPr_(w_tblPr), 
+                                          w_tblGrid_(w_tblGrid)
+  {}
+
+  void Table::SetGrid(const int rows, const int cols)
+  {
+    rows_ = rows;
+    cols_ = cols;
+
+    for (int i = 0; i < rows; i++) {
+      Row row;
+      for (int j = 0; j < cols; j++) {
+        Cell cell = { i, j, 1, 1 };
+        row.push_back(cell);
+      }
+      grid_.push_back(row);
+    }
+
+    for (int i = 0; i < rows; i++) {
+      auto w_gridCol = w_tblGrid_.append_child("w:gridCol");
+
+      auto w_tr = w_tbl_.append_child("w:tr");
+      for (int j = 0; j < cols; j++) {
+        auto w_tc = w_tr.append_child("w:tc");
+        auto w_tcPr = w_tc.append_child("w:tcPr");
+        auto c = TableCell(i, j, w_tr, w_tc, w_tcPr);
+        // A table cell must contain at least one block-level element, 
+        // even if it is an empty <p/>.
+        c.AppendParagraph();
+      }
+    }
+  }
+
+  bool Table::MergCells(TableCell c1, TableCell c2)
+  {
+    return false;
+  }
+
+  void Table::SetWidthAuto()
+  {
+    SetWidth(0, "auto");
+  }
+
+  void Table::SetWidthPercent(const double w)
+  {
+    SetWidth(w / 0.02, "pct");
+  }
+
+  void Table::SetWidth(const int w, const char *units)
+  {
+    auto w_tblW = w_tblPr_.child("w:tblW");
+    if (!w_tblW) {
+      w_tblW = w_tblPr_.append_child("w:tblW");
+    }
+
+    auto w_w = w_tblW.attribute("w:w");
+    if (!w_w) {
+      w_w = w_tblW.append_attribute("w:w");
+    }
+
+    auto w_type = w_tblW.attribute("w:type");
+    if (!w_type) {
+      w_type = w_tblW.append_attribute("w:type");
+    }
+
+    w_w.set_value(w);
+    w_type.set_value(units);
+  }
+
+  void Table::SetCellMarginTop(const int w, const char *units)
+  {
+    SetCellMargin("w:top", w, units);
+  }
+
+  void Table::SetCellMarginBottom(const int w, const char *units)
+  {
+    SetCellMargin("w:bottom", w, units);
+  }
+
+  void Table::SetCellMarginLeft(const int w, const char *units)
+  {
+    SetCellMargin("w:start", w, units);
+  }
+
+  void Table::SetCellMarginRight(const int w, const char *units)
+  {
+    SetCellMargin("w:end", w, units);
+  }
+
+  void Table::SetCellMargin(const char *name, const int w, const char *units)
+  {
+    auto w_tblCellMar = w_tblPr_.child("w:tblCellMar");
+    if (!w_tblCellMar) {
+      w_tblCellMar = w_tblPr_.append_child("w:tblCellMar");
+    }
+
+    auto w_tblCellMarChild = w_tblCellMar.child(name);
+    if (!w_tblCellMarChild) {
+      w_tblCellMarChild = w_tblCellMar.append_child(name);
+    }
+
+    auto w_w = w_tblCellMarChild.attribute("w:w");
+    if (!w_w) {
+      w_w = w_tblCellMarChild.append_attribute("w:w");
+    }
+
+    auto w_type = w_tblCellMarChild.attribute("w:type");
+    if (!w_type) {
+      w_type = w_tblCellMarChild.append_attribute("w:type");
+    }
+
+    w_w.set_value(w);
+    w_type.set_value(units);
+  }
+
+  TableCell Table::GetCell(const int row, const int col)
+  {
+    if (row < 0 || row >= rows_ || col < 0 || col >= cols_) {
+      return TableCell();
+    }
+
+    int i = 0;
+    auto w_tr = w_tbl_.child("w:tr");
+    while (i < row && !w_tr.empty()) {
+      w_tr = w_tr.next_sibling("w:tr");
+      i++;
+    }
+    if (w_tr.empty()) {
+      return TableCell();
+    }
+
+    int j = 0;
+    auto w_tc = w_tr.child("w:tc");
+    while (j < col && !w_tc.empty()) {
+      w_tc = w_tc.next_sibling("w:tc");
+      j++;
+    }
+    if (w_tc.empty()) {
+      return TableCell();
+    }
+
+    auto w_tcPr = w_tc.child("w:tcPr");
+    return TableCell(row, col, w_tr, w_tc, w_tcPr);
+  }
+
+  void Table::SetAlignment(const Alignment alignment)
+  {
+    const char *val;
+    switch (alignment) {
+      case Alignment::Left:
+        val = "start";
+        break;
+      case Alignment::Right:
+        val = "end";
+        break;
+      case Alignment::Centered:
+        val = "center";
+        break;
+    }
+
+    auto w_jc = w_tblPr_.child("w:jc");
+    if (!w_jc) {
+      w_jc = w_tblPr_.append_child("w:jc");
+    }
+    auto w_val = w_jc.attribute("w:val");
+    if (!w_val) {
+      w_val = w_jc.append_attribute("w:val");
+    }
+    w_val.set_value(val);
+  }
+
+  void Table::SetTopBorders(const BorderStyle style, const double width, const char *color)
+  {
+    SetBorders("w:top", style, width, color);
+  }
+
+  void Table::SetBottomBorders(const BorderStyle style, const double width, const char *color)
+  {
+    SetBorders("w:bottom", style, width, color);
+  }
+
+  void Table::SetLeftBorders(const BorderStyle style, const double width, const char *color)
+  {
+    SetBorders("w:start", style, width, color);
+  }
+
+  void Table::SetRightBorders(const BorderStyle style, const double width, const char *color)
+  {
+    SetBorders("w:end", style, width, color);
+  }
+
+  void Table::SetInsideHBorders(const BorderStyle style, const double width, const char *color)
+  {
+    SetBorders("w:insideH", style, width, color);
+  }
+
+  void Table::SetInsideVBorders(const BorderStyle style, const double width, const char *color)
+  {
+    SetBorders("w:insideV", style, width, color);
+  }
+
+  void Table::SetInsideBorders(const BorderStyle style, const double width, const char *color)
+  {
+    SetInsideHBorders(style, width, color);
+    SetInsideVBorders(style, width, color);
+  }
+
+  void Table::SetOutsideBorders(const BorderStyle style, const double width, const char *color)
+  {
+    SetTopBorders(style, width, color);
+    SetBottomBorders(style, width, color);
+    SetLeftBorders(style, width, color);
+    SetRightBorders(style, width, color);
+  }
+
+  void Table::SetAllBorders(const BorderStyle style, const double width, const char *color)
+  {
+    SetOutsideBorders(style, width, color);
+    SetInsideBorders(style, width, color);
+  }
+
+  void Table::SetBorders(const char *name, const BorderStyle style, const double width, const char *color)
+  {
+    auto w_tblBorders = w_tblPr_.child("w:tblBorders");
+    if (!w_tblBorders) {
+      w_tblBorders = w_tblPr_.append_child("w:tblBorders");
+    }
+
+    auto w_tblBordersChild = w_tblBorders.child(name);
+    if (!w_tblBordersChild) {
+      w_tblBordersChild = w_tblBorders.append_child(name);
+    }
+
+    const char *val;
+    switch (style) {
+      case BorderStyle::Single:
+        val = "single";
+        break;
+      case BorderStyle::Dotted:
+        val = "dotted";
+        break;
+      case BorderStyle::DotDash:
+        val = "dotDash";
+        break;
+      case BorderStyle::Dashed:
+        val = "dashed";
+        break;
+      case BorderStyle::Double:
+        val = "double";
+        break;
+      case BorderStyle::None:
+        val = "none";
+        break;
+    }
+
+    auto w_val = w_tblBordersChild.attribute("w:val");
+    if (!w_val) {
+      w_val = w_tblBordersChild.append_attribute("w:val");
+    }
+    w_val.set_value(val);
+
+    auto w_sz = w_tblBordersChild.attribute("w:sz");
+    if (!w_sz) {
+      w_sz = w_tblBordersChild.append_attribute("w:sz");
+    }
+    w_sz.set_value(width * 8);
+
+    auto w_color = w_tblBordersChild.attribute("w:color");
+    if (!w_color) {
+      w_color = w_tblBordersChild.append_attribute("w:color");
+    }
+    w_color.set_value(color);
+  }
+
+  // class TableCell
+  TableCell::TableCell()
+  {}
+
+  TableCell::TableCell(const int row, 
+                       const int col, 
+                       pugi::xml_node w_tr, 
+                       pugi::xml_node w_tc, 
+                       pugi::xml_node w_tcPr): row_(row), 
+                                               col_(col), 
+                                               w_tr_(w_tr), 
+                                               w_tc_(w_tc), 
+                                               w_tcPr_(w_tcPr)
+  {}
+
+  void TableCell::SetWidth(const int w, const char *units)
+  {
+    auto w_tcW = w_tcPr_.child("w:tcW");
+    if (!w_tcW) {
+      w_tcW = w_tcPr_.append_child("w:tcW");
+    }
+
+    auto w_w = w_tcW.attribute("w:w");
+    if (!w_w) {
+      w_w = w_tcW.append_attribute("w:w");
+    }
+
+    auto w_type = w_tcW.attribute("w:type");
+    if (!w_type) {
+      w_type = w_tcW.append_attribute("w:type");
+    }
+
+    w_w.set_value(w);
+    w_type.set_value(units);
+  }
+
+  TableCell::operator bool()
+  {
+    return w_tc_;
+  }
+
+  Paragraph TableCell::AppendParagraph()
+  {
+    auto w_p = w_tc_.append_child("w:p");
+    auto w_pPr = w_p.append_child("w:pPr");
+    return Paragraph(w_tc_, w_p, w_pPr);
+  }
+
+  Paragraph TableCell::FirstParagraph()
+  {
+    auto w_p = w_tc_.child("w:p");
+    auto w_pPr = w_p.child("w:pPr");
+    return Paragraph(w_tc_, w_p, w_pPr);
+  }
 
 } // namespace docx

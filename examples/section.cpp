@@ -4,7 +4,7 @@
 
 int main()
 {
-  docx::Document doc("./f.docx");
+  docx::Document doc("./section.docx");
 
   auto p1 = doc.AppendParagraph("This is the 1st paragraph.");
   auto p2 = doc.AppendSectionBreak();

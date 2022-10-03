@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include "pugixml.hpp"
 
 namespace docx
@@ -103,6 +104,107 @@ namespace docx
   class Paragraph;
   class Section;
   class Run;
+  class Table;
+  class TableCell;
+
+  class TableCell
+  {
+  public:
+    // constructs an empty cell
+    TableCell();
+    // constructs a table from existing xml node
+    TableCell(const int row, 
+              const int col, 
+              pugi::xml_node w_tr, 
+              pugi::xml_node w_tc, 
+              pugi::xml_node w_tcPr);
+    operator bool();
+
+    void SetWidth(const int w, const char *units = "dxa");
+
+    Paragraph AppendParagraph();
+    Paragraph FirstParagraph();
+
+  private:
+    int row_;
+    int col_;
+    pugi::xml_node w_tr_;
+    pugi::xml_node w_tc_;
+    pugi::xml_node w_tcPr_;
+  };
+
+  class Table
+  {
+  public:
+    // constructs a table from existing xml node
+    Table(pugi::xml_node w_body, 
+          pugi::xml_node w_tbl, 
+          pugi::xml_node w_tblPr, 
+          pugi::xml_node w_tblGrid);
+    void SetGrid(const int rows, const int cols);
+    bool MergCells(TableCell c1, TableCell c2);
+    bool SplitCell();
+
+    // units: 
+    //   auto - Specifies that width is determined by the overall table layout algorithm.
+    //   dxa  - Specifies that the value is in twentieths of a point (1/1440 of an inch).
+    //   nil  - Specifies a value of zero.
+    //   pct  - Specifies a value as a percent of the table width.
+    void SetWidthAuto();
+    void SetWidthPercent(const double w); // 0-100
+    void SetWidth(const int w, const char *units = "dxa");
+
+    // the distance between the cell contents and the cell borders
+    void SetCellMarginTop(const int w, const char *units = "dxa");
+    void SetCellMarginBottom(const int w, const char *units = "dxa");
+    void SetCellMarginLeft(const int w, const char *units = "dxa");
+    void SetCellMarginRight(const int w, const char *units = "dxa");
+    void SetCellMargin(const char *name, const int w, const char *units = "dxa");
+
+    TableCell GetCell(const int row, const int col);
+
+    // table formatting
+    enum class Alignment { Left, Centered, Right };
+    void SetAlignment(const Alignment alignment);
+
+    // style - Specifies the style of the border.
+    // width - Specifies the width of the border in points.
+    // color - Specifies the color of the border. 
+    //         Values are given as hex values (in RRGGBB format). 
+    //         No #, unlike hex values in HTML/CSS. E.g., color="FFFF00". 
+    //         A value of auto is also permitted and will allow the 
+    //         consuming word processor to determine the color.
+    enum class BorderStyle { Single, Dotted, Dashed, DotDash, Double, None };
+    void SetTopBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetBottomBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetLeftBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetRightBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetInsideHBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetInsideVBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetInsideBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetOutsideBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetAllsideBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetAllBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetBorders(const char *name, const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+
+  private:
+    int rows_;
+    int cols_;
+    struct Cell {
+      int row;
+      int col;
+      int rows;
+      int cols;
+    };
+    using Row = std::vector<Cell>;
+    using Grid = std::vector<Row>;
+    Grid grid_;
+
+    pugi::xml_node w_body_;
+    pugi::xml_node w_tbl_;
+    pugi::xml_node w_tblPr_;
+    pugi::xml_node w_tblGrid_;
+  };
 
   class Run
   {
@@ -225,8 +327,6 @@ namespace docx
   public:
     // constructs an empty paragraph
     Paragraph();
-    // constructs a new paragraph
-    Paragraph(pugi::xml_node w_body);
     // constructs paragraph from existing xml node
     Paragraph(pugi::xml_node w_body, 
               pugi::xml_node w_p, 
@@ -250,7 +350,7 @@ namespace docx
     enum class Alignment { Left, Centered, Right, Justified, Distributed };
     void SetAlignment(const Alignment alignment);
 
-    void SetLineSpacingSingle();         // Single
+    void SetLineSpacingSingle();               // Single
     void SetLineSpacingLines(const double at); // 1.5 lines, Double (2 lines), Multiple (3 lines)
     void SetLineSpacingAtLeast(const int at);  // At Least
     void SetLineSpacingExactly(const int at);  // Exactly
@@ -347,6 +447,9 @@ namespace docx
 
     // add section
     Paragraph AppendSectionBreak();
+
+    // add table
+    Table AppendTable(const int rows, const int cols);
 
   private:
     std::string        path_;

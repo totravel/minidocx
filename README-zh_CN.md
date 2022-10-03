@@ -97,7 +97,7 @@ using namespace docx;
 
 ### 单位
 
-文档的基本单位是磅的二十分之一（缇）。minidocx 提供了一些辅助函数用于单位换算：
+文档的基本单位是缇（Twip），它等于磅的二十分之一。minidocx 提供了一些辅助函数用于单位换算：
 
 ```cpp
 int Pt2Twip(const double pt);       // points to twip

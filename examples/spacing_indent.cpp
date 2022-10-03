@@ -7,7 +7,7 @@
 
 int main()
 {
-  docx::Document doc("./d.docx");
+  docx::Document doc("./spacing_indent.docx");
 
   // Page 1
   auto p1 = doc.AppendParagraph(text1);

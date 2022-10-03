@@ -4,7 +4,7 @@
 
 int main()
 {
-  docx::Document doc("./b.docx");
+  docx::Document doc("./traverse.docx");
 
   // Section 1
   doc.AppendParagraph("This is the 1st paragraph.");

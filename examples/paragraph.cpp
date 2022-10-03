@@ -3,7 +3,7 @@
 
 int main()
 {
-  docx::Document doc("./e.docx");
+  docx::Document doc("./paragraph.docx");
 
   doc.AppendParagraph("This is the 2nd paragraph.");
   doc.AppendParagraph("This is the 3rd paragraph.");
