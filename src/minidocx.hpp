@@ -145,6 +145,8 @@ namespace docx
 
   class Table
   {
+    friend class Document;
+
   public:
     // constructs a table from existing xml node
     Table(pugi::xml_node w_body, 
@@ -154,10 +156,11 @@ namespace docx
     void SetGrid(const int rows, const int cols);
 
     TableCell GetCell(const int row, const int col);
+    TableCell GetCell_(const int row, const int col);
     bool MergeCells(TableCell &tc1, TableCell &tc2);
     bool SplitCell();
 
-    void RemoveCell(TableCell &tc);
+    void RemoveCell_(TableCell &tc);
 
     // units: 
     //   auto - Specifies that width is determined by the overall table layout algorithm.
@@ -456,6 +459,7 @@ namespace docx
 
     // add table
     Table AppendTable(const int rows, const int cols);
+    void RemoveTable(Table &tbl);
 
   private:
     std::string        path_;

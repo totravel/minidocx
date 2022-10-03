@@ -294,9 +294,17 @@ namespace docx
     auto w_tblGrid = w_tbl.append_child("w:tblGrid");
     auto tbl = Table(w_body_, w_tbl, w_tblPr, w_tblGrid);
     tbl.SetGrid(rows, cols);
-    tbl.SetWidthPercent(100);
     tbl.SetAllBorders();
+    tbl.SetWidthPercent(100);
+    tbl.SetCellMarginLeft(CM2Twip(0.19));
+    tbl.SetCellMarginRight(CM2Twip(0.19));
+    tbl.SetAlignment(Table::Alignment::Centered);
     return tbl;
+  }
+
+  void Document::RemoveTable(Table &tbl)
+  {
+    w_body_.remove_child(tbl.w_tbl_);
   }
 
 
@@ -1153,13 +1161,14 @@ namespace docx
     }
 
     Cell *c = &grid_[row][col];
-    // get origin
-    const int x = c->row;
-    const int y = c->col;
+    return GetCell_(c->row, c->col);
+  }
 
+  TableCell Table::GetCell_(const int row, const int col)
+  {
     int i = 0;
     auto w_tr = w_tbl_.child("w:tr");
-    while (i < x && !w_tr.empty()) {
+    while (i < row && !w_tr.empty()) {
       i++;
       w_tr = w_tr.next_sibling("w:tr");
     }
@@ -1169,8 +1178,8 @@ namespace docx
 
     int j = 0;
     auto w_tc = w_tr.child("w:tc");
-    while (j < y && !w_tc.empty()) {
-      j += grid_[x][j].cols;
+    while (j < col && !w_tc.empty()) {
+      j += grid_[row][j].cols;
       w_tc = w_tc.next_sibling("w:tc");
     }
     if (w_tc.empty()) {
@@ -1178,7 +1187,7 @@ namespace docx
     }
 
     auto w_tcPr = w_tc.child("w:tcPr");
-    return TableCell(&grid_[x][y], w_tr, w_tc, w_tcPr);
+    return TableCell(&grid_[row][col], w_tr, w_tc, w_tcPr);
   }
 
   bool Table::MergeCells(TableCell &tc1, TableCell &tc2)
@@ -1194,31 +1203,51 @@ namespace docx
       Cell *left_cell, *right_cell;
       TableCell *left_tc, *right_tc;
       if (c1->col < c2->col) {
-        left_cell  = c1;
-        left_tc  = &tc1;
+        left_cell = c1;
+        left_tc = &tc1;
         right_cell = c2;
         right_tc = &tc2;
       } else {
-        left_cell  = c2;
-        left_tc  = &tc2;
+        left_cell = c2;
+        left_tc = &tc2;
         right_cell = c1;
         right_tc = &tc1;
       }
 
-      const int cols = right_cell->col - left_cell->col;
-      if (cols == left_cell->cols) {
-        left_cell->cols += right_cell->cols;
+      const int col = left_cell->col;
+      if ((right_cell->col - col) == left_cell->cols) {
+        const int cols = left_cell->cols + right_cell->cols;
 
-        const int start = right_cell->col;
+        // update right grid
+        const int right_col = right_cell->col;
+        const int right_cols = right_cell->cols;
         for (int i = 0; i < right_cell->rows; i++) {
-          for (int j = 0; j < right_cell->cols; j++) {
-            Cell &c = grid_[right_cell->row + i][start + j];
-            c.col = left_cell->col;
+          const int y = right_cell->row + i;
+          for (int j = 0; j < right_cols; j++) {
+            Cell &c = grid_[y][right_col + j];
+            c.col = col;
+            c.cols = cols;
           }
         }
 
-        left_tc->SetCellSpanning(left_cell->cols);
-        RemoveCell(*right_tc);
+        // update cells
+        for (int i = 0; i < right_cell->rows; i++) {
+          RemoveCell_(GetCell_(right_cell->row + i, right_cell->col));
+        }
+        for (int i = 0; i < left_cell->rows; i++) {
+          GetCell_(left_cell->row + i, left_cell->col).SetCellSpanning(cols);
+        }
+
+        // update left grid
+        const int left_cols = left_cell->cols;
+        for (int i = 0; i < left_cell->rows; i++) {
+          const int y = left_cell->row + i;
+          for (int j = 0; j < left_cols; j++) {
+            Cell &c = grid_[y][left_cell->col + j];
+            c.cols = cols;
+          }
+        }
+
         right_tc->c_      = left_cell;
         right_tc->w_tc_   = left_tc->w_tc_;
         right_tc->w_tcPr_ = left_tc->w_tcPr_;
@@ -1228,19 +1257,22 @@ namespace docx
       Cell *top_cell, *bottom_cell;
       TableCell *top_tc, *bottom_tc;
       if (c1->row < c2->row) {
-        top_cell    = c1;
-        top_tc    = &tc1;
+        top_cell = c1;
+        top_tc = &tc1;
         bottom_cell = c2;
         bottom_tc = &tc2;
       } else {
-        top_cell    = c2;
-        top_tc    = &tc2;
+        top_cell = c2;
+        top_tc = &tc2;
         bottom_cell = c1;
         bottom_tc = &tc1;
       }
 
-      const int rows = bottom_cell->row - top_cell->row;
-      if (rows == top_cell->rows) {
+      const int row = top_cell->row;
+      if ((bottom_cell->row - top_cell->row) == top_cell->rows) {
+        const int rows = top_cell->rows + bottom_cell->rows;
+
+        // update cells
         if (top_cell->rows == 1) {
           auto w_vMerge = top_tc->w_tcPr_.append_child("w:vMerge");
           auto w_val = w_vMerge.append_attribute("w:val");
@@ -1252,13 +1284,26 @@ namespace docx
           bottom_tc->w_tcPr_.remove_child("w:vMerge");
           bottom_tc->w_tcPr_.append_child("w:vMerge");
         }
-        top_cell->rows += bottom_cell->rows;
 
-        const int start = bottom_cell->row;
-        for (int i = 0; i < bottom_cell->rows; i++) {
+        // update top grid
+        const int top_rows = top_cell->rows;
+        for (int i = 0; i < top_rows; i++) {
+          const int x = top_cell->row + i;
+          for (int j = 0; j < top_cell->cols; j++) {
+            Cell &c = grid_[x][top_cell->col + j];
+            c.rows = rows;
+          }
+        }
+
+        // update bottom grid
+        const int bottom_row = bottom_cell->row;
+        const int bottom_rows = bottom_cell->rows;
+        for (int i = 0; i < bottom_rows; i++) {
+          const int x = bottom_row + i;
           for (int j = 0; j < bottom_cell->cols; j++) {
-            Cell &c = grid_[start + i][bottom_cell->col + j];
-            c.row = top_cell->row;
+            Cell &c = grid_[x][bottom_cell->col + j];
+            c.row = row;
+            c.rows = rows;
           }
         }
 
@@ -1272,7 +1317,7 @@ namespace docx
     return false;
   }
 
-  void Table::RemoveCell(TableCell &tc)
+  void Table::RemoveCell_(TableCell &tc)
   {
     tc.w_tr_.remove_child(tc.w_tc_);
   }
