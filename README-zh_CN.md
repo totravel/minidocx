@@ -310,7 +310,7 @@ s1.SetPageSize(MM2Twip(297), MM2Twip(420));        // 纸张大小为 A3
 s1.SetPageOrient(Section::Orientation::Landscape); // 纸张方向为横向
 ```
 
-## 表格
+### 表格
 
 类 `Table` 表示一个表格；类 `TableCell` 表示一个单元格。
 
