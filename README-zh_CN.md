@@ -310,6 +310,38 @@ s1.SetPageSize(MM2Twip(297), MM2Twip(420));        // 纸张大小为 A3
 s1.SetPageOrient(Section::Orientation::Landscape); // 纸张方向为横向
 ```
 
+## 表格
+
+类 `Table` 表示一个表格；类 `TableCell` 表示一个单元格。
+
+要插入表格，可以用 `Document` 类的 `AppendTable()` 方法。比如，插入一个 4 行 5 列的表格：
+
+```cpp
+auto tbl = doc.AppendTable(4, 5);
+```
+
+每个单元格都至少包含一个段落。
+
+```cpp
+tbl.GetCell(0, 0).FirstParagraph().AppendRun("AAA");
+tbl.GetCell(0, 1).FirstParagraph().AppendRun("BBB");
+tbl.GetCell(0, 2).FirstParagraph().AppendRun("CCC");
+tbl.GetCell(0, 3).FirstParagraph().AppendRun("DDD");
+
+tbl.GetCell(1, 0).FirstParagraph().AppendRun("EEE");
+tbl.GetCell(1, 1).FirstParagraph().AppendRun("FFF");
+```
+
+设置表格的边框：
+
+```cpp
+tbl.SetTopBorders(Table::BorderStyle::Single, 1, "FF0000");
+tbl.SetBottomBorders(Table::BorderStyle::Dotted, 2, "00FF00");
+tbl.SetLeftBorders(Table::BorderStyle::Dashed, 3, "0000FF");
+tbl.SetRightBorders(Table::BorderStyle::DotDash, 1, "FFFF00");
+tbl.SetInsideHBorders(Table::BorderStyle::Double, 1, "FF00FF");
+```
+
 ## 反馈
 
 有任何疑问，可随时在 [此处](https://github.com/totravel/minidocx/issues) 提问。

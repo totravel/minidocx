@@ -1,4 +1,4 @@
-
+﻿
 #include "minidocx.hpp"
 #include <iostream>
 
