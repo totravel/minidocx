@@ -47,6 +47,7 @@ if(BUILD_EXAMPLES)
   add_executable(run            examples/run.cpp)
   add_executable(read           examples/read.cpp)
   add_executable(table          examples/table.cpp)
+  add_executable(table_advanced examples/table_advanced.cpp)
 endif()
 
 install(TARGETS minidocx)

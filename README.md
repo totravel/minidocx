@@ -3,7 +3,6 @@
 
 ![License](https://img.shields.io/github/license/totravel/minidocx)
 ![Documentation Status](https://img.shields.io/badge/中文文档-最新-brightgreen.svg)
-![Lines of code](https://img.shields.io/tokei/lines/github/totravel/minidocx)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/totravel/minidocx)
 ![GitHub last commit](https://img.shields.io/github/last-commit/totravel/minidocx)
 

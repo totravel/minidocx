@@ -1138,17 +1138,143 @@ namespace docx
       for (int j = 0; j < cols; j++) {
         auto w_tc = w_tr.append_child("w:tc");
         auto w_tcPr = w_tc.append_child("w:tcPr");
-        auto c = TableCell(i, j, w_tr, w_tc, w_tcPr);
+        auto tc = TableCell(&grid_[i][j], w_tr, w_tc, w_tcPr);
         // A table cell must contain at least one block-level element, 
         // even if it is an empty <p/>.
-        c.AppendParagraph();
+        tc.AppendParagraph();
       }
     }
   }
 
-  bool Table::MergCells(TableCell c1, TableCell c2)
+  TableCell Table::GetCell(const int row, const int col)
   {
+    if (row < 0 || row >= rows_ || col < 0 || col >= cols_) {
+      return TableCell();
+    }
+
+    Cell *c = &grid_[row][col];
+    // get origin
+    const int x = c->row;
+    const int y = c->col;
+
+    int i = 0;
+    auto w_tr = w_tbl_.child("w:tr");
+    while (i < x && !w_tr.empty()) {
+      i++;
+      w_tr = w_tr.next_sibling("w:tr");
+    }
+    if (w_tr.empty()) {
+      return TableCell();
+    }
+
+    int j = 0;
+    auto w_tc = w_tr.child("w:tc");
+    while (j < y && !w_tc.empty()) {
+      j += grid_[x][j].cols;
+      w_tc = w_tc.next_sibling("w:tc");
+    }
+    if (w_tc.empty()) {
+      return TableCell();
+    }
+
+    auto w_tcPr = w_tc.child("w:tcPr");
+    return TableCell(&grid_[x][y], w_tr, w_tc, w_tcPr);
+  }
+
+  bool Table::MergeCells(TableCell &tc1, TableCell &tc2)
+  {
+    if (tc1.empty() || tc2.empty()) {
+      return false;
+    }
+
+    Cell *c1 = tc1.c_;
+    Cell *c2 = tc2.c_;
+
+    if (c1->row == c2->row && c1->col != c2->col && c1->rows == c2->rows) {
+      Cell *left_cell, *right_cell;
+      TableCell *left_tc, *right_tc;
+      if (c1->col < c2->col) {
+        left_cell  = c1;
+        left_tc  = &tc1;
+        right_cell = c2;
+        right_tc = &tc2;
+      } else {
+        left_cell  = c2;
+        left_tc  = &tc2;
+        right_cell = c1;
+        right_tc = &tc1;
+      }
+
+      const int cols = right_cell->col - left_cell->col;
+      if (cols == left_cell->cols) {
+        left_cell->cols += right_cell->cols;
+
+        const int start = right_cell->col;
+        for (int i = 0; i < right_cell->rows; i++) {
+          for (int j = 0; j < right_cell->cols; j++) {
+            Cell &c = grid_[right_cell->row + i][start + j];
+            c.col = left_cell->col;
+          }
+        }
+
+        left_tc->SetCellSpanning(left_cell->cols);
+        RemoveCell(*right_tc);
+        right_tc->c_      = left_cell;
+        right_tc->w_tc_   = left_tc->w_tc_;
+        right_tc->w_tcPr_ = left_tc->w_tcPr_;
+        return true;
+      }
+    } else if (c1->col == c2->col && c1->row != c2->row && c1->cols == c2->cols) {
+      Cell *top_cell, *bottom_cell;
+      TableCell *top_tc, *bottom_tc;
+      if (c1->row < c2->row) {
+        top_cell    = c1;
+        top_tc    = &tc1;
+        bottom_cell = c2;
+        bottom_tc = &tc2;
+      } else {
+        top_cell    = c2;
+        top_tc    = &tc2;
+        bottom_cell = c1;
+        bottom_tc = &tc1;
+      }
+
+      const int rows = bottom_cell->row - top_cell->row;
+      if (rows == top_cell->rows) {
+        if (top_cell->rows == 1) {
+          auto w_vMerge = top_tc->w_tcPr_.append_child("w:vMerge");
+          auto w_val = w_vMerge.append_attribute("w:val");
+          w_val.set_value("restart");
+        }
+        if (bottom_cell->rows == 1) {
+          bottom_tc->w_tcPr_.append_child("w:vMerge");
+        } else {
+          bottom_tc->w_tcPr_.remove_child("w:vMerge");
+          bottom_tc->w_tcPr_.append_child("w:vMerge");
+        }
+        top_cell->rows += bottom_cell->rows;
+
+        const int start = bottom_cell->row;
+        for (int i = 0; i < bottom_cell->rows; i++) {
+          for (int j = 0; j < bottom_cell->cols; j++) {
+            Cell &c = grid_[start + i][bottom_cell->col + j];
+            c.row = top_cell->row;
+          }
+        }
+
+        bottom_tc->c_      = top_cell;
+        bottom_tc->w_tc_   = top_tc->w_tc_;
+        bottom_tc->w_tcPr_ = top_tc->w_tcPr_;
+        return true;
+      }
+    }
+
     return false;
+  }
+
+  void Table::RemoveCell(TableCell &tc)
+  {
+    tc.w_tr_.remove_child(tc.w_tc_);
   }
 
   void Table::SetWidthAuto()
@@ -1226,36 +1352,6 @@ namespace docx
 
     w_w.set_value(w);
     w_type.set_value(units);
-  }
-
-  TableCell Table::GetCell(const int row, const int col)
-  {
-    if (row < 0 || row >= rows_ || col < 0 || col >= cols_) {
-      return TableCell();
-    }
-
-    int i = 0;
-    auto w_tr = w_tbl_.child("w:tr");
-    while (i < row && !w_tr.empty()) {
-      w_tr = w_tr.next_sibling("w:tr");
-      i++;
-    }
-    if (w_tr.empty()) {
-      return TableCell();
-    }
-
-    int j = 0;
-    auto w_tc = w_tr.child("w:tc");
-    while (j < col && !w_tc.empty()) {
-      w_tc = w_tc.next_sibling("w:tc");
-      j++;
-    }
-    if (w_tc.empty()) {
-      return TableCell();
-    }
-
-    auto w_tcPr = w_tc.child("w:tcPr");
-    return TableCell(row, col, w_tr, w_tc, w_tcPr);
   }
 
   void Table::SetAlignment(const Alignment alignment)
@@ -1391,16 +1487,24 @@ namespace docx
   TableCell::TableCell()
   {}
 
-  TableCell::TableCell(const int row, 
-                       const int col, 
+  TableCell::TableCell(Cell *c, 
                        pugi::xml_node w_tr, 
                        pugi::xml_node w_tc, 
-                       pugi::xml_node w_tcPr): row_(row), 
-                                               col_(col), 
+                       pugi::xml_node w_tcPr): c_(c), 
                                                w_tr_(w_tr), 
                                                w_tc_(w_tc), 
                                                w_tcPr_(w_tcPr)
   {}
+
+  TableCell::operator bool()
+  {
+    return w_tc_;
+  }
+
+  bool TableCell::empty() const
+  {
+    return !w_tc_;
+  }
 
   void TableCell::SetWidth(const int w, const char *units)
   {
@@ -1423,9 +1527,52 @@ namespace docx
     w_type.set_value(units);
   }
 
-  TableCell::operator bool()
+  void TableCell::SetVerticalAlignment(const Alignment align)
   {
-    return w_tc_;
+    auto w_vAlign = w_tcPr_.child("w:vAlign");
+    if (!w_vAlign) {
+      w_vAlign = w_tcPr_.append_child("w:vAlign");
+    }
+
+    auto w_val = w_vAlign.attribute("w:val");
+    if (!w_val) {
+      w_val = w_vAlign.append_attribute("w:val");
+    }
+
+    const char *val;
+    switch (align) {
+      case Alignment::Top:
+        val = "top";
+        break;
+      case Alignment::Center:
+        val = "center";
+        break;
+      case Alignment::Bottom:
+        val = "bottom";
+        break;
+    }
+    w_val.set_value(val);
+  }
+
+  void TableCell::SetCellSpanning(const int cols)
+  {
+    auto w_gridSpan = w_tcPr_.child("w:gridSpan");
+    if (cols == 1) {
+      if (w_gridSpan) {
+        w_tcPr_.remove_child(w_gridSpan);
+      }
+      return;
+    }
+    if (!w_gridSpan) {
+      w_gridSpan = w_tcPr_.append_child("w:gridSpan");
+    }
+
+    auto w_val = w_gridSpan.attribute("w:val");
+    if (!w_val) {
+      w_val = w_gridSpan.append_attribute("w:val");
+    }
+
+    w_val.set_value(cols);
   }
 
   Paragraph TableCell::AppendParagraph()

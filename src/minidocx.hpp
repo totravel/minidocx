@@ -107,27 +107,37 @@ namespace docx
   class Table;
   class TableCell;
 
+  struct Cell {
+    int row, col; // cell origin
+    int rows, cols; // cell size
+  };
+
   class TableCell
   {
+    friend class Table;
+
   public:
     // constructs an empty cell
     TableCell();
     // constructs a table from existing xml node
-    TableCell(const int row, 
-              const int col, 
+    TableCell(Cell *c, 
               pugi::xml_node w_tr, 
               pugi::xml_node w_tc, 
               pugi::xml_node w_tcPr);
     operator bool();
+    bool empty() const;
 
     void SetWidth(const int w, const char *units = "dxa");
+    enum class Alignment { Top, Center, Bottom };
+    void SetVerticalAlignment(const Alignment align);
+
+    void SetCellSpanning(const int cols);
 
     Paragraph AppendParagraph();
     Paragraph FirstParagraph();
 
   private:
-    int row_;
-    int col_;
+    Cell *c_;
     pugi::xml_node w_tr_;
     pugi::xml_node w_tc_;
     pugi::xml_node w_tcPr_;
@@ -142,8 +152,12 @@ namespace docx
           pugi::xml_node w_tblPr, 
           pugi::xml_node w_tblGrid);
     void SetGrid(const int rows, const int cols);
-    bool MergCells(TableCell c1, TableCell c2);
+
+    TableCell GetCell(const int row, const int col);
+    bool MergeCells(TableCell &tc1, TableCell &tc2);
     bool SplitCell();
+
+    void RemoveCell(TableCell &tc);
 
     // units: 
     //   auto - Specifies that width is determined by the overall table layout algorithm.
@@ -160,8 +174,6 @@ namespace docx
     void SetCellMarginLeft(const int w, const char *units = "dxa");
     void SetCellMarginRight(const int w, const char *units = "dxa");
     void SetCellMargin(const char *name, const int w, const char *units = "dxa");
-
-    TableCell GetCell(const int row, const int col);
 
     // table formatting
     enum class Alignment { Left, Centered, Right };
@@ -190,15 +202,9 @@ namespace docx
   private:
     int rows_;
     int cols_;
-    struct Cell {
-      int row;
-      int col;
-      int rows;
-      int cols;
-    };
     using Row = std::vector<Cell>;
     using Grid = std::vector<Row>;
-    Grid grid_;
+    Grid grid_; // logical grid
 
     pugi::xml_node w_body_;
     pugi::xml_node w_tbl_;
