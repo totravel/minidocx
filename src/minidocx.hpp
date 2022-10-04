@@ -79,6 +79,7 @@ namespace docx
   const unsigned int TABLOID_COLS = 792;
   const unsigned int TABLOID_ROWS = 1224;
   
+
   int Pt2Twip(const double pt);
   double Twip2Pt(const int twip);
 
@@ -100,17 +101,29 @@ namespace docx
   int CM2Twip(const double cm);
   double Twip2CM(const int twip);
 
+
   class Document;
   class Paragraph;
   class Section;
   class Run;
   class Table;
   class TableCell;
+  class TextFrame;
+
+
+  class Box
+  {
+  public:
+    enum class BorderStyle { Single, Dotted, Dashed, DotDash, Double, Wave, None };
+    static void SetBorders_(pugi::xml_node &w_bdrs, const char *elemName, const BorderStyle style, const double width, const char *color);
+  };
+
 
   struct Cell {
     int row, col; // cell origin
     int rows, cols; // cell size
   };
+
 
   class TableCell
   {
@@ -141,9 +154,10 @@ namespace docx
     pugi::xml_node w_tr_;
     pugi::xml_node w_tc_;
     pugi::xml_node w_tcPr_;
-  };
+  }; // class TableCell
 
-  class Table
+
+  class Table: public Box
   {
     friend class Document;
 
@@ -189,7 +203,6 @@ namespace docx
     //         No #, unlike hex values in HTML/CSS. E.g., color="FFFF00". 
     //         A value of auto is also permitted and will allow the 
     //         consuming word processor to determine the color.
-    enum class BorderStyle { Single, Dotted, Dashed, DotDash, Double, None };
     void SetTopBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
     void SetBottomBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
     void SetLeftBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
@@ -198,9 +211,8 @@ namespace docx
     void SetInsideVBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
     void SetInsideBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
     void SetOutsideBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetAllsideBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
     void SetAllBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetBorders(const char *elemName, const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetBorders_(const char *elemName, const BorderStyle style, const double width, const char *color);
 
   private:
     int rows_;
@@ -213,7 +225,8 @@ namespace docx
     pugi::xml_node w_tbl_;
     pugi::xml_node w_tblPr_;
     pugi::xml_node w_tblGrid_;
-  };
+  }; // class Table
+
 
   class Run
   {
@@ -328,7 +341,7 @@ namespace docx
   }; // class Section
 
 
-  class Paragraph
+  class Paragraph: public Box
   {
     friend class Document;
     friend class Section;
@@ -384,6 +397,13 @@ namespace docx
     void SetHanging(const int indent);
     void SetIndent(const int indent, const char *attrName);
 
+    void SetTopBorder(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetBottomBorder(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetLeftBorder(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetRightBorder(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetBorders_(const char *elemName, const BorderStyle style, const double width, const char *color);
+
     // helper
     void SetFontSize(const double fontSize);
     void SetFont(const std::string fontAscii, 
@@ -404,11 +424,43 @@ namespace docx
     Section RemoveSectionBreak();
     bool HasSectionBreak();
 
-  private:
+  protected:
     pugi::xml_node w_body_;
     pugi::xml_node w_p_;
     pugi::xml_node w_pPr_;
   }; // class Paragraph
+
+
+  class TextFrame: public Paragraph
+  {
+  public:
+    // constructs an empty text frame
+    TextFrame();
+    // constructs text frame from existing xml node
+    TextFrame(pugi::xml_node w_body, 
+              pugi::xml_node w_p, 
+              pugi::xml_node w_pPr, 
+              pugi::xml_node w_framePr);
+
+    void SetSize(const int w, const int h);
+
+    enum class Anchor { Page, Margin };
+    enum class Position { Left, Center, Right, Top, Bottom };
+    void SetAnchor_(const char *attrName, const Anchor anchor);
+    void SetPosition_(const char *attrName, const Position align);
+    void SetPosition_(const char *attrName, const int twip);
+
+    void SetPositionX(const Position align, const Anchor ralativeTo);
+    void SetPositionY(const Position align, const Anchor ralativeTo);
+    void SetPositionX(const int x, const Anchor ralativeTo);
+    void SetPositionY(const int y, const Anchor ralativeTo);
+
+    enum class Wrapping { Around, None };
+    void SetTextWrapping(const Wrapping wrapping);
+
+  private:
+    pugi::xml_node w_framePr_;
+  }; // class TextFrame
 
 
   class Document
@@ -460,6 +512,9 @@ namespace docx
     // add table
     Table AppendTable(const int rows, const int cols);
     void RemoveTable(Table &tbl);
+
+    // add text frame
+    TextFrame AppendTextFrame(const int w, const int h);
 
   private:
     std::string        path_;

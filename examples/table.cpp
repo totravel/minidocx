@@ -25,6 +25,7 @@ int main()
   tbl.SetLeftBorders(Table::BorderStyle::Dashed, 3, "0000FF");
   tbl.SetRightBorders(Table::BorderStyle::DotDash, 1, "FFFF00");
   tbl.SetInsideHBorders(Table::BorderStyle::Double, 1, "FF00FF");
+  tbl.SetInsideVBorders(Table::BorderStyle::Wave, 1, "00FFFF");
 
   tbl.SetCellMarginLeft(CM2Twip(0.19));
   tbl.SetCellMarginRight(CM2Twip(0.19));

@@ -307,6 +307,16 @@ namespace docx
     w_body_.remove_child(tbl.w_tbl_);
   }
 
+  TextFrame Document::AppendTextFrame(const int w, const int h)
+  {
+    auto w_p = w_body_.insert_child_before("w:p", w_sectPr_);
+    auto w_pPr = w_p.append_child("w:pPr");
+    auto w_framePr = w_pPr.append_child("w:framePr");
+    auto textFrame = TextFrame(w_body_, w_p, w_pPr, w_framePr);
+    textFrame.SetSize(w, h);
+    return textFrame;
+  }
+
 
   // class Paragraph
   Paragraph::Paragraph()
@@ -583,6 +593,43 @@ namespace docx
       attrIndent = elemIndent.append_attribute(attrName);
     }
     attrIndent.set_value(indent);
+  }
+
+  void Paragraph::SetTopBorder(const BorderStyle style, const double width, const char *color)
+  {
+    SetBorders_("w:top", style, width, color);
+  }
+
+  void Paragraph::SetBottomBorder(const BorderStyle style, const double width, const char *color)
+  {
+    SetBorders_("w:bottom", style, width, color);
+  }
+
+  void Paragraph::SetLeftBorder(const BorderStyle style, const double width, const char *color)
+  {
+    SetBorders_("w:left", style, width, color);
+  }
+
+  void Paragraph::SetRightBorder(const BorderStyle style, const double width, const char *color)
+  {
+    SetBorders_("w:right", style, width, color);
+  }
+
+  void Paragraph::SetBorders(const BorderStyle style, const double width, const char *color)
+  {
+    SetTopBorder(style, width, color);
+    SetBottomBorder(style, width, color);
+    SetLeftBorder(style, width, color);
+    SetRightBorder(style, width, color);
+  }
+
+  void Paragraph::SetBorders_(const char *elemName, const BorderStyle style, const double width, const char *color)
+  {
+    auto w_pBdr = w_pPr_.child("w:pBdr");
+    if (!w_pBdr) {
+      w_pBdr = w_pPr_.append_child("w:pBdr");
+    }
+    Box::SetBorders_(w_pBdr, elemName, style, width, color);
   }
 
   void Paragraph::SetFontSize(const double fontSize)
@@ -1429,32 +1476,32 @@ namespace docx
 
   void Table::SetTopBorders(const BorderStyle style, const double width, const char *color)
   {
-    SetBorders("w:top", style, width, color);
+    SetBorders_("w:top", style, width, color);
   }
 
   void Table::SetBottomBorders(const BorderStyle style, const double width, const char *color)
   {
-    SetBorders("w:bottom", style, width, color);
+    SetBorders_("w:bottom", style, width, color);
   }
 
   void Table::SetLeftBorders(const BorderStyle style, const double width, const char *color)
   {
-    SetBorders("w:start", style, width, color);
+    SetBorders_("w:start", style, width, color);
   }
 
   void Table::SetRightBorders(const BorderStyle style, const double width, const char *color)
   {
-    SetBorders("w:end", style, width, color);
+    SetBorders_("w:end", style, width, color);
   }
 
   void Table::SetInsideHBorders(const BorderStyle style, const double width, const char *color)
   {
-    SetBorders("w:insideH", style, width, color);
+    SetBorders_("w:insideH", style, width, color);
   }
 
   void Table::SetInsideVBorders(const BorderStyle style, const double width, const char *color)
   {
-    SetBorders("w:insideV", style, width, color);
+    SetBorders_("w:insideV", style, width, color);
   }
 
   void Table::SetInsideBorders(const BorderStyle style, const double width, const char *color)
@@ -1477,16 +1524,20 @@ namespace docx
     SetInsideBorders(style, width, color);
   }
 
-  void Table::SetBorders(const char *elemName, const BorderStyle style, const double width, const char *color)
+  void Table::SetBorders_(const char *elemName, const BorderStyle style, const double width, const char *color)
   {
     auto w_tblBorders = w_tblPr_.child("w:tblBorders");
     if (!w_tblBorders) {
       w_tblBorders = w_tblPr_.append_child("w:tblBorders");
     }
+    Box::SetBorders_(w_tblBorders, elemName, style, width, color);
+  }
 
-    auto w_tblBordersChild = w_tblBorders.child(elemName);
-    if (!w_tblBordersChild) {
-      w_tblBordersChild = w_tblBorders.append_child(elemName);
+  void Box::SetBorders_(pugi::xml_node &w_bdrs, const char *elemName, const BorderStyle style, const double width, const char *color)
+  {
+    auto w_bdr = w_bdrs.child(elemName);
+    if (!w_bdr) {
+      w_bdr = w_bdrs.append_child(elemName);
     }
 
     const char *val;
@@ -1506,26 +1557,29 @@ namespace docx
       case BorderStyle::Double:
         val = "double";
         break;
+      case BorderStyle::Wave:
+        val = "wave";
+        break;
       case BorderStyle::None:
         val = "none";
         break;
     }
 
-    auto w_val = w_tblBordersChild.attribute("w:val");
+    auto w_val = w_bdr.attribute("w:val");
     if (!w_val) {
-      w_val = w_tblBordersChild.append_attribute("w:val");
+      w_val = w_bdr.append_attribute("w:val");
     }
     w_val.set_value(val);
 
-    auto w_sz = w_tblBordersChild.attribute("w:sz");
+    auto w_sz = w_bdr.attribute("w:sz");
     if (!w_sz) {
-      w_sz = w_tblBordersChild.append_attribute("w:sz");
+      w_sz = w_bdr.append_attribute("w:sz");
     }
     w_sz.set_value(width * 8);
 
-    auto w_color = w_tblBordersChild.attribute("w:color");
+    auto w_color = w_bdr.attribute("w:color");
     if (!w_color) {
-      w_color = w_tblBordersChild.append_attribute("w:color");
+      w_color = w_bdr.append_attribute("w:color");
     }
     w_color.set_value(color);
   }
@@ -1635,5 +1689,132 @@ namespace docx
     auto w_pPr = w_p.child("w:pPr");
     return Paragraph(w_tc_, w_p, w_pPr);
   }
+
+  // class TextFrame
+  TextFrame::TextFrame()
+  {
+  }
+
+  TextFrame::TextFrame(pugi::xml_node w_body, 
+                       pugi::xml_node w_p, 
+                       pugi::xml_node w_pPr, 
+                       pugi::xml_node w_framePr): Paragraph(w_body, w_p, w_pPr), 
+                                                  w_framePr_(w_framePr)
+  {}
+
+  void TextFrame::SetSize(const int w, const int h)
+  {
+    auto w_w = w_framePr_.attribute("w:w");
+    if (!w_w) {
+      w_w = w_framePr_.append_attribute("w:w");
+    }
+    auto w_h = w_framePr_.attribute("w:h");
+    if (!w_h) {
+      w_h = w_framePr_.append_attribute("w:h");
+    }
+
+    w_w.set_value(w);
+    w_h.set_value(h);
+  }
+
+  void TextFrame::SetPositionX(const Position align, const Anchor ralativeTo)
+  {
+    SetAnchor_("w:hAnchor", ralativeTo);
+    SetPosition_("w:xAlign", align);
+  }
+
+  void TextFrame::SetPositionY(const Position align, const Anchor ralativeTo)
+  {
+    SetAnchor_("w:vAnchor", ralativeTo);
+    SetPosition_("w:yAlign", align);
+  }
+
+  void TextFrame::SetPositionX(const int x, const Anchor ralativeTo)
+  {
+    SetAnchor_("w:hAnchor", ralativeTo);
+    SetPosition_("w:x", x);
+  }
+
+  void TextFrame::SetPositionY(const int y, const Anchor ralativeTo)
+  {
+    SetAnchor_("w:vAnchor", ralativeTo);
+    SetPosition_("w:y", y);
+  }
+
+  void TextFrame::SetAnchor_(const char *attrName, const Anchor anchor)
+  {
+    auto w_anchor = w_framePr_.attribute(attrName);
+    if (!w_anchor) {
+      w_anchor = w_framePr_.append_attribute(attrName);
+    }
+
+    const char *val;
+    switch (anchor) {
+      case Anchor::Page:
+        val = "page";
+        break;
+      case Anchor::Margin:
+        val = "margin";
+        break;
+    }
+    w_anchor.set_value(val);
+  }
+
+  void TextFrame::SetPosition_(const char *attrName, const Position align)
+  {
+    auto w_align = w_framePr_.attribute(attrName);
+    if (!w_align) {
+      w_align = w_framePr_.append_attribute(attrName);
+    }
+
+    const char *val;
+    switch (align) {
+      case Position::Left:
+        val = "left";
+        break;
+      case Position::Center:
+        val = "center";
+        break;
+      case Position::Right:
+        val = "right";
+        break;
+      case Position::Top:
+        val = "top";
+        break;
+      case Position::Bottom:
+        val = "bottom";
+        break;
+    }
+    w_align.set_value(val);
+  }
+
+  void TextFrame::SetPosition_(const char *attrName, const int twip)
+  {
+    auto w_Align = w_framePr_.attribute(attrName);
+    if (!w_Align) {
+      w_Align = w_framePr_.append_attribute(attrName);
+    }
+    w_Align.set_value(twip);
+  }
+
+  void TextFrame::SetTextWrapping(const Wrapping wrapping)
+  {
+    auto w_wrap = w_framePr_.attribute("w:wrap");
+    if (!w_wrap) {
+      w_wrap = w_framePr_.append_attribute("w:wrap");
+    }
+
+    const char *val;
+    switch (wrapping) {
+      case Wrapping::Around:
+        val = "around";
+        break;
+      case Wrapping::None:
+        val = "none";
+        break;
+    }
+    w_wrap.set_value(val);
+  }
+
 
 } // namespace docx
