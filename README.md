@@ -310,6 +310,51 @@ s1.SetPageSize(MM2Twip(297), MM2Twip(420)); // A3
 s1.SetPageOrient(Section::Orientation::Landscape);
 ```
 
+### Table
+
+You can insert a table by using `Document::AppendTable()`.
+
+```cpp
+auto tbl = doc.AppendTable(2, 3);
+```
+
+Each cell already contains a paragraph.
+
+```cpp
+tbl.GetCell(0, 0).FirstParagraph().AppendRun("AAA");
+tbl.GetCell(0, 1).FirstParagraph().AppendRun("BBB");
+tbl.GetCell(0, 2).FirstParagraph().AppendRun("CCC");
+
+tbl.GetCell(1, 0).FirstParagraph().AppendRun("DDD");
+tbl.GetCell(1, 1).FirstParagraph().AppendRun("EEE");
+```
+
+| AAA  | BBB  | CCC  |
+| ---- | ---- | ---- |
+| DDD  | EEE  |      |
+
+You can change the style, width (points) and color (hex) of borders.
+
+```cpp
+tbl.SetTopBorders(Table::BorderStyle::Single, 1, "FF0000");      // a single line, 1 pt, Red
+tbl.SetBottomBorders(Table::BorderStyle::Dotted, 2, "00FF00");   // a dotted line, 2 pt, Green
+tbl.SetLeftBorders(Table::BorderStyle::Dashed, 3, "0000FF");     // a dashed line, 3 pt, Blue
+tbl.SetRightBorders(Table::BorderStyle::DotDash, 0.5, "FFFF00"); // a line with alternating dots and dashes, 1/2 pt, yellow
+tbl.SetInsideHBorders(Table::BorderStyle::Double, 1, "FF00FF");  // a double line, 1 pt, purple
+```
+
+#### Merge cells
+
+You can merge adjacent cells with the same number of rows or columns.
+
+```cpp
+auto c00 = tbl.GetCell(0, 0);
+auto c01 = tbl.GetCell(0, 1);
+if (tbl.MergeCells(c00, c01)) {
+  std::cout << "c00 c01 merged\n";
+}
+```
+
 ## Contact
 
 Do you have an issue using minidocx? Feel free to let me know on [issue tracker](https://github.com/totravel/minidocx/issues).

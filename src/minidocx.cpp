@@ -293,7 +293,7 @@ namespace docx
     auto w_tblPr = w_tbl.append_child("w:tblPr");
     auto w_tblGrid = w_tbl.append_child("w:tblGrid");
     auto tbl = Table(w_body_, w_tbl, w_tblPr, w_tblGrid);
-    tbl.SetGrid(rows, cols);
+    tbl.Create_(rows, cols);
     tbl.SetAllBorders();
     tbl.SetWidthPercent(100);
     tbl.SetCellMarginLeft(CM2Twip(0.19));
@@ -1125,11 +1125,12 @@ namespace docx
                                           w_tblGrid_(w_tblGrid)
   {}
 
-  void Table::SetGrid(const int rows, const int cols)
+  void Table::Create_(const int rows, const int cols)
   {
     rows_ = rows;
     cols_ = cols;
 
+    // init grid
     for (int i = 0; i < rows; i++) {
       Row row;
       for (int j = 0; j < cols; j++) {
@@ -1139,6 +1140,7 @@ namespace docx
       grid_.push_back(row);
     }
 
+    // init table
     for (int i = 0; i < rows; i++) {
       auto w_gridCol = w_tblGrid_.append_child("w:gridCol");
 
@@ -1235,7 +1237,7 @@ namespace docx
           RemoveCell_(GetCell_(right_cell->row + i, right_cell->col));
         }
         for (int i = 0; i < left_cell->rows; i++) {
-          GetCell_(left_cell->row + i, left_cell->col).SetCellSpanning(cols);
+          GetCell_(left_cell->row + i, left_cell->col).SetCellSpanning_(cols);
         }
 
         // update left grid
@@ -1373,16 +1375,16 @@ namespace docx
     SetCellMargin("w:end", w, units);
   }
 
-  void Table::SetCellMargin(const char *name, const int w, const char *units)
+  void Table::SetCellMargin(const char *elemName, const int w, const char *units)
   {
     auto w_tblCellMar = w_tblPr_.child("w:tblCellMar");
     if (!w_tblCellMar) {
       w_tblCellMar = w_tblPr_.append_child("w:tblCellMar");
     }
 
-    auto w_tblCellMarChild = w_tblCellMar.child(name);
+    auto w_tblCellMarChild = w_tblCellMar.child(elemName);
     if (!w_tblCellMarChild) {
-      w_tblCellMarChild = w_tblCellMar.append_child(name);
+      w_tblCellMarChild = w_tblCellMar.append_child(elemName);
     }
 
     auto w_w = w_tblCellMarChild.attribute("w:w");
@@ -1475,16 +1477,16 @@ namespace docx
     SetInsideBorders(style, width, color);
   }
 
-  void Table::SetBorders(const char *name, const BorderStyle style, const double width, const char *color)
+  void Table::SetBorders(const char *elemName, const BorderStyle style, const double width, const char *color)
   {
     auto w_tblBorders = w_tblPr_.child("w:tblBorders");
     if (!w_tblBorders) {
       w_tblBorders = w_tblPr_.append_child("w:tblBorders");
     }
 
-    auto w_tblBordersChild = w_tblBorders.child(name);
+    auto w_tblBordersChild = w_tblBorders.child(elemName);
     if (!w_tblBordersChild) {
-      w_tblBordersChild = w_tblBorders.append_child(name);
+      w_tblBordersChild = w_tblBorders.append_child(elemName);
     }
 
     const char *val;
@@ -1599,7 +1601,7 @@ namespace docx
     w_val.set_value(val);
   }
 
-  void TableCell::SetCellSpanning(const int cols)
+  void TableCell::SetCellSpanning_(const int cols)
   {
     auto w_gridSpan = w_tcPr_.child("w:gridSpan");
     if (cols == 1) {

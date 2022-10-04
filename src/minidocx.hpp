@@ -131,7 +131,7 @@ namespace docx
     enum class Alignment { Top, Center, Bottom };
     void SetVerticalAlignment(const Alignment align);
 
-    void SetCellSpanning(const int cols);
+    void SetCellSpanning_(const int cols);
 
     Paragraph AppendParagraph();
     Paragraph FirstParagraph();
@@ -153,7 +153,7 @@ namespace docx
           pugi::xml_node w_tbl, 
           pugi::xml_node w_tblPr, 
           pugi::xml_node w_tblGrid);
-    void SetGrid(const int rows, const int cols);
+    void Create_(const int rows, const int cols);
 
     TableCell GetCell(const int row, const int col);
     TableCell GetCell_(const int row, const int col);
@@ -176,7 +176,7 @@ namespace docx
     void SetCellMarginBottom(const int w, const char *units = "dxa");
     void SetCellMarginLeft(const int w, const char *units = "dxa");
     void SetCellMarginRight(const int w, const char *units = "dxa");
-    void SetCellMargin(const char *name, const int w, const char *units = "dxa");
+    void SetCellMargin(const char *elemName, const int w, const char *units = "dxa");
 
     // table formatting
     enum class Alignment { Left, Centered, Right };
@@ -200,7 +200,7 @@ namespace docx
     void SetOutsideBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
     void SetAllsideBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
     void SetAllBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetBorders(const char *name, const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
+    void SetBorders(const char *elemName, const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
 
   private:
     int rows_;

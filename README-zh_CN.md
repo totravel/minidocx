@@ -312,34 +312,47 @@ s1.SetPageOrient(Section::Orientation::Landscape); // 纸张方向为横向
 
 ### 表格
 
-类 `Table` 表示一个表格；类 `TableCell` 表示一个单元格。
-
-要插入表格，可以用 `Document` 类的 `AppendTable()` 方法。比如，插入一个 4 行 5 列的表格：
+要插入表格，可以用 `Document` 类的 `AppendTable()` 方法。比如，插入一个 2 行 3 列的表格：
 
 ```cpp
-auto tbl = doc.AppendTable(4, 5);
+auto tbl = doc.AppendTable(2, 3);
 ```
 
-每个单元格都至少包含一个段落。
+每个单元格都已经包含一个段落。
 
 ```cpp
 tbl.GetCell(0, 0).FirstParagraph().AppendRun("AAA");
 tbl.GetCell(0, 1).FirstParagraph().AppendRun("BBB");
 tbl.GetCell(0, 2).FirstParagraph().AppendRun("CCC");
-tbl.GetCell(0, 3).FirstParagraph().AppendRun("DDD");
 
-tbl.GetCell(1, 0).FirstParagraph().AppendRun("EEE");
-tbl.GetCell(1, 1).FirstParagraph().AppendRun("FFF");
+tbl.GetCell(1, 0).FirstParagraph().AppendRun("DDD");
+tbl.GetCell(1, 1).FirstParagraph().AppendRun("EEE");
 ```
 
-设置表格的边框：
+| AAA  | BBB  | CCC  |
+| ---- | ---- | ---- |
+| DDD  | EEE  |      |
+
+可以设置边框的样式、宽度（磅）和颜色（十六进制）：
 
 ```cpp
-tbl.SetTopBorders(Table::BorderStyle::Single, 1, "FF0000");
-tbl.SetBottomBorders(Table::BorderStyle::Dotted, 2, "00FF00");
-tbl.SetLeftBorders(Table::BorderStyle::Dashed, 3, "0000FF");
-tbl.SetRightBorders(Table::BorderStyle::DotDash, 1, "FFFF00");
-tbl.SetInsideHBorders(Table::BorderStyle::Double, 1, "FF00FF");
+tbl.SetTopBorders(Table::BorderStyle::Single, 1, "FF0000");      // 单直线, 1 磅, 红色
+tbl.SetBottomBorders(Table::BorderStyle::Dotted, 2, "00FF00");   // 点虚线, 2 磅, 绿色
+tbl.SetLeftBorders(Table::BorderStyle::Dashed, 3, "0000FF");     // 短划线, 3 磅, 蓝色
+tbl.SetRightBorders(Table::BorderStyle::DotDash, 0.5, "FFFF00"); // 点划线, 1/2 磅，黄色
+tbl.SetInsideHBorders(Table::BorderStyle::Double, 1, "FF00FF");  // 双直线, 1 磅, 紫色
+```
+
+#### 合并单元格
+
+可以合并相邻且具有相同行数或列数的单元格：
+
+```cpp
+auto c00 = tbl.GetCell(0, 0);
+auto c01 = tbl.GetCell(0, 1);
+if (tbl.MergeCells(c00, c01)) {
+  std::cout << "c00 c01 merged\n";
+}
 ```
 
 ## 反馈
