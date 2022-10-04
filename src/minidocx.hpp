@@ -1,14 +1,11 @@
 ﻿/**
- * minidocx - C++ library for creating Microsoft Word Document (.docx).
- * 
- * Copyright (C) 2022 Xie Zequn <totravel@foxmail.com>
- *
- * Units: 
- *   Values are in twentieths of a point, e.g. 1440 = 72 points.
- *   One point is equal to 1/72 inch, e.g. 72 points = 1 inch.
+ * minidocx 0.3.0 - C++ library for creating Microsoft Word Document (.docx).
+ * --------------------------------------------------------
+ * Copyright (C) 2022, by Xie Zequn (totravel@foxmail.com)
+ * Report bugs and download new versions at https://github.com/totravel/minidocx
  */
 
-#include <iostream>
+#include <iostream> // std::ostream
 #include <string>
 #include <vector>
 #include "pugixml.hpp"

@@ -1,4 +1,10 @@
-﻿
+﻿/**
+ * minidocx 0.3.0 - C++ library for creating Microsoft Word Document (.docx).
+ * --------------------------------------------------------
+ * Copyright (C) 2022, by Xie Zequn (totravel@foxmail.com)
+ * Report bugs and download new versions at https://github.com/totravel/minidocx
+ */
+
 #include "minidocx.hpp"
 #include <cstring> // std::strlen(), std::strcmp()
 #include <cstdlib> // std::free()

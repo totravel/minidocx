@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 3.21)
-project(myproj VERSION 0.2.0 LANGUAGES C CXX) # C needed by zip.c
+project(myproj VERSION 0.3.0 LANGUAGES C CXX) # C needed by zip.c
 
 option(BUILD_EXAMPLES  "Build examples"               ON)
 option(WITH_STATIC_CRT "Use static C Runtime library" OFF)
