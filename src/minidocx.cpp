@@ -314,6 +314,7 @@ namespace docx
     auto w_framePr = w_pPr.append_child("w:framePr");
     auto textFrame = TextFrame(w_body_, w_p, w_pPr, w_framePr);
     textFrame.SetSize(w, h);
+    textFrame.SetBorders();
     return textFrame;
   }
 

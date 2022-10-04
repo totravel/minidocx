@@ -355,6 +355,28 @@ if (tbl.MergeCells(c00, c01)) {
 }
 ```
 
+### 图文框
+
+图文框类似于文本框，但比文本框简单。图文框是特殊的段落，可以 `Document::AppendTextFrame()` 方法添加。
+
+```cpp
+auto frame = doc.AppendTextFrame(CM2Twip(4), CM2Twip(5));
+frame.AppendRun("This is the text frame paragraph.");
+```
+
+设置图文框的位置：
+
+```cpp
+frame.SetPositionX(TextFrame::Position::Left, TextFrame::Anchor::Page);   // 相对于页面
+frame.SetPositionY(TextFrame::Position::Top,  TextFrame::Anchor::Margin); // 相对于页边距
+```
+
+设置文本环绕：
+
+```cpp
+frame.SetTextWrapping(TextFrame::Wrapping::Around);
+```
+
 ## 反馈
 
 有任何疑问，可随时在 [此处](https://github.com/totravel/minidocx/issues) 提问。

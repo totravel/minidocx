@@ -355,6 +355,22 @@ if (tbl.MergeCells(c00, c01)) {
 }
 ```
 
+### Text Frame
+
+A text frame is similar to a text box. Both are containers for text that can be positioned on a page and sized. Text boxes have more flexibility for formatting.
+
+A text frame paragraph is simply a paragraph.
+
+```cpp
+auto frame = doc.AppendTextFrame(CM2Twip(4), CM2Twip(5));
+frame.AppendRun("This is the text frame paragraph.");
+
+frame.SetPositionX(TextFrame::Position::Left, TextFrame::Anchor::Page);
+frame.SetPositionY(TextFrame::Position::Top,  TextFrame::Anchor::Margin);
+
+frame.SetTextWrapping(TextFrame::Wrapping::Around);
+``` 
+
 ## Contact
 
 Do you have an issue using minidocx? Feel free to let me know on [issue tracker](https://github.com/totravel/minidocx/issues).
