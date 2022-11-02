@@ -1373,7 +1373,7 @@ namespace docx
     return false;
   }
 
-  void Table::RemoveCell_(TableCell &tc)
+  void Table::RemoveCell_(TableCell tc)
   {
     tc.w_tr_.remove_child(tc.w_tc_);
   }

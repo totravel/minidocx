@@ -171,7 +171,7 @@ namespace docx
     bool MergeCells(TableCell &tc1, TableCell &tc2);
     bool SplitCell();
 
-    void RemoveCell_(TableCell &tc);
+    void RemoveCell_(TableCell tc);
 
     // units: 
     //   auto - Specifies that width is determined by the overall table layout algorithm.
