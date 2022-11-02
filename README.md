@@ -71,14 +71,17 @@ See other [examples](./examples).
 ## Build Instructions
 
 ```bash
+git clone git@github.com:totravel/minidocx.git
+cd minidocx
+
 # Windows
 cmake -S . -B build -DBUILD_EXAMPLES=ON -DWITH_STATIC_CRT=OFF
-cmake --build build -j4 --config Release
+cmake --build build --config Release -j
 cmake --install build --prefix install --config Release
 
 # Linux
-cmake -S . -B build -DBUILD_EXAMPLES=ON -DWITH_STATIC_CRT=OFF -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j4
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=ON -DWITH_STATIC_CRT=OFF
+cmake --build build -j
 cmake --install build --prefix install
 ```
 

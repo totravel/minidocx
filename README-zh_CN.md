@@ -71,6 +71,9 @@ int main()
 ## 构建命令
 
 ```bash
+git clone git@gitee.com:totravel/minidocx.git
+cd minidocx
+
 # Windows
 cmake -S . -B build -DBUILD_EXAMPLES=ON -DWITH_STATIC_CRT=OFF
 cmake --build build -j4 --config Release
