@@ -8,14 +8,14 @@
 
 English | [简体中文](./README-zh_CN.md)
 
-minidocx is a portable and easy-to-use C++ library for creating Microsoft Word Document (.docx) from scratch. It is designed to be simple and small enough. So, you can grab these 2 files and compile them into your project.
+minidocx is a portable and easy-to-use C++ library for creating Microsoft Word Document (.docx) from scratch. It is designed to be simple and small enough. So, you can grab these files and compile them into your project.
 
 ## Requirements
 
 To build minidocx you'll need a C++11 compiler and the following libraries:
 
 - [zip](https://github.com/kuba--/zip) <= 0.2.1
-- [pugixml](https://github.com/zeux/pugixml) >= 1.12.1
+- [pugixml](https://github.com/zeux/pugixml) >= 1.13
 
 It is tested with the following IDE/toolchains versions:
 
