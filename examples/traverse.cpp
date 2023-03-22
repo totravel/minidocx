@@ -10,7 +10,7 @@ int main()
   doc.AppendParagraph("This is the 1st paragraph.");
   doc.AppendParagraph("This is the 2nd paragraph.");
   doc.AppendParagraph("This is the 3rd paragraph.");
-  
+
   auto p = doc.AppendSectionBreak();
   p.AppendRun("This is the 1st run. ");
   p.AppendRun("This is the 2nd run. ");
@@ -28,6 +28,7 @@ int main()
   // Section 3
   doc.AppendParagraph("This is the 8th paragraph.");
   doc.AppendParagraph("This is the 9th paragraph.");
+
 
   for (auto p = doc.FirstParagraph(); p; p = p.Next()) {
     std::cout << "paragraph: \n";

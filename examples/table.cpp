@@ -29,8 +29,8 @@ int main()
 
   tbl.SetCellMarginLeft(CM2Twip(0.19));
   tbl.SetCellMarginRight(CM2Twip(0.19));
-
-  doc.Save();
+  
   std::cout << doc;
+  doc.Save();
   return 0;
 }

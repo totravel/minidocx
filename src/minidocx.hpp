@@ -1,5 +1,5 @@
 ﻿/**
- * minidocx 0.3.2 - C++ library for creating Microsoft Word Document (.docx).
+ * minidocx 0.4.0 - C++ library for creating Microsoft Word Document (.docx).
  * --------------------------------------------------------
  * Copyright (C) 2022-2023, by Xie Zequn (totravel@foxmail.com)
  * Report bugs and download new versions at https://github.com/totravel/minidocx
@@ -8,7 +8,7 @@
 #include <iostream> // std::ostream
 #include <string>
 #include <vector>
-#include "pugixml.hpp"
+
 
 namespace docx
 {
@@ -75,7 +75,7 @@ namespace docx
 
   const unsigned int TABLOID_COLS = 792;
   const unsigned int TABLOID_ROWS = 1224;
-  
+
 
   int Pt2Twip(const double pt);
   double Twip2Pt(const int twip);
@@ -112,7 +112,6 @@ namespace docx
   {
   public:
     enum class BorderStyle { Single, Dotted, Dashed, DotDash, Double, Wave, None };
-    static void SetBorders_(pugi::xml_node &w_bdrs, const char *elemName, const BorderStyle style, const double width, const char *color);
   };
 
 
@@ -120,6 +119,8 @@ namespace docx
     int row, col; // cell origin
     int rows, cols; // cell size
   };
+  using Row = std::vector<Cell>;
+  using Grid = std::vector<Row>;
 
 
   class TableCell
@@ -129,15 +130,15 @@ namespace docx
   public:
     // constructs an empty cell
     TableCell();
-    // constructs a table from existing xml node
-    TableCell(Cell *c, 
-              pugi::xml_node w_tr, 
-              pugi::xml_node w_tc, 
-              pugi::xml_node w_tcPr);
+    TableCell(TableCell& tc);
+    ~TableCell();
+    void operator=(TableCell& right);
+
     operator bool();
     bool empty() const;
 
-    void SetWidth(const int w, const char *units = "dxa");
+    void SetWidth(const int w, const char* units = "dxa");
+
     enum class Alignment { Top, Center, Bottom };
     void SetVerticalAlignment(const Alignment align);
 
@@ -147,28 +148,28 @@ namespace docx
     Paragraph FirstParagraph();
 
   private:
-    Cell *c_;
-    pugi::xml_node w_tr_;
-    pugi::xml_node w_tc_;
-    pugi::xml_node w_tcPr_;
+    struct Impl;
+    Impl* impl_ = nullptr;
+
+    // constructs a table from existing xml node
+    TableCell(Impl* impl);
   }; // class TableCell
 
 
-  class Table: public Box
+  class Table : public Box
   {
     friend class Document;
 
   public:
-    // constructs a table from existing xml node
-    Table(pugi::xml_node w_body, 
-          pugi::xml_node w_tbl, 
-          pugi::xml_node w_tblPr, 
-          pugi::xml_node w_tblGrid);
+    Table(Table& t);
+    ~Table();
+    void operator=(Table& right);
+
     void Create_(const int rows, const int cols);
 
     TableCell GetCell(const int row, const int col);
     TableCell GetCell_(const int row, const int col);
-    bool MergeCells(TableCell &tc1, TableCell &tc2);
+    bool MergeCells(TableCell& tc1, TableCell& tc2);
     bool SplitCell();
 
     void RemoveCell_(TableCell tc);
@@ -180,14 +181,14 @@ namespace docx
     //   pct  - Specifies a value as a percent of the table width.
     void SetWidthAuto();
     void SetWidthPercent(const double w); // 0-100
-    void SetWidth(const int w, const char *units = "dxa");
+    void SetWidth(const int w, const char* units = "dxa");
 
     // the distance between the cell contents and the cell borders
-    void SetCellMarginTop(const int w, const char *units = "dxa");
-    void SetCellMarginBottom(const int w, const char *units = "dxa");
-    void SetCellMarginLeft(const int w, const char *units = "dxa");
-    void SetCellMarginRight(const int w, const char *units = "dxa");
-    void SetCellMargin(const char *elemName, const int w, const char *units = "dxa");
+    void SetCellMarginTop(const int w, const char* units = "dxa");
+    void SetCellMarginBottom(const int w, const char* units = "dxa");
+    void SetCellMarginLeft(const int w, const char* units = "dxa");
+    void SetCellMarginRight(const int w, const char* units = "dxa");
+    void SetCellMargin(const char* elemName, const int w, const char* units = "dxa");
 
     // table formatting
     enum class Alignment { Left, Centered, Right };
@@ -200,41 +201,38 @@ namespace docx
     //         No #, unlike hex values in HTML/CSS. E.g., color="FFFF00". 
     //         A value of auto is also permitted and will allow the 
     //         consuming word processor to determine the color.
-    void SetTopBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetBottomBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetLeftBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetRightBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetInsideHBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetInsideVBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetInsideBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetOutsideBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetAllBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetBorders_(const char *elemName, const BorderStyle style, const double width, const char *color);
+    void SetTopBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char* color = "auto");
+    void SetBottomBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char* color = "auto");
+    void SetLeftBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char* color = "auto");
+    void SetRightBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char* color = "auto");
+    void SetInsideHBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char* color = "auto");
+    void SetInsideVBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char* color = "auto");
+    void SetInsideBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char* color = "auto");
+    void SetOutsideBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char* color = "auto");
+    void SetAllBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char* color = "auto");
+    void SetBorders_(const char* elemName, const BorderStyle style, const double width, const char* color);
 
   private:
-    int rows_;
-    int cols_;
-    using Row = std::vector<Cell>;
-    using Grid = std::vector<Row>;
-    Grid grid_; // logical grid
+    struct Impl;
+    Impl* impl_ = nullptr;
 
-    pugi::xml_node w_body_;
-    pugi::xml_node w_tbl_;
-    pugi::xml_node w_tblPr_;
-    pugi::xml_node w_tblGrid_;
+    // constructs a table from existing xml node
+    Table(Impl* impl);
   }; // class Table
 
 
   class Run
   {
+    friend class Paragraph;
+    friend std::ostream& operator<<(std::ostream& out, const Run& r);
+
   public:
-    // constructs run from existing xml node
-    Run(pugi::xml_node w_p, 
-        pugi::xml_node w_r, 
-        pugi::xml_node w_rPr);
+    Run();
+    Run(Run& r);
+    ~Run();
 
     // text
-    void AppendText(const std::string text);
+    void AppendText(const std::string& text);
     std::string GetText();
     void ClearText();
     void AppendLineBreak();
@@ -243,18 +241,16 @@ namespace docx
     using FontStyle = unsigned int;
     enum : FontStyle
     {
-      Bold          = 1 << 0, 
-      Italic        = 1 << 1, 
-      Underline     = 1 << 2, 
+      Bold = 1 << 0,
+      Italic = 1 << 1,
+      Underline = 1 << 2,
       Strikethrough = 1 << 3
     };
     void SetFontSize(const double fontSize);
     double GetFontSize();
 
-    void SetFont(const std::string fontAscii, 
-                 const std::string fontEastAsia = "");
-    void GetFont(std::string &fontAscii, 
-                 std::string &fontEastAsia);
+    void SetFont(const std::string& fontAscii, const std::string& fontEastAsia = "");
+    void GetFont(std::string& fontAscii, std::string& fontEastAsia);
 
     void SetFontStyle(const FontStyle fontStyle);
     FontStyle GetFontStyle();
@@ -269,28 +265,27 @@ namespace docx
     // traverse
     Run Next();
     operator bool();
+    void operator=(Run& right);
 
   private:
-    pugi::xml_node w_p_;
-    pugi::xml_node w_r_;
-    pugi::xml_node w_rPr_;
+    struct Impl;
+    Impl* impl_ = nullptr;
+
+    // constructs run from existing xml node
+    Run(Impl* impl);
   }; // class Run
 
 
   class Section
   {
+    friend class Paragraph;
+    friend std::ostream& operator<<(std::ostream& out, const Section& s);
+
   public:
     // constructs an empty section
     Section();
-    // constructs a new section
-    Section(pugi::xml_node w_body, 
-            pugi::xml_node w_p, 
-            pugi::xml_node w_pPr);
-    // constructs section from existing xml node
-    Section(pugi::xml_node w_body, 
-            pugi::xml_node w_p, 
-            pugi::xml_node w_pPr, 
-            pugi::xml_node w_sectPr);
+    Section(Section& s);
+    ~Section();
 
     // section
     void Split();
@@ -300,18 +295,16 @@ namespace docx
     // page formatting
     enum class Orientation { Landscape, Portrait };
     void SetPageSize(const int w, const int h);
-    void GetPageSize(int &w, int &h);
+    void GetPageSize(int& w, int& h);
 
     void SetPageOrient(const Orientation orient);
     Orientation GetPageOrient();
 
-    void SetPageMargin(const int top, const int bottom, 
-                       const int left, const int right);
-    void GetPageMargin(int &top, int &bottom, 
-                       int &left, int &right);
+    void SetPageMargin(const int top, const int bottom, const int left, const int right);
+    void GetPageMargin(int& top, int& bottom, int& left, int& right);
 
     void SetPageMargin(const int header, const int footer);
-    void GetPageMargin(int &header, int &footer);
+    void GetPageMargin(int& header, int& footer);
 
     void SetColumn(const int num, const int space = 425);
 
@@ -324,45 +317,40 @@ namespace docx
     Section Next();
     Section Prev();
     operator bool();
-    bool operator==(const Section &s);
+    bool operator==(const Section& s);
+    void operator=(const Section& right);
 
   private:
-    pugi::xml_node w_body_;
-    pugi::xml_node w_p_;      // current paragraph
-    pugi::xml_node w_p_last_; // the last paragraph of the section
-    pugi::xml_node w_pPr_;
-    pugi::xml_node w_pPr_last_;
-    pugi::xml_node w_sectPr_;
+    struct Impl;
+    Impl* impl_ = nullptr;
 
-    void GetSectPr();
+    // constructs section from existing xml node
+    Section(Impl* impl);
+    void FindSectionProperties();
   }; // class Section
 
 
-  class Paragraph: public Box
+  class Paragraph : public Box
   {
     friend class Document;
     friend class Section;
+    friend class TableCell;
+    friend std::ostream& operator<<(std::ostream& out, const Paragraph& p);
 
   public:
     // constructs an empty paragraph
     Paragraph();
-    // constructs paragraph from existing xml node
-    Paragraph(pugi::xml_node w_body, 
-              pugi::xml_node w_p, 
-              pugi::xml_node w_pPr);
+    Paragraph(Paragraph& p);
+    ~Paragraph();
 
     // get run
     Run FirstRun();
 
     // add run
     Run AppendRun();
-    Run AppendRun(const std::string text);
-    Run AppendRun(const std::string text, 
-                  const double fontSize);
-    Run AppendRun(const std::string text, 
-                  const double fontSize, 
-                  const std::string fontAscii, 
-                  const std::string fontEastAsia = "");
+    Run AppendRun(const std::string& text);
+    Run AppendRun(const std::string& text, const double fontSize);
+    Run AppendRun(const std::string& text, const double fontSize, const std::string& fontAscii, const std::string& fontEastAsia = "");
     Run AppendPageBreak();
 
     // paragraph formatting
@@ -373,16 +361,16 @@ namespace docx
     void SetLineSpacingLines(const double at); // 1.5 lines, Double (2 lines), Multiple (3 lines)
     void SetLineSpacingAtLeast(const int at);  // At Least
     void SetLineSpacingExactly(const int at);  // Exactly
-    void SetLineSpacing(const int at, const char *lineRule);
+    void SetLineSpacing(const int at, const char* lineRule);
 
     void SetBeforeSpacingAuto();
     void SetAfterSpacingAuto();
-    void SetSpacingAuto(const char *attrNameAuto);
+    void SetSpacingAuto(const char* attrNameAuto);
     void SetBeforeSpacingLines(const double beforeSpacing);
     void SetAfterSpacingLines(const double afterSpacing);
     void SetBeforeSpacing(const int beforeSpacing);
     void SetAfterSpacing(const int afterSpacing);
-    void SetSpacing(const int twip, const char *attrNameAuto, const char *attrName);
+    void SetSpacing(const int twip, const char* attrNameAuto, const char* attrName);
 
     void SetLeftIndentChars(const double leftIndent);
     void SetRightIndentChars(const double rightIndent);
@@ -392,19 +380,18 @@ namespace docx
     void SetHangingChars(const double indent);
     void SetFirstLine(const int indent);
     void SetHanging(const int indent);
-    void SetIndent(const int indent, const char *attrName);
+    void SetIndent(const int indent, const char* attrName);
 
-    void SetTopBorder(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetBottomBorder(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetLeftBorder(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetRightBorder(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char *color = "auto");
-    void SetBorders_(const char *elemName, const BorderStyle style, const double width, const char *color);
+    void SetTopBorder(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char* color = "auto");
+    void SetBottomBorder(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char* color = "auto");
+    void SetLeftBorder(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char* color = "auto");
+    void SetRightBorder(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char* color = "auto");
+    void SetBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char* color = "auto");
+    void SetBorders_(const char* elemName, const BorderStyle style, const double width, const char* color);
 
     // helper
     void SetFontSize(const double fontSize);
-    void SetFont(const std::string fontAscii, 
-                 const std::string fontEastAsia = "");
+    void SetFont(const std::string& fontAscii, const std::string& fontEastAsia = "");
     void SetFontStyle(const Run::FontStyle fontStyle);
     void SetCharacterSpacing(const int characterSpacing);
     std::string GetText();
@@ -413,7 +400,8 @@ namespace docx
     Paragraph Next();
     Paragraph Prev();
     operator bool();
-    bool operator==(const Paragraph &p);
+    void operator=(Paragraph& right);
+    bool operator==(const Paragraph& p);
 
     // section
     Section GetSection();
@@ -422,30 +410,31 @@ namespace docx
     bool HasSectionBreak();
 
   protected:
-    pugi::xml_node w_body_;
-    pugi::xml_node w_p_;
-    pugi::xml_node w_pPr_;
+    struct Impl;
+    Impl* impl_ = nullptr;
+
+    // constructs paragraph from existing xml node
+    Paragraph(Impl* impl);
   }; // class Paragraph
 
 
-  class TextFrame: public Paragraph
+  class TextFrame : public Paragraph
   {
+    friend class Document;
+
   public:
     // constructs an empty text frame
     TextFrame();
-    // constructs text frame from existing xml node
-    TextFrame(pugi::xml_node w_body, 
-              pugi::xml_node w_p, 
-              pugi::xml_node w_pPr, 
-              pugi::xml_node w_framePr);
+    TextFrame(TextFrame& tf);
+    ~TextFrame();
 
     void SetSize(const int w, const int h);
 
     enum class Anchor { Page, Margin };
     enum class Position { Left, Center, Right, Top, Bottom };
-    void SetAnchor_(const char *attrName, const Anchor anchor);
-    void SetPosition_(const char *attrName, const Position align);
-    void SetPosition_(const char *attrName, const int twip);
+    void SetAnchor_(const char* attrName, const Anchor anchor);
+    void SetPosition_(const char* attrName, const Position align);
+    void SetPosition_(const char* attrName, const int twip);
 
     void SetPositionX(const Position align, const Anchor ralativeTo);
     void SetPositionY(const Position align, const Anchor ralativeTo);
@@ -456,20 +445,26 @@ namespace docx
     void SetTextWrapping(const Wrapping wrapping);
 
   private:
-    pugi::xml_node w_framePr_;
+    struct Impl;
+    Impl* impl_ = nullptr;
+
+    // constructs text frame from existing xml node
+    TextFrame(Impl* impl, Paragraph::Impl* p_impl);
   }; // class TextFrame
 
 
   class Document
   {
+    friend std::ostream& operator<<(std::ostream& out, const Document& doc);
+
   public:
     // constructs an empty document
-    Document(const std::string path);
+    Document(const std::string& path);
+    ~Document();
+
     // save document to file
     bool Save();
-    bool Open(const std::string path);
-
-    friend std::ostream& operator<<(std::ostream &out, const Document &doc);
+    bool Open(const std::string& path);
 
     // get paragraph
     Paragraph FirstParagraph();
@@ -477,25 +472,17 @@ namespace docx
 
     // add paragraph
     Paragraph AppendParagraph();
-    Paragraph AppendParagraph(const std::string text);
-    Paragraph AppendParagraph(const std::string text, 
-                              const double fontSize);
-    Paragraph AppendParagraph(const std::string text, 
-                              const double fontSize, 
-                              const std::string fontAscii, 
-                              const std::string fontEastAsia = "");
+    Paragraph AppendParagraph(const std::string& text);
+    Paragraph AppendParagraph(const std::string& text, const double fontSize);
+    Paragraph AppendParagraph(const std::string& text, const double fontSize, const std::string& fontAscii, const std::string& fontEastAsia = "");
     Paragraph PrependParagraph();
-    Paragraph PrependParagraph(const std::string text);
-    Paragraph PrependParagraph(const std::string text, 
-                               const double fontSize);
-    Paragraph PrependParagraph(const std::string text, 
-                               const double fontSize, 
-                               const std::string fontAscii, 
-                               const std::string fontEastAsia = "");
+    Paragraph PrependParagraph(const std::string& text);
+    Paragraph PrependParagraph(const std::string& text, const double fontSize);
+    Paragraph PrependParagraph(const std::string& text, const double fontSize, const std::string& fontAscii, const std::string& fontEastAsia = "");
 
-    Paragraph InsertParagraphBefore(Paragraph &p);
-    Paragraph InsertParagraphAfter(Paragraph &p);
-    bool RemoveParagraph(Paragraph &p);
+    Paragraph InsertParagraphBefore(const Paragraph& p);
+    Paragraph InsertParagraphAfter(const Paragraph& p);
+    bool RemoveParagraph(Paragraph& p);
 
     Paragraph AppendPageBreak();
 
@@ -508,16 +495,14 @@ namespace docx
 
     // add table
     Table AppendTable(const int rows, const int cols);
-    void RemoveTable(Table &tbl);
+    void RemoveTable(Table& tbl);
 
     // add text frame
     TextFrame AppendTextFrame(const int w, const int h);
 
   private:
-    std::string        path_;
-    pugi::xml_document doc_;
-    pugi::xml_node     w_body_;
-    pugi::xml_node     w_sectPr_;
+    struct Impl;
+    Impl* impl_ = nullptr;
   }; // class Document
 
 
