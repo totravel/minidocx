@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 3.21)
-project(myproj VERSION 0.3.2 LANGUAGES C CXX) # C needed by zip.c
+project(minidocx VERSION 0.3.2 LANGUAGES C CXX) # C needed by zip.c
 
 option(BUILD_EXAMPLES  "Build examples"               ON)
 option(WITH_STATIC_CRT "Use static C Runtime library" OFF)
@@ -26,9 +26,11 @@ set_target_properties(pugixml PROPERTIES
 )
 
 add_library(minidocx STATIC)
-target_sources(minidocx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/minidocx.cpp")
+list(APPEND sources "${CMAKE_CURRENT_SOURCE_DIR}/src/minidocx.cpp")
+list(APPEND headers "${CMAKE_CURRENT_SOURCE_DIR}/src/minidocx.hpp")
+source_group("Header Files" FILES ${headers})
+target_sources(minidocx PRIVATE ${sources} ${headers})
 target_include_directories(minidocx PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
-target_include_directories(minidocx PUBLIC "${PUGIXML_DIR}")
 target_link_libraries(minidocx PRIVATE zip pugixml)
 if(WITH_STATIC_CRT)
   set_target_properties(minidocx 
