@@ -116,8 +116,8 @@ namespace docx
 
 
   struct Cell {
-    int row, col; // cell origin
-    int rows, cols; // cell size
+    int row, col; // position
+    int rows, cols; // size
   };
   using Row = std::vector<Cell>;
   using Grid = std::vector<Row>;
@@ -161,6 +161,8 @@ namespace docx
     friend class Document;
 
   public:
+    // constructs an empty table
+    Table();
     Table(Table& t);
     ~Table();
     void operator=(Table& right);
@@ -227,10 +229,15 @@ namespace docx
     friend std::ostream& operator<<(std::ostream& out, const Run& r);
 
   public:
+    // constructs an empty run
     Run();
     Run(Run& r);
     ~Run();
+    void operator=(Run& right);
 
+    operator bool();
+    Run Next();
+    
     // text
     void AppendText(const std::string& text);
     std::string GetText();
@@ -262,11 +269,6 @@ namespace docx
     void Remove();
     bool IsPageBreak();
 
-    // traverse
-    Run Next();
-    operator bool();
-    void operator=(Run& right);
-
   private:
     struct Impl;
     Impl* impl_ = nullptr;
@@ -286,6 +288,12 @@ namespace docx
     Section();
     Section(Section& s);
     ~Section();
+    void operator=(const Section& right);
+    bool operator==(const Section& s);
+
+    operator bool();
+    Section Next();
+    Section Prev();
 
     // section
     void Split();
@@ -308,17 +316,9 @@ namespace docx
 
     void SetColumn(const int num, const int space = 425);
 
-
     // paragraph
     Paragraph FirstParagraph();
     Paragraph LastParagraph();
-
-    // traverse
-    Section Next();
-    Section Prev();
-    operator bool();
-    bool operator==(const Section& s);
-    void operator=(const Section& right);
 
   private:
     struct Impl;
@@ -342,6 +342,12 @@ namespace docx
     Paragraph();
     Paragraph(Paragraph& p);
     ~Paragraph();
+    void operator=(Paragraph& right);
+    bool operator==(const Paragraph& p);
+
+    operator bool();
+    Paragraph Next();
+    Paragraph Prev();
 
     // get run
     Run FirstRun();
@@ -395,13 +401,6 @@ namespace docx
     void SetFontStyle(const Run::FontStyle fontStyle);
     void SetCharacterSpacing(const int characterSpacing);
     std::string GetText();
-
-    // traverse paragraph
-    Paragraph Next();
-    Paragraph Prev();
-    operator bool();
-    void operator=(Paragraph& right);
-    bool operator==(const Paragraph& p);
 
     // section
     Section GetSection();

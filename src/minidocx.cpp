@@ -193,14 +193,14 @@ namespace docx
 
   struct Table::Impl
   {
-    int rows_ = 0;
-    int cols_ = 0;
-    Grid grid_; // logical grid
-
     pugi::xml_node w_body_;
     pugi::xml_node w_tbl_;
     pugi::xml_node w_tblPr_;
     pugi::xml_node w_tblGrid_;
+
+    int rows_ = 0;
+    int cols_ = 0;
+    Grid grid_; // logical grid
   };
 
   struct Run::Impl
@@ -545,10 +545,12 @@ namespace docx
 
   // class Paragraph
   Paragraph::Paragraph()
-  {}
+  {
+  }
 
   Paragraph::Paragraph(Impl* impl) : impl_(impl)
-  {}
+  {
+  }
 
   Paragraph::Paragraph(Paragraph& p)
   {
@@ -1004,10 +1006,12 @@ namespace docx
 
   // class Section
   Section::Section()
-  {}
+  {
+  }
 
   Section::Section(Impl* impl) : impl_(impl)
-  {}
+  {
+  }
 
   Section::Section(Section& s)
   {
@@ -1320,10 +1324,12 @@ namespace docx
 
   // class Run
   Run::Run()
-  {}
+  {
+  }
 
   Run::Run(Impl* impl) : impl_(impl)
-  {}
+  {
+  }
 
   Run::Run(Run& r)
   {
@@ -1538,7 +1544,12 @@ namespace docx
 
   // class Table
   Table::Table(Impl* impl) : impl_(impl)
-  {}
+  {
+  }
+
+  Table::Table()
+  {
+  }
 
   Table::Table(Table& t)
   {
@@ -1956,10 +1967,12 @@ namespace docx
 
   // class TableCell
   TableCell::TableCell()
-  {}
+  {
+  }
 
   TableCell::TableCell(Impl* impl) : impl_(impl)
-  {}
+  {
+  }
 
   TableCell::TableCell(TableCell& tc)
   {
@@ -2100,11 +2113,13 @@ namespace docx
 
   // class TextFrame
   TextFrame::TextFrame()
-  {}
+  {
+  }
 
   TextFrame::TextFrame(Impl* impl, Paragraph::Impl* p_impl)
     : Paragraph(p_impl), impl_(impl)
-  {}
+  {
+  }
 
   TextFrame::TextFrame(TextFrame& tf)
   {

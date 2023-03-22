@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 3.21)
-project(minidocx VERSION 0.3.2 LANGUAGES C CXX) # C needed by zip.c
+project(minidocx VERSION 0.4.0 LANGUAGES C CXX) # C needed by zip.c
 
 option(BUILD_EXAMPLES  "Build examples"               ON)
 option(WITH_STATIC_CRT "Use static C Runtime library" OFF)
