@@ -1,5 +1,5 @@
 ﻿/**
- * minidocx 0.4.0 - C++ library for creating Microsoft Word Document (.docx).
+ * minidocx 0.4.1 - C++ library for creating Microsoft Word Document (.docx).
  * --------------------------------------------------------
  * Copyright (C) 2022-2023, by Xie Zequn (totravel@foxmail.com)
  * Report bugs and download new versions at https://github.com/totravel/minidocx
@@ -552,7 +552,7 @@ namespace docx
   {
   }
 
-  Paragraph::Paragraph(Paragraph& p)
+  Paragraph::Paragraph(const Paragraph& p)
   {
     impl_ = new Impl;
     impl_->w_body_ = p.impl_->w_body_;
@@ -956,7 +956,7 @@ namespace docx
     return false;
   }
 
-  void Paragraph::operator=(Paragraph& right)
+  void Paragraph::operator=(const Paragraph& right)
   {
     if (this == &right) return;
     if (impl_ != nullptr) delete impl_;
@@ -1013,7 +1013,7 @@ namespace docx
   {
   }
 
-  Section::Section(Section& s)
+  Section::Section(const Section& s)
   {
     impl_ = new Impl;
     impl_->w_body_ = s.impl_->w_body_;
@@ -1331,7 +1331,7 @@ namespace docx
   {
   }
 
-  Run::Run(Run& r)
+  Run::Run(const Run& r)
   {
     impl_ = new Impl;
     impl_->w_p_ = r.impl_->w_p_;
@@ -1527,7 +1527,7 @@ namespace docx
     return impl_ != nullptr && impl_->w_r_;
   }
 
-  void Run::operator=(Run& right)
+  void Run::operator=(const Run& right)
   {
     if (this == &right) return;
     if (impl_ != nullptr) delete impl_;
@@ -1551,7 +1551,7 @@ namespace docx
   {
   }
 
-  Table::Table(Table& t)
+  Table::Table(const Table& t)
   {
     impl_ = new Impl;
     impl_->w_body_ = t.impl_->w_body_;
@@ -1571,7 +1571,7 @@ namespace docx
     }
   }
 
-  void Table::operator=(Table& right)
+  void Table::operator=(const Table& right)
   {
     if (this == &right) return;
     if (impl_ != nullptr) delete impl_;
@@ -1667,7 +1667,7 @@ namespace docx
     return TableCell(impl);
   }
 
-  bool Table::MergeCells(TableCell& tc1, TableCell& tc2)
+  bool Table::MergeCells(TableCell tc1, TableCell tc2)
   {
     if (tc1.empty() || tc2.empty()) {
       return false;
@@ -1974,7 +1974,7 @@ namespace docx
   {
   }
 
-  TableCell::TableCell(TableCell& tc)
+  TableCell::TableCell(const TableCell& tc)
   {
     impl_ = new Impl;
     impl_->c_ = tc.impl_->c_;
@@ -1991,7 +1991,7 @@ namespace docx
     }
   }
 
-  void TableCell::operator=(TableCell& right)
+  void TableCell::operator=(const TableCell& right)
   {
     if (this == &right) return;
     if (impl_ != nullptr) delete impl_;
@@ -2121,7 +2121,7 @@ namespace docx
   {
   }
 
-  TextFrame::TextFrame(TextFrame& tf)
+  TextFrame::TextFrame(const TextFrame& tf)
   {
     impl_ = new Impl;
     impl_->w_framePr_ = tf.impl_->w_framePr_;

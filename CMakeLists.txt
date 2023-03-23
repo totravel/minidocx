@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 3.21)
-project(minidocx VERSION 0.4.0 LANGUAGES C CXX) # C needed by zip.c
+project(minidocx VERSION 0.4.1 LANGUAGES C CXX) # C needed by zip.c
 
 option(BUILD_EXAMPLES  "Build examples"               ON)
 option(WITH_STATIC_CRT "Use static C Runtime library" OFF)
@@ -55,5 +55,3 @@ endif()
 
 install(TARGETS minidocx)
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/minidocx.hpp" TYPE INCLUDE)
-install(FILES "${PUGIXML_DIR}/pugixml.hpp" TYPE INCLUDE)
-install(FILES "${PUGIXML_DIR}/pugiconfig.hpp" TYPE INCLUDE)

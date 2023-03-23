@@ -1,5 +1,5 @@
 ﻿/**
- * minidocx 0.4.0 - C++ library for creating Microsoft Word Document (.docx).
+ * minidocx 0.4.1 - C++ library for creating Microsoft Word Document (.docx).
  * --------------------------------------------------------
  * Copyright (C) 2022-2023, by Xie Zequn (totravel@foxmail.com)
  * Report bugs and download new versions at https://github.com/totravel/minidocx
@@ -130,9 +130,9 @@ namespace docx
   public:
     // constructs an empty cell
     TableCell();
-    TableCell(TableCell& tc);
+    TableCell(const TableCell& tc);
     ~TableCell();
-    void operator=(TableCell& right);
+    void operator=(const TableCell& right);
 
     operator bool();
     bool empty() const;
@@ -163,15 +163,15 @@ namespace docx
   public:
     // constructs an empty table
     Table();
-    Table(Table& t);
+    Table(const Table& t);
     ~Table();
-    void operator=(Table& right);
+    void operator=(const Table& right);
 
     void Create_(const int rows, const int cols);
 
     TableCell GetCell(const int row, const int col);
     TableCell GetCell_(const int row, const int col);
-    bool MergeCells(TableCell& tc1, TableCell& tc2);
+    bool MergeCells(TableCell tc1, TableCell tc2);
     bool SplitCell();
 
     void RemoveCell_(TableCell tc);
@@ -231,9 +231,9 @@ namespace docx
   public:
     // constructs an empty run
     Run();
-    Run(Run& r);
+    Run(const Run& r);
     ~Run();
-    void operator=(Run& right);
+    void operator=(const Run& right);
 
     operator bool();
     Run Next();
@@ -286,7 +286,7 @@ namespace docx
   public:
     // constructs an empty section
     Section();
-    Section(Section& s);
+    Section(const Section& s);
     ~Section();
     void operator=(const Section& right);
     bool operator==(const Section& s);
@@ -340,9 +340,9 @@ namespace docx
   public:
     // constructs an empty paragraph
     Paragraph();
-    Paragraph(Paragraph& p);
+    Paragraph(const Paragraph& p);
     ~Paragraph();
-    void operator=(Paragraph& right);
+    void operator=(const Paragraph& right);
     bool operator==(const Paragraph& p);
 
     operator bool();
@@ -424,7 +424,7 @@ namespace docx
   public:
     // constructs an empty text frame
     TextFrame();
-    TextFrame(TextFrame& tf);
+    TextFrame(const TextFrame& tf);
     ~TextFrame();
 
     void SetSize(const int w, const int h);
