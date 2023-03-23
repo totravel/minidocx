@@ -6,24 +6,26 @@ int main()
 {
   docx::Document doc("./section.docx");
 
-  auto p1 = doc.AppendParagraph("This is the 1st paragraph.");
+  auto p1 = doc.AppendParagraph("This is the 1st paragraph of the 1st section (A3).");
   auto p2 = doc.AppendSectionBreak();
-  p2.AppendRun("This is the 2nd paragraph.");
+  p2.AppendRun("This is the 2nd paragraph of the 1st section (A3).");
 
-  auto p3 = doc.AppendParagraph("This is the 3rd paragraph.");
-  auto p4 = doc.AppendParagraph("This is the 4th paragraph.");
+  auto p3 = doc.AppendParagraph("This is the 3rd paragraph of the 2nd section.");
+  auto p4 = doc.AppendParagraph("This is the 4th paragraph of the 2nd section.");
 
-  auto p5 = doc.AppendParagraph("This is the 5th paragraph.");
-  auto p6 = doc.AppendParagraph("This is the 6th paragraph.");
+  auto p5 = doc.AppendParagraph("This is the 5th paragraph of the 3rd section (Landscape).");
+  auto p6 = doc.AppendParagraph("This is the 6th paragraph of the 3rd section (Landscape).");
   p6.InsertSectionBreak();
 
-  auto p7 = doc.AppendParagraph("This is the 7th paragraph.");
-  auto p8 = doc.AppendParagraph("This is the 8th paragraph.");
+  auto p7 = doc.AppendParagraph("This is the 7th paragraph of the 4th section.");
+  auto p8 = doc.AppendParagraph("This is the 8th paragraph of the 4th section.");
 
   auto s1 = p1.GetSection();
   auto s2 = p4.InsertSectionBreak();
   auto s3 = s2.Next();
   auto s4 = doc.LastSection();
+
+  std::cout << doc;
 
   std::cout << s1.LastParagraph().GetText() << std::endl;
   std::cout << s2.LastParagraph().GetText() << std::endl;
@@ -58,14 +60,14 @@ int main()
                    docx::CM2Twip(3.175), docx::CM2Twip(3.175));
   s4.SetPageMargin(docx::CM2Twip(1.5),   docx::CM2Twip(1.75));
 
-  std::cout << doc;
+  // std::cout << doc;
 
-  s2.Merge();
+  //s2.Merge();
   std::cout << s2.LastParagraph().GetText() << std::endl;
 
   p2.SetAlignment(docx::Paragraph::Alignment::Left);
-  p4.SetAlignment(docx::Paragraph::Alignment::Left);
-  p6.SetAlignment(docx::Paragraph::Alignment::Left);
+  p4.SetAlignment(docx::Paragraph::Alignment::Centered);
+  p6.SetAlignment(docx::Paragraph::Alignment::Right);
 
   doc.Save();
   return 0;

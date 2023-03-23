@@ -70,7 +70,8 @@ int main()
 
   t2.MergeCells(t2.GetCell(0, 0), t2.GetCell(0, 1));
 
+  // std::cout << doc;
+
   doc.Save();
-  std::cout << doc;
   return 0;
 }

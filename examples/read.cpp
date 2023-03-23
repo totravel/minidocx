@@ -7,6 +7,8 @@ int main()
 {
   Document doc("");
   doc.Open("test.docx");
-  std::cout << doc;
+
+  // std::cout << doc;
+  
   return 0;
 }
