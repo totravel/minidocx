@@ -25,7 +25,7 @@ int main()
   auto s3 = s2.Next();
   auto s4 = doc.LastSection();
 
-  std::cout << doc;
+  // std::cout << doc;
 
   std::cout << s1.LastParagraph().GetText() << std::endl;
   std::cout << s2.LastParagraph().GetText() << std::endl;

@@ -15,7 +15,7 @@ minidocx 是一个跨平台且易于使用的 C++ 库，用于从零开始创建
 要构建 minidocx，你需要一个支持 C++ 11 的编译器和下列两个第三方库：
 
 - [zip](https://github.com/kuba--/zip) <= 0.2.1
-- [pugixml](https://github.com/zeux/pugixml) >= 1.12.1
+- [pugixml](https://github.com/zeux/pugixml) >= 1.13
 
 已测试的开发环境：
 
