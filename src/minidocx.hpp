@@ -280,6 +280,7 @@ namespace docx
 
   class Section
   {
+    friend class Document;
     friend class Paragraph;
     friend std::ostream& operator<<(std::ostream& out, const Section& s);
 

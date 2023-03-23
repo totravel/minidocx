@@ -185,8 +185,8 @@ namespace docx
   {
     pugi::xml_node w_body_;
     pugi::xml_node w_p_;      // current paragraph
-    pugi::xml_node w_p_last_; // the last paragraph of the section
     pugi::xml_node w_pPr_;
+    pugi::xml_node w_p_last_; // the last paragraph of this section
     pugi::xml_node w_pPr_last_;
     pugi::xml_node w_sectPr_;
   };
@@ -369,12 +369,26 @@ namespace docx
 
   Section Document::FirstSection()
   {
-    return FirstParagraph().GetSection();
+    Paragraph firstParagraph = FirstParagraph();
+    if (firstParagraph) return firstParagraph.GetSection();
+    
+    Section::Impl* impl = new Section::Impl;
+    impl->w_body_ = impl_->w_body_;
+    Section section(impl);
+    section.FindSectionProperties();
+    return section;
   }
 
   Section Document::LastSection()
   {
-    return LastParagraph().GetSection();
+    Paragraph lastParagraph = LastParagraph();
+    if (lastParagraph) return lastParagraph.GetSection();
+    
+    Section::Impl* impl = new Section::Impl;
+    impl->w_body_ = impl_->w_body_;
+    Section section(impl);
+    section.FindSectionProperties();
+    return section;
   }
 
   Paragraph Document::AppendParagraph()
@@ -1040,15 +1054,16 @@ namespace docx
       w_pPr = w_p.child("w:pPr");
       w_sectPr = w_pPr.child("w:sectPr");
 
-      w_p_next = w_p.next_sibling();
+      w_p_next = w_p.next_sibling("w:p");
     } while (w_sectPr.empty() && !w_p_next.empty());
 
     impl_->w_p_last_ = w_p;
     impl_->w_pPr_last_ = w_pPr;
     impl_->w_sectPr_ = w_sectPr;
 
-    if (impl_->w_sectPr_.empty())
+    if (impl_->w_sectPr_.empty()) {
       impl_->w_sectPr_ = impl_->w_body_.child("w:sectPr");
+    }
   }
 
   void Section::Split()
@@ -1243,10 +1258,7 @@ namespace docx
     impl->w_body_ = impl_->w_body_;
     impl->w_p_ = impl_->w_p_last_;
     impl->w_pPr_ = impl_->w_pPr_last_;
-    //return Paragraph(impl);
-    Paragraph p(impl);
-    std::cout << "---> " << p;
-    return p;
+    return Paragraph(impl);
   }
 
   Section Section::Next()
@@ -1285,10 +1297,7 @@ namespace docx
     impl->w_p_ = impl->w_p_last_ = w_p;
     impl->w_pPr_ = impl->w_pPr_last_ = w_pPr;
     impl->w_sectPr_ = w_sectPr;
-    //return Section(impl);
-    Section s(impl);
-    std::cout << "--->" << s;
-    return s;
+    return Section(impl);
   }
 
   Section::operator bool()
