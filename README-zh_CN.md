@@ -17,11 +17,11 @@ minidocx 是一个跨平台且易于使用的 C++ 库，用于从零开始创建
 - [zip](https://github.com/kuba--/zip) <= 0.2.1
 - [pugixml](https://github.com/zeux/pugixml) >= 1.13
 
-已测试的开发环境：
+已在下列平台测试通过：
 
 - CMake 3.21
-- Visual Studio 16 2019
-- GCC 8.2.0
+- Visual Studio 14 2015 / Visual Studio 16 2019 / GCC 8.2+
+- Windows 7/10 / Ubuntu 18.04 / Kylin-Desktop V10-SP1
 
 ## 参考文献
 

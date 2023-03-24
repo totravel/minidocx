@@ -17,11 +17,11 @@ To build minidocx you'll need a C++11 compiler and the following libraries:
 - [zip](https://github.com/kuba--/zip) <= 0.2.1
 - [pugixml](https://github.com/zeux/pugixml) >= 1.13
 
-It is tested with the following IDE/toolchains versions:
+It is tested for the following platform:
 
 - CMake 3.21
-- Visual Studio 16 2019
-- GCC 8.2.0
+- Visual Studio 16 2019 / Visual Studio 14 2015 / GCC 8.2+
+- Windows 7/10 / Ubuntu 18.04 / Kylin-Desktop V10-SP1
 
 ## References
 
