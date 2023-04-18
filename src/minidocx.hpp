@@ -1,5 +1,5 @@
 ﻿/**
- * minidocx 0.4.2 - C++ library for creating Microsoft Word Document (.docx).
+ * minidocx 0.5.0 - C++ library for creating Microsoft Word Document (.docx).
  * --------------------------------------------------------
  * Copyright (C) 2022-2023, by Xie Zequn (totravel@foxmail.com)
  * Report bugs and download new versions at https://github.com/totravel/minidocx
@@ -248,10 +248,10 @@ namespace docx
     using FontStyle = unsigned int;
     enum : FontStyle
     {
-      Bold = 1 << 0,
-      Italic = 1 << 1,
-      Underline = 1 << 2,
-      Strikethrough = 1 << 3
+      Bold = 1,
+      Italic = 2,
+      Underline = 4,
+      Strikethrough = 8
     };
     void SetFontSize(const double fontSize);
     double GetFontSize();
@@ -302,7 +302,7 @@ namespace docx
     void Merge();
 
     // page formatting
-    enum class Orientation { Landscape, Portrait };
+    enum class Orientation { Landscape, Portrait, Unknown };
     void SetPageSize(const int w, const int h);
     void GetPageSize(int& w, int& h);
 
@@ -316,6 +316,28 @@ namespace docx
     void GetPageMargin(int& header, int& footer);
 
     void SetColumn(const int num, const int space = 425);
+    
+    enum class PageNumberFormat {
+      Decimal,      // e.g., 1, 2, 3, 4, etc.
+      NumberInDash, // e.g., -1-, -2-, -3-, -4-, etc.
+      CardinalText, // In English, One, Two, Three, etc.
+      OrdinalText,  // In English, First, Second, Third, etc.
+      LowerLetter,  // e.g., a, b, c, etc.
+      UpperLetter,  // e.g., A, B, C, etc.
+      LowerRoman,   // e.g., i, ii, iii, iv, etc.
+      UpperRoman    // e.g., I, II, III, IV, etc.
+    };
+
+    /**
+     * Specifies the page numbers for pages in the section.
+     * 
+     * @param fmt   Specifies the number format to be used for page numbers in the section.
+     * 
+     * @param start Specifies the page number that appears on the first page of the section.
+     *              If the value is omitted, numbering continues from the highest page number in the previous section.
+     */
+    void SetPageNumber(const PageNumberFormat fmt = PageNumberFormat::Decimal, const unsigned int start = 0);
+    void RemovePageNumber();
 
     // paragraph
     Paragraph FirstParagraph();

@@ -27,6 +27,7 @@ if [ "$OSTYPE" == "msys" ]; then
   $build_dir/$build_type/table
   $build_dir/$build_type/table_advanced
   $build_dir/$build_type/text_frame
+  $build_dir/$build_type/page_num
 else
   $build_dir/basic
   $build_dir/traverse
@@ -38,4 +39,5 @@ else
   $build_dir/table
   $build_dir/table_advanced
   $build_dir/text_frame
+  $build_dir/page_num
 fi

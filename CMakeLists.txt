@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 3.21)
-project(minidocx VERSION 0.4.2 LANGUAGES C CXX) # C needed by zip.c
+project(minidocx VERSION 0.5.0 LANGUAGES C CXX) # C needed by zip.c
 
 option(BUILD_EXAMPLES  "Build examples"               ON)
 option(WITH_STATIC_CRT "Use static C Runtime library" OFF)
@@ -48,6 +48,7 @@ if(BUILD_EXAMPLES)
   add_executable(table          examples/table.cpp)
   add_executable(table_advanced examples/table_advanced.cpp)
   add_executable(text_frame     examples/text_frame.cpp)
+  add_executable(page_num       examples/page_num.cpp)
 endif()
 
 install(TARGETS minidocx)
