@@ -227,7 +227,7 @@ namespace docx
       out << writer.result;
     }
     else {
-      out << "<empty document>";
+      out << "<document />";
     }
     return out;
   }
@@ -240,7 +240,7 @@ namespace docx
       out << writer.result;
     }
     else {
-      out << "<empty paragraph>";
+      out << "<paragraph />";
     }
     return out;
   }
@@ -253,7 +253,7 @@ namespace docx
       out << writer.result;
     }
     else {
-      out << "<empty run>";
+      out << "<run />";
     }
     return out;
   }
@@ -266,7 +266,7 @@ namespace docx
       out << writer.result;
     }
     else {
-      out << "<empty section>";
+      out << "<section />";
     }
     return out;
   }
@@ -292,6 +292,8 @@ namespace docx
 
   bool Document::Save()
   {
+    if (!impl_) return false;
+
     xml_string_writer writer;
     impl_->doc_.save(writer, "", pugi::format_raw);
     const char* buf = writer.result.c_str();
@@ -319,6 +321,8 @@ namespace docx
 
   bool Document::Open(const std::string& path)
   {
+    if (!impl_) return false;
+
     struct zip_t* zip = zip_open(path.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'r');
     if (zip == nullptr) {
       return false;
@@ -371,7 +375,7 @@ namespace docx
   {
     Paragraph firstParagraph = FirstParagraph();
     if (firstParagraph) return firstParagraph.GetSection();
-    
+
     Section::Impl* impl = new Section::Impl;
     impl->w_body_ = impl_->w_body_;
     Section section(impl);
@@ -383,7 +387,7 @@ namespace docx
   {
     Paragraph lastParagraph = LastParagraph();
     if (lastParagraph) return lastParagraph.GetSection();
-    
+
     Section::Impl* impl = new Section::Impl;
     impl->w_body_ = impl_->w_body_;
     Section section(impl);
@@ -393,6 +397,8 @@ namespace docx
 
   Paragraph Document::AppendParagraph()
   {
+    if (!impl_) return Paragraph();
+
     auto w_p = impl_->w_body_.insert_child_before("w:p", impl_->w_sectPr_);
     auto w_pPr = w_p.append_child("w:pPr");
 
@@ -430,6 +436,8 @@ namespace docx
 
   Paragraph Document::PrependParagraph()
   {
+    if (!impl_) return Paragraph();
+
     auto w_p = impl_->w_body_.prepend_child("w:p");
     auto w_pPr = w_p.append_child("w:pPr");
 
@@ -467,6 +475,8 @@ namespace docx
 
   Paragraph Document::InsertParagraphBefore(const Paragraph& p)
   {
+    if (!impl_) return Paragraph();
+
     auto w_p = impl_->w_body_.insert_child_before("w:p", p.impl_->w_p_);
     auto w_pPr = w_p.append_child("w:pPr");
 
@@ -479,6 +489,8 @@ namespace docx
 
   Paragraph Document::InsertParagraphAfter(const Paragraph& p)
   {
+    if (!impl_) return Paragraph();
+
     auto w_p = impl_->w_body_.insert_child_after("w:p", p.impl_->w_p_);
     auto w_pPr = w_p.append_child("w:pPr");
 
@@ -491,6 +503,7 @@ namespace docx
 
   bool Document::RemoveParagraph(Paragraph& p)
   {
+    if (!impl_) return false;
     return impl_->w_body_.remove_child(p.impl_->w_p_);
   }
 
@@ -510,6 +523,8 @@ namespace docx
 
   Table Document::AppendTable(const int rows, const int cols)
   {
+    if (!impl_) return Table();
+
     auto w_tbl = impl_->w_body_.insert_child_before("w:tbl", impl_->w_sectPr_);
     auto w_tblPr = w_tbl.append_child("w:tblPr");
     auto w_tblGrid = w_tbl.append_child("w:tblGrid");
@@ -532,24 +547,27 @@ namespace docx
 
   void Document::RemoveTable(Table& tbl)
   {
+    if (!impl_) return;
     impl_->w_body_.remove_child(tbl.impl_->w_tbl_);
   }
 
   TextFrame Document::AppendTextFrame(const int w, const int h)
   {
+    if (!impl_) return TextFrame();
+
     auto w_p = impl_->w_body_.insert_child_before("w:p", impl_->w_sectPr_);
     auto w_pPr = w_p.append_child("w:pPr");
     auto w_framePr = w_pPr.append_child("w:framePr");
 
 
-    Paragraph::Impl* p_impl = new Paragraph::Impl;
-    p_impl->w_body_ = impl_->w_body_;
-    p_impl->w_p_ = w_p;
-    p_impl->w_pPr_ = w_pPr;
+    Paragraph::Impl* paragraph_impl = new Paragraph::Impl;
+    paragraph_impl->w_body_ = impl_->w_body_;
+    paragraph_impl->w_p_ = w_p;
+    paragraph_impl->w_pPr_ = w_pPr;
 
     TextFrame::Impl* impl = new TextFrame::Impl;
     impl->w_framePr_ = w_framePr;
-    auto textFrame = TextFrame(impl, p_impl);
+    auto textFrame = TextFrame(impl, paragraph_impl);
 
     textFrame.SetSize(w, h);
     textFrame.SetBorders();
@@ -560,10 +578,12 @@ namespace docx
   // class Paragraph
   Paragraph::Paragraph()
   {
+
   }
 
   Paragraph::Paragraph(Impl* impl) : impl_(impl)
   {
+
   }
 
   Paragraph::Paragraph(const Paragraph& p)
@@ -597,6 +617,7 @@ namespace docx
 
   Run Paragraph::AppendRun()
   {
+    if (!impl_) return Run();
     auto w_r = impl_->w_p_.append_child("w:r");
     auto w_rPr = w_r.append_child("w:rPr");
 
@@ -636,6 +657,7 @@ namespace docx
 
   Run Paragraph::AppendPageBreak()
   {
+    if (!impl_) return Run();
     auto w_r = impl_->w_p_.append_child("w:r");
     auto w_br = w_r.append_child("w:br");
     w_br.append_attribute("w:type") = "page";
@@ -649,6 +671,8 @@ namespace docx
 
   void Paragraph::SetAlignment(const Alignment alignment)
   {
+    if (!impl_) return;
+
     const char* val;
     switch (alignment) {
     case Alignment::Left:
@@ -681,6 +705,7 @@ namespace docx
 
   void Paragraph::SetLineSpacingSingle()
   {
+    if (!impl_) return;
     auto spacing = impl_->w_pPr_.child("w:spacing");
     if (!spacing) return;
     auto spacingLineRule = spacing.attribute("w:lineRule");
@@ -717,6 +742,7 @@ namespace docx
 
   void Paragraph::SetLineSpacing(const int at, const char* lineRule)
   {
+    if (!impl_) return;
     auto spacing = impl_->w_pPr_.child("w:spacing");
     if (!spacing) {
       spacing = impl_->w_pPr_.append_child("w:spacing");
@@ -748,6 +774,7 @@ namespace docx
 
   void Paragraph::SetSpacingAuto(const char* attrNameAuto)
   {
+    if (!impl_) return;
     auto spacing = impl_->w_pPr_.child("w:spacing");
     if (!spacing) {
       spacing = impl_->w_pPr_.append_child("w:spacing");
@@ -784,6 +811,7 @@ namespace docx
 
   void Paragraph::SetSpacing(const int twip, const char* attrNameAuto, const char* attrName)
   {
+    if (!impl_) return;
     auto elemSpacing = impl_->w_pPr_.child("w:spacing");
     if (!elemSpacing) {
       elemSpacing = impl_->w_pPr_.append_child("w:spacing");
@@ -846,6 +874,7 @@ namespace docx
 
   void Paragraph::SetIndent(const int indent, const char* attrName)
   {
+    if (!impl_) return;
     auto elemIndent = impl_->w_pPr_.child("w:ind");
     if (!elemIndent) {
       elemIndent = impl_->w_pPr_.append_child("w:ind");
@@ -888,6 +917,7 @@ namespace docx
 
   void Paragraph::SetBorders_(const char* elemName, const BorderStyle style, const double width, const char* color)
   {
+    if (!impl_) return;
     auto w_pBdr = impl_->w_pPr_.child("w:pBdr");
     if (!w_pBdr) {
       w_pBdr = impl_->w_pPr_.append_child("w:pBdr");
@@ -1021,10 +1051,12 @@ namespace docx
   // class Section
   Section::Section()
   {
+
   }
 
   Section::Section(Impl* impl) : impl_(impl)
   {
+
   }
 
   Section::Section(const Section& s)
@@ -1048,6 +1080,7 @@ namespace docx
 
   void Section::FindSectionProperties()
   {
+    if (!impl_) return;
     pugi::xml_node w_p_next = impl_->w_p_, w_p, w_pPr, w_sectPr;
     do {
       w_p = w_p_next;
@@ -1068,6 +1101,7 @@ namespace docx
 
   void Section::Split()
   {
+    if (!impl_) return;
     if (IsSplit()) return;
     impl_->w_p_last_ = impl_->w_p_;
     impl_->w_pPr_last_ = impl_->w_pPr_;
@@ -1076,11 +1110,13 @@ namespace docx
 
   bool Section::IsSplit()
   {
+    if (!impl_) return false;
     return impl_->w_pPr_.child("w:sectPr");
   }
 
   void Section::Merge()
   {
+    if (!impl_) return;
     if (impl_->w_pPr_.child("w:sectPr").empty()) return;
     impl_->w_pPr_last_.remove_child(impl_->w_sectPr_);
     FindSectionProperties();
@@ -1088,6 +1124,7 @@ namespace docx
 
   void Section::SetPageSize(const int w, const int h)
   {
+    if (!impl_) return;
     auto pgSz = impl_->w_sectPr_.child("w:pgSz");
     if (!pgSz) {
       pgSz = impl_->w_sectPr_.append_child("w:pgSz");
@@ -1106,6 +1143,7 @@ namespace docx
 
   void Section::GetPageSize(int& w, int& h)
   {
+    if (!impl_) return;
     w = h = 0;
     auto pgSz = impl_->w_sectPr_.child("w:pgSz");
     if (!pgSz) return;
@@ -1119,6 +1157,7 @@ namespace docx
 
   void Section::SetPageOrient(const Orientation orient)
   {
+    if (!impl_) return;
     auto pgSz = impl_->w_sectPr_.child("w:pgSz");
     if (!pgSz) {
       pgSz = impl_->w_sectPr_.append_child("w:pgSz");
@@ -1155,6 +1194,7 @@ namespace docx
 
   Section::Orientation Section::GetPageOrient()
   {
+    if (!impl_) return Orientation::Portrait;
     Orientation orient = Orientation::Portrait;
     auto pgSz = impl_->w_sectPr_.child("w:pgSz");
     if (!pgSz) return orient;
@@ -1169,6 +1209,7 @@ namespace docx
   void Section::SetPageMargin(const int top, const int bottom,
     const int left, const int right)
   {
+    if (!impl_) return;
     auto pgMar = impl_->w_sectPr_.child("w:pgMar");
     if (!pgMar) {
       pgMar = impl_->w_sectPr_.append_child("w:pgMar");
@@ -1198,6 +1239,7 @@ namespace docx
   void Section::GetPageMargin(int& top, int& bottom,
     int& left, int& right)
   {
+    if (!impl_) return;
     top = bottom = left = right = 0;
     auto pgMar = impl_->w_sectPr_.child("w:pgMar");
     if (!pgMar) return;
@@ -1217,6 +1259,7 @@ namespace docx
 
   void Section::SetPageMargin(const int header, const int footer)
   {
+    if (!impl_) return;
     auto pgMar = impl_->w_sectPr_.child("w:pgMar");
     if (!pgMar) {
       pgMar = impl_->w_sectPr_.append_child("w:pgMar");
@@ -1235,6 +1278,7 @@ namespace docx
 
   void Section::GetPageMargin(int& header, int& footer)
   {
+    if (!impl_) return;
     header = footer = 0;
     auto pgMar = impl_->w_sectPr_.child("w:pgMar");
     if (!pgMar) return;
@@ -1334,10 +1378,12 @@ namespace docx
   // class Run
   Run::Run()
   {
+
   }
 
   Run::Run(Impl* impl) : impl_(impl)
   {
+
   }
 
   Run::Run(const Run& r)
@@ -1358,6 +1404,7 @@ namespace docx
 
   void Run::AppendText(const std::string& text)
   {
+    if (!impl_) return;
     auto t = impl_->w_r_.append_child("w:t");
     if (std::isspace(static_cast<unsigned char>(text.front()))) {
       t.append_attribute("xml:space") = "preserve";
@@ -1367,6 +1414,7 @@ namespace docx
 
   std::string Run::GetText()
   {
+    if (!impl_) return "";
     std::string text;
     for (auto t = impl_->w_r_.child("w:t"); t; t = t.next_sibling("w:t")) {
       text += t.text().get();
@@ -1376,16 +1424,19 @@ namespace docx
 
   void Run::ClearText()
   {
+    if (!impl_) return;
     impl_->w_r_.remove_children();
   }
 
   void Run::AppendLineBreak()
   {
+    if (!impl_) return;
     impl_->w_r_.append_child("w:br");
   }
 
   void Run::SetFontSize(const double fontSize)
   {
+    if (!impl_) return;
     auto sz = impl_->w_rPr_.child("w:sz");
     if (!sz) {
       sz = impl_->w_rPr_.append_child("w:sz");
@@ -1400,6 +1451,7 @@ namespace docx
 
   double Run::GetFontSize()
   {
+    if (!impl_) return -1;
     auto sz = impl_->w_rPr_.child("w:sz");
     if (!sz) return 0;
     auto szVal = sz.attribute("w:val");
@@ -1411,6 +1463,7 @@ namespace docx
     const std::string& fontAscii,
     const std::string& fontEastAsia)
   {
+    if (!impl_) return;
     auto rFonts = impl_->w_rPr_.child("w:rFonts");
     if (!rFonts) {
       rFonts = impl_->w_rPr_.append_child("w:rFonts");
@@ -1433,6 +1486,7 @@ namespace docx
     std::string& fontAscii,
     std::string& fontEastAsia)
   {
+    if (!impl_) return;
     auto rFonts = impl_->w_rPr_.child("w:rFonts");
     if (!rFonts) return;
 
@@ -1445,6 +1499,7 @@ namespace docx
 
   void Run::SetFontStyle(const FontStyle f)
   {
+    if (!impl_) return;
     auto b = impl_->w_rPr_.child("w:b");
     if (f & Bold) {
       if (b.empty()) impl_->w_rPr_.append_child("w:b");
@@ -1482,6 +1537,7 @@ namespace docx
 
   Run::FontStyle Run::GetFontStyle()
   {
+    if (!impl_) return 0;
     FontStyle fontStyle = 0;
     if (impl_->w_rPr_.child("w:b")) fontStyle |= Bold;
     if (impl_->w_rPr_.child("w:i")) fontStyle |= Italic;
@@ -1492,6 +1548,7 @@ namespace docx
 
   void Run::SetCharacterSpacing(const int characterSpacing)
   {
+    if (!impl_) return;
     auto spacing = impl_->w_rPr_.child("w:spacing");
     if (!spacing) {
       spacing = impl_->w_rPr_.append_child("w:spacing");
@@ -1505,16 +1562,19 @@ namespace docx
 
   int Run::GetCharacterSpacing()
   {
+    if (!impl_) return -1;
     return impl_->w_rPr_.child("w:spacing").attribute("w:val").as_int();
   }
 
   bool Run::IsPageBreak()
   {
+    if (!impl_) return false;
     return impl_->w_r_.find_child_by_attribute("w:br", "w:type", "page");
   }
 
   void Run::Remove()
   {
+    if (!impl_) return;
     impl_->w_p_.remove_child(impl_->w_r_);
   }
 
@@ -1554,10 +1614,12 @@ namespace docx
   // class Table
   Table::Table(Impl* impl) : impl_(impl)
   {
+
   }
 
   Table::Table()
   {
+
   }
 
   Table::Table(const Table& t)
@@ -1601,6 +1663,7 @@ namespace docx
 
   void Table::Create_(const int rows, const int cols)
   {
+    if (!impl_) return;
     impl_->rows_ = rows;
     impl_->cols_ = cols;
 
@@ -1638,6 +1701,7 @@ namespace docx
 
   TableCell Table::GetCell(const int row, const int col)
   {
+    if (!impl_) return TableCell();
     if (row < 0 || row >= impl_->rows_ || col < 0 || col >= impl_->cols_) {
       return TableCell();
     }
@@ -1648,6 +1712,7 @@ namespace docx
 
   TableCell Table::GetCell_(const int row, const int col)
   {
+    if (!impl_) return TableCell();
     int i = 0;
     auto w_tr = impl_->w_tbl_.child("w:tr");
     while (i < row && !w_tr.empty()) {
@@ -1809,6 +1874,7 @@ namespace docx
 
   void Table::RemoveCell_(TableCell tc)
   {
+    if (!impl_) return;
     tc.impl_->w_tr_.remove_child(tc.impl_->w_tc_);
   }
 
@@ -1824,6 +1890,7 @@ namespace docx
 
   void Table::SetWidth(const int w, const char* units)
   {
+    if (!impl_) return;
     auto w_tblW = impl_->w_tblPr_.child("w:tblW");
     if (!w_tblW) {
       w_tblW = impl_->w_tblPr_.append_child("w:tblW");
@@ -1865,6 +1932,7 @@ namespace docx
 
   void Table::SetCellMargin(const char* elemName, const int w, const char* units)
   {
+    if (!impl_) return;
     auto w_tblCellMar = impl_->w_tblPr_.child("w:tblCellMar");
     if (!w_tblCellMar) {
       w_tblCellMar = impl_->w_tblPr_.append_child("w:tblCellMar");
@@ -1891,6 +1959,7 @@ namespace docx
 
   void Table::SetAlignment(const Alignment alignment)
   {
+    if (!impl_) return;
     const char* val;
     switch (alignment) {
     case Alignment::Left:
@@ -1967,6 +2036,7 @@ namespace docx
 
   void Table::SetBorders_(const char* elemName, const BorderStyle style, const double width, const char* color)
   {
+    if (!impl_) return;
     auto w_tblBorders = impl_->w_tblPr_.child("w:tblBorders");
     if (!w_tblBorders) {
       w_tblBorders = impl_->w_tblPr_.append_child("w:tblBorders");
@@ -1977,10 +2047,12 @@ namespace docx
   // class TableCell
   TableCell::TableCell()
   {
+
   }
 
   TableCell::TableCell(Impl* impl) : impl_(impl)
   {
+
   }
 
   TableCell::TableCell(const TableCell& tc)
@@ -2028,6 +2100,7 @@ namespace docx
 
   void TableCell::SetWidth(const int w, const char* units)
   {
+    if (!impl_) return;
     auto w_tcW = impl_->w_tcPr_.child("w:tcW");
     if (!w_tcW) {
       w_tcW = impl_->w_tcPr_.append_child("w:tcW");
@@ -2049,6 +2122,7 @@ namespace docx
 
   void TableCell::SetVerticalAlignment(const Alignment align)
   {
+    if (!impl_) return;
     auto w_vAlign = impl_->w_tcPr_.child("w:vAlign");
     if (!w_vAlign) {
       w_vAlign = impl_->w_tcPr_.append_child("w:vAlign");
@@ -2076,6 +2150,7 @@ namespace docx
 
   void TableCell::SetCellSpanning_(const int cols)
   {
+    if (!impl_) return;
     auto w_gridSpan = impl_->w_tcPr_.child("w:gridSpan");
     if (cols == 1) {
       if (w_gridSpan) {
@@ -2097,6 +2172,7 @@ namespace docx
 
   Paragraph TableCell::AppendParagraph()
   {
+    if (!impl_) return Paragraph();
     auto w_p = impl_->w_tc_.append_child("w:p");
     auto w_pPr = w_p.append_child("w:pPr");
 
@@ -2123,14 +2199,17 @@ namespace docx
   // class TextFrame
   TextFrame::TextFrame()
   {
+
   }
 
-  TextFrame::TextFrame(Impl* impl, Paragraph::Impl* p_impl)
-    : Paragraph(p_impl), impl_(impl)
+  TextFrame::TextFrame(Impl* impl, Paragraph::Impl* paragraph_impl)
+    : Paragraph(paragraph_impl), impl_(impl)
   {
+
   }
 
   TextFrame::TextFrame(const TextFrame& tf)
+    : Paragraph(tf)
   {
     impl_ = new Impl;
     impl_->w_framePr_ = tf.impl_->w_framePr_;
@@ -2146,6 +2225,7 @@ namespace docx
 
   void TextFrame::SetSize(const int w, const int h)
   {
+    if (!impl_) return;
     auto w_w = impl_->w_framePr_.attribute("w:w");
     if (!w_w) {
       w_w = impl_->w_framePr_.append_attribute("w:w");
@@ -2185,6 +2265,7 @@ namespace docx
 
   void TextFrame::SetAnchor_(const char* attrName, const Anchor anchor)
   {
+    if (!impl_) return;
     auto w_anchor = impl_->w_framePr_.attribute(attrName);
     if (!w_anchor) {
       w_anchor = impl_->w_framePr_.append_attribute(attrName);
@@ -2204,6 +2285,7 @@ namespace docx
 
   void TextFrame::SetPosition_(const char* attrName, const Position align)
   {
+    if (!impl_) return;
     auto w_align = impl_->w_framePr_.attribute(attrName);
     if (!w_align) {
       w_align = impl_->w_framePr_.append_attribute(attrName);
@@ -2232,6 +2314,7 @@ namespace docx
 
   void TextFrame::SetPosition_(const char* attrName, const int twip)
   {
+    if (!impl_) return;
     auto w_Align = impl_->w_framePr_.attribute(attrName);
     if (!w_Align) {
       w_Align = impl_->w_framePr_.append_attribute(attrName);
@@ -2241,6 +2324,7 @@ namespace docx
 
   void TextFrame::SetTextWrapping(const Wrapping wrapping)
   {
+    if (!impl_) return;
     auto w_wrap = impl_->w_framePr_.attribute("w:wrap");
     if (!w_wrap) {
       w_wrap = impl_->w_framePr_.append_attribute("w:wrap");

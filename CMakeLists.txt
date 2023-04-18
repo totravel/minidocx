@@ -9,8 +9,7 @@ set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" CACHE PATH "3rdparty"
 set(ZIP_DIR         "${THIRD_PARTY_DIR}/zip-0.2.1"         CACHE PATH "zip")
 set(PUGIXML_DIR     "${THIRD_PARTY_DIR}/pugixml-1.13"      CACHE PATH "pugixml")
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CONFIGURATION_TYPES Debug Release)
 set(CMAKE_DEBUG_POSTFIX d)
 
 add_library(zip INTERFACE)
@@ -33,9 +32,7 @@ target_sources(minidocx PRIVATE ${sources} ${headers})
 target_include_directories(minidocx PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_link_libraries(minidocx PRIVATE zip pugixml)
 if(WITH_STATIC_CRT)
-  set_target_properties(minidocx 
-    PROPERTIES 
-      MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  set_target_properties(minidocx PROPERTIES MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
 if(BUILD_EXAMPLES)

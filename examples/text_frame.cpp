@@ -1,5 +1,6 @@
 ﻿
 #include "minidocx.hpp"
+#include <iostream>
 
 using namespace docx;
 
