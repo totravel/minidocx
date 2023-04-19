@@ -313,6 +313,16 @@ s1.SetPageSize(MM2Twip(297), MM2Twip(420)); // A3
 s1.SetPageOrient(Section::Orientation::Landscape);
 ```
 
+#### Page Number
+
+The page numbers for pages in the section can be added and removed by using `SetPageNumber()` and `RemovePageNumber()`:
+
+```cpp
+s1.SetPageNumber(docx::Section::PageNumberFormat::Decimal);         // 1, 2, 3, ...
+s1.SetPageNumber(docx::Section::PageNumberFormat::NumberInDash, 3); // -3-, -4-, -5-, ...
+s1.RemovePageNumber();
+```
+
 ### Table
 
 You can insert a table by using `Document::AppendTable()`.

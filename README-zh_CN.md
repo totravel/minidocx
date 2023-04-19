@@ -313,6 +313,16 @@ s1.SetPageSize(MM2Twip(297), MM2Twip(420));        // 纸张大小为 A3
 s1.SetPageOrient(Section::Orientation::Landscape); // 纸张方向为横向
 ```
 
+#### 页码
+
+底部居中的页码可以用 `SetPageNumber()` 方法添加，用 `RemovePageNumber()` 方法移除：
+
+```cpp
+s1.SetPageNumber(docx::Section::PageNumberFormat::Decimal);         // 1, 2, 3, ...
+s1.SetPageNumber(docx::Section::PageNumberFormat::NumberInDash, 3); // -3-, -4-, -5-, ...
+s1.RemovePageNumber();
+```
+
 ### 表格
 
 要插入表格，可以用 `Document` 类的 `AppendTable()` 方法。比如，插入一个 2 行 3 列的表格：
