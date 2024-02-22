@@ -4891,10 +4891,14 @@ static int mz_mkdir(const char *pDirname) {
 #define MZ_DELETE_FILE remove
 #define MZ_MKDIR(d) mz_mkdir(d)
 
-#elif defined(__MINGW32__) || defined(__MINGW64__)
+#elif defined(__MINGW32__) || defined(__MINGW64__) || defined(__BORLANDC__)
 #include <windows.h>
 #ifndef MINIZ_NO_TIME
+#if defined(__BORLANDC__)
+#include <utime.h>
+#else
 #include <sys/utime.h>
+#endif
 #endif
 
 #define MZ_FOPEN(f, m) fopen(f, m)
