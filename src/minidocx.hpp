@@ -119,8 +119,8 @@ namespace docx
     int row, col; // position
     int rows, cols; // size
   };
-  using Row = std::vector<Cell>;
-  using Grid = std::vector<Row>;
+  typedef std::vector<Cell> Row;
+  typedef std::vector<Row> Grid;
 
 
   class TableCell
@@ -245,7 +245,7 @@ namespace docx
     void AppendLineBreak();
 
     // text formatting
-    using FontStyle = unsigned int;
+    typedef unsigned int FontStyle;
     enum : FontStyle
     {
       Bold = 1,

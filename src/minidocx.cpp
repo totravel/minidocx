@@ -200,9 +200,10 @@ namespace docx
     pugi::xml_node w_tblPr_;
     pugi::xml_node w_tblGrid_;
 
-    int rows_ = 0;
-    int cols_ = 0;
+    int rows_;
+    int cols_;
     Grid grid_; // logical grid
+    Impl() : rows_(0), cols_(0) {}
   };
 
   struct Run::Impl
