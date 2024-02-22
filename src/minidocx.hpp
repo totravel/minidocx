@@ -149,7 +149,7 @@ namespace docx
 
   private:
     struct Impl;
-    Impl* impl_ = nullptr;
+    Impl* impl_;
 
     // constructs a table from existing xml node
     TableCell(Impl* impl);
@@ -216,7 +216,7 @@ namespace docx
 
   private:
     struct Impl;
-    Impl* impl_ = nullptr;
+    Impl* impl_;
 
     // constructs a table from existing xml node
     Table(Impl* impl);
@@ -271,7 +271,7 @@ namespace docx
 
   private:
     struct Impl;
-    Impl* impl_ = nullptr;
+    Impl* impl_;
 
     // constructs run from existing xml node
     Run(Impl* impl);
@@ -345,7 +345,7 @@ namespace docx
 
   private:
     struct Impl;
-    Impl* impl_ = nullptr;
+    Impl* impl_;
 
     // constructs section from existing xml node
     Section(Impl* impl);
@@ -433,7 +433,7 @@ namespace docx
 
   protected:
     struct Impl;
-    Impl* impl_ = nullptr;
+    Impl* impl_;
 
     // constructs paragraph from existing xml node
     Paragraph(Impl* impl);
@@ -468,7 +468,7 @@ namespace docx
 
   private:
     struct Impl;
-    Impl* impl_ = nullptr;
+    Impl* impl_;
 
     // constructs text frame from existing xml node
     TextFrame(Impl* impl, Paragraph::Impl* p_impl);
@@ -524,7 +524,7 @@ namespace docx
 
   private:
     struct Impl;
-    Impl* impl_ = nullptr;
+    Impl* impl_;
   }; // class Document
 
 
