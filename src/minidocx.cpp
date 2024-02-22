@@ -587,7 +587,7 @@ namespace docx
 
 
   // class Paragraph
-  Paragraph::Paragraph()
+  Paragraph::Paragraph() : impl_(NULL)
   {
 
   }
@@ -1060,7 +1060,7 @@ namespace docx
 
 
   // class Section
-  Section::Section()
+  Section::Section() : impl_(NULL)
   {
 
   }
@@ -1475,7 +1475,7 @@ namespace docx
 
 
   // class Run
-  Run::Run()
+  Run::Run() : impl_(NULL)
   {
 
   }
@@ -1716,7 +1716,7 @@ namespace docx
 
   }
 
-  Table::Table()
+  Table::Table() : impl_(NULL)
   {
 
   }
@@ -2144,7 +2144,7 @@ namespace docx
   }
 
   // class TableCell
-  TableCell::TableCell()
+  TableCell::TableCell() : impl_(NULL)
   {
 
   }
@@ -2296,7 +2296,7 @@ namespace docx
   }
 
   // class TextFrame
-  TextFrame::TextFrame()
+  TextFrame::TextFrame() : impl_(NULL)
   {
 
   }
