@@ -287,9 +287,9 @@ namespace docx
 
   Document::~Document()
   {
-    if (impl_ != nullptr) {
+    if (impl_ != NULL) {
       delete impl_;
-      impl_ = nullptr;
+      impl_ = NULL;
     }
   }
 
@@ -302,7 +302,7 @@ namespace docx
     const char* buf = writer.result.c_str();
 
     struct zip_t* zip = zip_open(impl_->path_.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'w');
-    if (zip == nullptr) {
+    if (zip == NULL) {
       return false;
     }
 
@@ -335,7 +335,7 @@ namespace docx
     if (!impl_) return false;
 
     struct zip_t* zip = zip_open(path.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'r');
-    if (zip == nullptr) {
+    if (zip == NULL) {
       return false;
     }
 
@@ -343,7 +343,7 @@ namespace docx
       zip_close(zip);
       return false;
     }
-    void* buf = nullptr;
+    void* buf = NULL;
     size_t bufsize;
     zip_entry_read(zip, &buf, &bufsize);
     zip_entry_close(zip);
@@ -607,9 +607,9 @@ namespace docx
 
   Paragraph::~Paragraph()
   {
-    if (impl_ != nullptr) {
+    if (impl_ != NULL) {
       delete impl_;
-      impl_ = nullptr;
+      impl_ = NULL;
     }
   }
 
@@ -1001,7 +1001,7 @@ namespace docx
 
   Paragraph::operator bool()
   {
-    return impl_ != nullptr && impl_->w_p_;
+    return impl_ != NULL && impl_->w_p_;
   }
 
   bool Paragraph::operator==(const Paragraph& p)
@@ -1014,15 +1014,15 @@ namespace docx
   void Paragraph::operator=(const Paragraph& right)
   {
     if (this == &right) return;
-    if (impl_ != nullptr) delete impl_;
-    if (right.impl_ != nullptr) {
+    if (impl_ != NULL) delete impl_;
+    if (right.impl_ != NULL) {
       impl_ = new Impl;
       impl_->w_body_ = right.impl_->w_body_;
       impl_->w_p_ = right.impl_->w_p_;
       impl_->w_pPr_ = right.impl_->w_pPr_;
     }
     else {
-      impl_ = nullptr;
+      impl_ = NULL;
     }
   }
 
@@ -1083,9 +1083,9 @@ namespace docx
 
   Section::~Section()
   {
-    if (impl_ != nullptr) {
+    if (impl_ != NULL) {
       delete impl_;
-      impl_ = nullptr;
+      impl_ = NULL;
     }
   }
 
@@ -1445,7 +1445,7 @@ namespace docx
 
   Section::operator bool()
   {
-    return impl_ != nullptr && impl_->w_sectPr_;
+    return impl_ != NULL && impl_->w_sectPr_;
   }
 
   bool Section::operator==(const Section& s)
@@ -1458,8 +1458,8 @@ namespace docx
   void Section::operator=(const Section& right)
   {
     if (this == &right) return;
-    if (impl_ != nullptr) delete impl_;
-    if (right.impl_ != nullptr) {
+    if (impl_ != NULL) delete impl_;
+    if (right.impl_ != NULL) {
       impl_ = new Impl;
       impl_->w_body_ = right.impl_->w_body_;
       impl_->w_p_ = right.impl_->w_p_;
@@ -1469,7 +1469,7 @@ namespace docx
       impl_->w_sectPr_ = right.impl_->w_sectPr_;
     }
     else {
-      impl_ = nullptr;
+      impl_ = NULL;
     }
   }
 
@@ -1495,9 +1495,9 @@ namespace docx
 
   Run::~Run()
   {
-    if (impl_ != nullptr) {
+    if (impl_ != NULL) {
       delete impl_;
-      impl_ = nullptr;
+      impl_ = NULL;
     }
   }
 
@@ -1692,21 +1692,21 @@ namespace docx
 
   Run::operator bool()
   {
-    return impl_ != nullptr && impl_->w_r_;
+    return impl_ != NULL && impl_->w_r_;
   }
 
   void Run::operator=(const Run& right)
   {
     if (this == &right) return;
-    if (impl_ != nullptr) delete impl_;
-    if (right.impl_ != nullptr) {
+    if (impl_ != NULL) delete impl_;
+    if (right.impl_ != NULL) {
       impl_ = new Impl;
       impl_->w_p_ = right.impl_->w_p_;
       impl_->w_r_ = right.impl_->w_r_;
       impl_->w_rPr_ = right.impl_->w_rPr_;
     }
     else {
-      impl_ = nullptr;
+      impl_ = NULL;
     }
   }
 
@@ -1735,17 +1735,17 @@ namespace docx
 
   Table::~Table()
   {
-    if (impl_ != nullptr) {
+    if (impl_ != NULL) {
       delete impl_;
-      impl_ = nullptr;
+      impl_ = NULL;
     }
   }
 
   void Table::operator=(const Table& right)
   {
     if (this == &right) return;
-    if (impl_ != nullptr) delete impl_;
-    if (right.impl_ != nullptr) {
+    if (impl_ != NULL) delete impl_;
+    if (right.impl_ != NULL) {
       impl_ = new Impl;
       impl_->w_body_ = right.impl_->w_body_;
       impl_->w_tbl_ = right.impl_->w_tbl_;
@@ -1756,7 +1756,7 @@ namespace docx
       impl_->grid_ = right.impl_->grid_;
     }
     else {
-      impl_ = nullptr;
+      impl_ = NULL;
     }
   }
 
@@ -2165,17 +2165,17 @@ namespace docx
 
   TableCell::~TableCell()
   {
-    if (impl_ != nullptr) {
+    if (impl_ != NULL) {
       delete impl_;
-      impl_ = nullptr;
+      impl_ = NULL;
     }
   }
 
   void TableCell::operator=(const TableCell& right)
   {
     if (this == &right) return;
-    if (impl_ != nullptr) delete impl_;
-    if (right.impl_ != nullptr) {
+    if (impl_ != NULL) delete impl_;
+    if (right.impl_ != NULL) {
       impl_ = new Impl;
       impl_->c_ = right.impl_->c_;
       impl_->w_tr_ = right.impl_->w_tr_;
@@ -2183,18 +2183,18 @@ namespace docx
       impl_->w_tcPr_ = right.impl_->w_tcPr_;
     }
     else {
-      impl_ = nullptr;
+      impl_ = NULL;
     }
   }
 
   TableCell::operator bool()
   {
-    return impl_ != nullptr && impl_->w_tc_;
+    return impl_ != NULL && impl_->w_tc_;
   }
 
   bool TableCell::empty() const
   {
-    return impl_ == nullptr || !impl_->w_tc_;
+    return impl_ == NULL || !impl_->w_tc_;
   }
 
   void TableCell::SetWidth(const int w, const char* units)
@@ -2316,9 +2316,9 @@ namespace docx
 
   TextFrame::~TextFrame()
   {
-    if (impl_ != nullptr) {
+    if (impl_ != NULL) {
       delete impl_;
-      impl_ = nullptr;
+      impl_ = NULL;
     }
   }
 
