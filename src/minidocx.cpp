@@ -113,7 +113,7 @@ namespace docx
 
   void SetBorders(pugi::xml_node& w_bdrs, const char* elemName, const Box::BorderStyle style, const double width, const char* color)
   {
-    auto w_bdr = w_bdrs.child(elemName);
+    pugi::xml_node w_bdr = w_bdrs.child(elemName);
     if (!w_bdr) {
       w_bdr = w_bdrs.append_child(elemName);
     }
@@ -143,19 +143,19 @@ namespace docx
       break;
     }
 
-    auto w_val = w_bdr.attribute("w:val");
+    pugi::xml_attribute w_val = w_bdr.attribute("w:val");
     if (!w_val) {
       w_val = w_bdr.append_attribute("w:val");
     }
     w_val.set_value(val);
 
-    auto w_sz = w_bdr.attribute("w:sz");
+    pugi::xml_attribute w_sz = w_bdr.attribute("w:sz");
     if (!w_sz) {
       w_sz = w_bdr.append_attribute("w:sz");
     }
     w_sz.set_value(width * 8);
 
-    auto w_color = w_bdr.attribute("w:color");
+    pugi::xml_attribute w_color = w_bdr.attribute("w:color");
     if (!w_color) {
       w_color = w_bdr.append_attribute("w:color");
     }
@@ -359,7 +359,7 @@ namespace docx
   Paragraph Document::FirstParagraph()
   {
     if (!impl_) return Paragraph();
-    auto w_p = impl_->w_body_.child("w:p");
+    pugi::xml_node w_p = impl_->w_body_.child("w:p");
     if (!w_p) return Paragraph();
 
     Paragraph::Impl* impl = new Paragraph::Impl;
@@ -372,7 +372,7 @@ namespace docx
   Paragraph Document::LastParagraph()
   {
     if (!impl_) return Paragraph();
-    auto w_p = GetLastChild(impl_->w_body_, "w:p");
+    pugi::xml_node w_p = GetLastChild(impl_->w_body_, "w:p");
     if (!w_p) return Paragraph();
 
     Paragraph::Impl* impl = new Paragraph::Impl;
@@ -410,8 +410,8 @@ namespace docx
   {
     if (!impl_) return Paragraph();
 
-    auto w_p = impl_->w_body_.insert_child_before("w:p", impl_->w_sectPr_);
-    auto w_pPr = w_p.append_child("w:pPr");
+    pugi::xml_node w_p = impl_->w_body_.insert_child_before("w:p", impl_->w_sectPr_);
+    pugi::xml_node w_pPr = w_p.append_child("w:pPr");
 
     Paragraph::Impl* impl = new Paragraph::Impl;
     impl->w_body_ = impl_->w_body_;
@@ -422,7 +422,7 @@ namespace docx
 
   Paragraph Document::AppendParagraph(const std::string& text)
   {
-    auto p = AppendParagraph();
+    Paragraph p = AppendParagraph();
     p.AppendRun(text);
     return p;
   }
@@ -430,7 +430,7 @@ namespace docx
   Paragraph Document::AppendParagraph(const std::string& text,
     const double fontSize)
   {
-    auto p = AppendParagraph();
+    Paragraph p = AppendParagraph();
     p.AppendRun(text, fontSize);
     return p;
   }
@@ -440,7 +440,7 @@ namespace docx
     const std::string& fontAscii,
     const std::string& fontEastAsia)
   {
-    auto p = AppendParagraph();
+    Paragraph p = AppendParagraph();
     p.AppendRun(text, fontSize, fontAscii, fontEastAsia);
     return p;
   }
@@ -449,8 +449,8 @@ namespace docx
   {
     if (!impl_) return Paragraph();
 
-    auto w_p = impl_->w_body_.prepend_child("w:p");
-    auto w_pPr = w_p.append_child("w:pPr");
+    pugi::xml_node w_p = impl_->w_body_.prepend_child("w:p");
+    pugi::xml_node w_pPr = w_p.append_child("w:pPr");
 
     Paragraph::Impl* impl = new Paragraph::Impl;
     impl->w_body_ = impl_->w_body_;
@@ -461,7 +461,7 @@ namespace docx
 
   Paragraph Document::PrependParagraph(const std::string& text)
   {
-    auto p = PrependParagraph();
+    Paragraph p = PrependParagraph();
     p.AppendRun(text);
     return p;
   }
@@ -469,7 +469,7 @@ namespace docx
   Paragraph Document::PrependParagraph(const std::string& text,
     const double fontSize)
   {
-    auto p = PrependParagraph();
+    Paragraph p = PrependParagraph();
     p.AppendRun(text, fontSize);
     return p;
   }
@@ -479,7 +479,7 @@ namespace docx
     const std::string& fontAscii,
     const std::string& fontEastAsia)
   {
-    auto p = PrependParagraph();
+    Paragraph p = PrependParagraph();
     p.AppendRun(text, fontSize, fontAscii, fontEastAsia);
     return p;
   }
@@ -488,8 +488,8 @@ namespace docx
   {
     if (!impl_) return Paragraph();
 
-    auto w_p = impl_->w_body_.insert_child_before("w:p", p.impl_->w_p_);
-    auto w_pPr = w_p.append_child("w:pPr");
+    pugi::xml_node w_p = impl_->w_body_.insert_child_before("w:p", p.impl_->w_p_);
+    pugi::xml_node w_pPr = w_p.append_child("w:pPr");
 
     Paragraph::Impl* impl = new Paragraph::Impl;
     impl->w_body_ = impl_->w_body_;
@@ -502,8 +502,8 @@ namespace docx
   {
     if (!impl_) return Paragraph();
 
-    auto w_p = impl_->w_body_.insert_child_after("w:p", p.impl_->w_p_);
-    auto w_pPr = w_p.append_child("w:pPr");
+    pugi::xml_node w_p = impl_->w_body_.insert_child_after("w:p", p.impl_->w_p_);
+    pugi::xml_node w_pPr = w_p.append_child("w:pPr");
 
     Paragraph::Impl* impl = new Paragraph::Impl;
     impl->w_body_ = impl_->w_body_;
@@ -520,14 +520,14 @@ namespace docx
 
   Paragraph Document::AppendPageBreak()
   {
-    auto p = AppendParagraph();
+    Paragraph p = AppendParagraph();
     p.AppendPageBreak();
     return p;
   }
 
   Paragraph Document::AppendSectionBreak()
   {
-    auto p = AppendParagraph();
+    Paragraph p = AppendParagraph();
     p.InsertSectionBreak();
     return p;
   }
@@ -536,9 +536,9 @@ namespace docx
   {
     if (!impl_) return Table();
 
-    auto w_tbl = impl_->w_body_.insert_child_before("w:tbl", impl_->w_sectPr_);
-    auto w_tblPr = w_tbl.append_child("w:tblPr");
-    auto w_tblGrid = w_tbl.append_child("w:tblGrid");
+    pugi::xml_node w_tbl = impl_->w_body_.insert_child_before("w:tbl", impl_->w_sectPr_);
+    pugi::xml_node w_tblPr = w_tbl.append_child("w:tblPr");
+    pugi::xml_node w_tblGrid = w_tbl.append_child("w:tblGrid");
 
     Table::Impl* impl = new Table::Impl;
     impl->w_body_ = impl_->w_body_;
@@ -566,9 +566,9 @@ namespace docx
   {
     if (!impl_) return TextFrame();
 
-    auto w_p = impl_->w_body_.insert_child_before("w:p", impl_->w_sectPr_);
-    auto w_pPr = w_p.append_child("w:pPr");
-    auto w_framePr = w_pPr.append_child("w:framePr");
+    pugi::xml_node w_p = impl_->w_body_.insert_child_before("w:p", impl_->w_sectPr_);
+    pugi::xml_node w_pPr = w_p.append_child("w:pPr");
+    pugi::xml_node w_framePr = w_pPr.append_child("w:framePr");
 
 
     Paragraph::Impl* paragraph_impl = new Paragraph::Impl;
@@ -578,7 +578,7 @@ namespace docx
 
     TextFrame::Impl* impl = new TextFrame::Impl;
     impl->w_framePr_ = w_framePr;
-    auto textFrame = TextFrame(impl, paragraph_impl);
+    TextFrame textFrame = TextFrame(impl, paragraph_impl);
 
     textFrame.SetSize(w, h);
     textFrame.SetBorders();
@@ -616,7 +616,7 @@ namespace docx
   Run Paragraph::FirstRun()
   {
     if (!impl_) return Run();
-    auto w_r = impl_->w_p_.child("w:r");
+    pugi::xml_node w_r = impl_->w_p_.child("w:r");
     if (!w_r) return Run();
 
     Run::Impl* impl = new Run::Impl;
@@ -629,8 +629,8 @@ namespace docx
   Run Paragraph::AppendRun()
   {
     if (!impl_) return Run();
-    auto w_r = impl_->w_p_.append_child("w:r");
-    auto w_rPr = w_r.append_child("w:rPr");
+    pugi::xml_node w_r = impl_->w_p_.append_child("w:r");
+    pugi::xml_node w_rPr = w_r.append_child("w:rPr");
 
     Run::Impl* impl = new Run::Impl;
     impl->w_p_ = impl_->w_p_;
@@ -641,7 +641,7 @@ namespace docx
 
   Run Paragraph::AppendRun(const std::string& text)
   {
-    auto r = AppendRun();
+    Run r = AppendRun();
     if (!text.empty()) {
       r.AppendText(text);
     }
@@ -650,7 +650,7 @@ namespace docx
 
   Run Paragraph::AppendRun(const std::string& text, const double fontSize)
   {
-    auto r = AppendRun(text);
+    Run r = AppendRun(text);
     if (fontSize != 0) {
       r.SetFontSize(fontSize);
     }
@@ -659,7 +659,7 @@ namespace docx
 
   Run Paragraph::AppendRun(const std::string& text, const double fontSize, const std::string& fontAscii, const std::string& fontEastAsia)
   {
-    auto r = AppendRun(text, fontSize);
+    Run r = AppendRun(text, fontSize);
     if (!fontAscii.empty()) {
       r.SetFont(fontAscii, fontEastAsia);
     }
@@ -669,8 +669,8 @@ namespace docx
   Run Paragraph::AppendPageBreak()
   {
     if (!impl_) return Run();
-    auto w_r = impl_->w_p_.append_child("w:r");
-    auto w_br = w_r.append_child("w:br");
+    pugi::xml_node w_r = impl_->w_p_.append_child("w:r");
+    pugi::xml_node w_br = w_r.append_child("w:br");
     w_br.append_attribute("w:type") = "page";
 
     Run::Impl* impl = new Run::Impl;
@@ -703,11 +703,11 @@ namespace docx
       break;
     }
 
-    auto jc = impl_->w_pPr_.child("w:jc");
+    pugi::xml_node jc = impl_->w_pPr_.child("w:jc");
     if (!jc) {
       jc = impl_->w_pPr_.append_child("w:jc");
     }
-    auto jcVal = jc.attribute("w:val");
+    pugi::xml_attribute jcVal = jc.attribute("w:val");
     if (!jcVal) {
       jcVal = jc.append_attribute("w:val");
     }
@@ -717,13 +717,13 @@ namespace docx
   void Paragraph::SetLineSpacingSingle()
   {
     if (!impl_) return;
-    auto spacing = impl_->w_pPr_.child("w:spacing");
+    pugi::xml_node spacing = impl_->w_pPr_.child("w:spacing");
     if (!spacing) return;
-    auto spacingLineRule = spacing.attribute("w:lineRule");
+    pugi::xml_attribute spacingLineRule = spacing.attribute("w:lineRule");
     if (spacingLineRule) {
       spacing.remove_attribute(spacingLineRule);
     }
-    auto spacingLine = spacing.attribute("w:line");
+    pugi::xml_attribute spacingLine = spacing.attribute("w:line");
     if (spacingLine) {
       spacing.remove_attribute(spacingLine);
     }
@@ -754,17 +754,17 @@ namespace docx
   void Paragraph::SetLineSpacing(const int at, const char* lineRule)
   {
     if (!impl_) return;
-    auto spacing = impl_->w_pPr_.child("w:spacing");
+    pugi::xml_node spacing = impl_->w_pPr_.child("w:spacing");
     if (!spacing) {
       spacing = impl_->w_pPr_.append_child("w:spacing");
     }
 
-    auto spacingLineRule = spacing.attribute("w:lineRule");
+    pugi::xml_attribute spacingLineRule = spacing.attribute("w:lineRule");
     if (!spacingLineRule) {
       spacingLineRule = spacing.append_attribute("w:lineRule");
     }
 
-    auto spacingLine = spacing.attribute("w:line");
+    pugi::xml_attribute spacingLine = spacing.attribute("w:line");
     if (!spacingLine) {
       spacingLine = spacing.append_attribute("w:line");
     }
@@ -786,11 +786,11 @@ namespace docx
   void Paragraph::SetSpacingAuto(const char* attrNameAuto)
   {
     if (!impl_) return;
-    auto spacing = impl_->w_pPr_.child("w:spacing");
+    pugi::xml_node spacing = impl_->w_pPr_.child("w:spacing");
     if (!spacing) {
       spacing = impl_->w_pPr_.append_child("w:spacing");
     }
-    auto spacingAuto = spacing.attribute(attrNameAuto);
+    pugi::xml_attribute spacingAuto = spacing.attribute(attrNameAuto);
     if (!spacingAuto) {
       spacingAuto = spacing.append_attribute(attrNameAuto);
     }
@@ -823,17 +823,17 @@ namespace docx
   void Paragraph::SetSpacing(const int twip, const char* attrNameAuto, const char* attrName)
   {
     if (!impl_) return;
-    auto elemSpacing = impl_->w_pPr_.child("w:spacing");
+    pugi::xml_node elemSpacing = impl_->w_pPr_.child("w:spacing");
     if (!elemSpacing) {
       elemSpacing = impl_->w_pPr_.append_child("w:spacing");
     }
 
-    auto attrSpacingAuto = elemSpacing.attribute(attrNameAuto);
+    pugi::xml_attribute attrSpacingAuto = elemSpacing.attribute(attrNameAuto);
     if (attrSpacingAuto) {
       elemSpacing.remove_attribute(attrSpacingAuto);
     }
 
-    auto attrSpacing = elemSpacing.attribute(attrName);
+    pugi::xml_attribute attrSpacing = elemSpacing.attribute(attrName);
     if (!attrSpacing) {
       attrSpacing = elemSpacing.append_attribute(attrName);
     }
@@ -886,12 +886,12 @@ namespace docx
   void Paragraph::SetIndent(const int indent, const char* attrName)
   {
     if (!impl_) return;
-    auto elemIndent = impl_->w_pPr_.child("w:ind");
+    pugi::xml_node elemIndent = impl_->w_pPr_.child("w:ind");
     if (!elemIndent) {
       elemIndent = impl_->w_pPr_.append_child("w:ind");
     }
 
-    auto attrIndent = elemIndent.attribute(attrName);
+    pugi::xml_attribute attrIndent = elemIndent.attribute(attrName);
     if (!attrIndent) {
       attrIndent = elemIndent.append_attribute(attrName);
     }
@@ -929,7 +929,7 @@ namespace docx
   void Paragraph::SetBorders_(const char* elemName, const BorderStyle style, const double width, const char* color)
   {
     if (!impl_) return;
-    auto w_pBdr = impl_->w_pPr_.child("w:pBdr");
+    pugi::xml_node w_pBdr = impl_->w_pPr_.child("w:pBdr");
     if (!w_pBdr) {
       w_pBdr = impl_->w_pPr_.append_child("w:pBdr");
     }
@@ -938,28 +938,28 @@ namespace docx
 
   void Paragraph::SetFontSize(const double fontSize)
   {
-    for (auto r = FirstRun(); r; r = r.Next()) {
+    for (Run r = FirstRun(); r; r = r.Next()) {
       r.SetFontSize(fontSize);
     }
   }
 
   void Paragraph::SetFont(const std::string& fontAscii, const std::string& fontEastAsia)
   {
-    for (auto r = FirstRun(); r; r = r.Next()) {
+    for (Run r = FirstRun(); r; r = r.Next()) {
       r.SetFont(fontAscii, fontEastAsia);
     }
   }
 
   void Paragraph::SetFontStyle(const Run::FontStyle fontStyle)
   {
-    for (auto r = FirstRun(); r; r = r.Next()) {
+    for (Run r = FirstRun(); r; r = r.Next()) {
       r.SetFontStyle(fontStyle);
     }
   }
 
   void Paragraph::SetCharacterSpacing(const int characterSpacing)
   {
-    for (auto r = FirstRun(); r; r = r.Next()) {
+    for (Run r = FirstRun(); r; r = r.Next()) {
       r.SetCharacterSpacing(characterSpacing);
     }
   }
@@ -967,7 +967,7 @@ namespace docx
   std::string Paragraph::GetText()
   {
     std::string text;
-    for (auto r = FirstRun(); r; r = r.Next()) {
+    for (Run r = FirstRun(); r; r = r.Next()) {
       text += r.GetText();
     }
     return text;
@@ -976,7 +976,7 @@ namespace docx
   Paragraph Paragraph::Next()
   {
     if (!impl_) return Paragraph();
-    auto w_p = impl_->w_p_.next_sibling("w:p");
+    pugi::xml_node w_p = impl_->w_p_.next_sibling("w:p");
     if (!w_p) return Paragraph();
 
     Paragraph::Impl* impl = new Paragraph::Impl;
@@ -989,7 +989,7 @@ namespace docx
   Paragraph Paragraph::Prev()
   {
     if (!impl_) return Paragraph();
-    auto w_p = impl_->w_p_.previous_sibling("w:p");
+    pugi::xml_node w_p = impl_->w_p_.previous_sibling("w:p");
     if (!w_p) return Paragraph();
 
     Paragraph::Impl* impl = new Paragraph::Impl;
@@ -1136,15 +1136,15 @@ namespace docx
   void Section::SetPageSize(const int w, const int h)
   {
     if (!impl_) return;
-    auto pgSz = impl_->w_sectPr_.child("w:pgSz");
+    pugi::xml_node pgSz = impl_->w_sectPr_.child("w:pgSz");
     if (!pgSz) {
       pgSz = impl_->w_sectPr_.append_child("w:pgSz");
     }
-    auto pgSzW = pgSz.attribute("w:w");
+    pugi::xml_attribute pgSzW = pgSz.attribute("w:w");
     if (!pgSzW) {
       pgSzW = pgSz.append_attribute("w:w");
     }
-    auto pgSzH = pgSz.attribute("w:h");
+    pugi::xml_attribute pgSzH = pgSz.attribute("w:h");
     if (!pgSzH) {
       pgSzH = pgSz.append_attribute("w:h");
     }
@@ -1156,11 +1156,11 @@ namespace docx
   {
     if (!impl_) return;
     w = h = 0;
-    auto pgSz = impl_->w_sectPr_.child("w:pgSz");
+    pugi::xml_node pgSz = impl_->w_sectPr_.child("w:pgSz");
     if (!pgSz) return;
-    auto pgSzW = pgSz.attribute("w:w");
+    pugi::xml_attribute pgSzW = pgSz.attribute("w:w");
     if (!pgSzW) return;
-    auto pgSzH = pgSz.attribute("w:h");
+    pugi::xml_attribute pgSzH = pgSz.attribute("w:h");
     if (!pgSzH) return;
     w = pgSzW.as_int();
     h = pgSzH.as_int();
@@ -1169,19 +1169,19 @@ namespace docx
   void Section::SetPageOrient(const Orientation orient)
   {
     if (!impl_) return;
-    auto pgSz = impl_->w_sectPr_.child("w:pgSz");
+    pugi::xml_node pgSz = impl_->w_sectPr_.child("w:pgSz");
     if (!pgSz) {
       pgSz = impl_->w_sectPr_.append_child("w:pgSz");
     }
-    auto pgSzH = pgSz.attribute("w:h");
+    pugi::xml_attribute pgSzH = pgSz.attribute("w:h");
     if (!pgSzH) {
       pgSzH = pgSz.append_attribute("w:h");
     }
-    auto pgSzW = pgSz.attribute("w:w");
+    pugi::xml_attribute pgSzW = pgSz.attribute("w:w");
     if (!pgSzW) {
       pgSzW = pgSz.append_attribute("w:w");
     }
-    auto pgSzOrient = pgSz.attribute("w:orient");
+    pugi::xml_attribute pgSzOrient = pgSz.attribute("w:orient");
     if (!pgSzOrient) {
       pgSzOrient = pgSz.append_attribute("w:orient");
     }
@@ -1207,9 +1207,9 @@ namespace docx
   {
     if (!impl_) return Orientation::Unknown;
     Orientation orient = Orientation::Portrait;
-    auto pgSz = impl_->w_sectPr_.child("w:pgSz");
+    pugi::xml_node pgSz = impl_->w_sectPr_.child("w:pgSz");
     if (!pgSz) return orient;
-    auto pgSzOrient = pgSz.attribute("w:orient");
+    pugi::xml_attribute pgSzOrient = pgSz.attribute("w:orient");
     if (!pgSzOrient) return orient;
     if (std::string(pgSzOrient.value()).compare("landscape") == 0) {
       orient = Orientation::Landscape;
@@ -1221,23 +1221,23 @@ namespace docx
     const int left, const int right)
   {
     if (!impl_) return;
-    auto pgMar = impl_->w_sectPr_.child("w:pgMar");
+    pugi::xml_node pgMar = impl_->w_sectPr_.child("w:pgMar");
     if (!pgMar) {
       pgMar = impl_->w_sectPr_.append_child("w:pgMar");
     }
-    auto pgMarTop = pgMar.attribute("w:top");
+    pugi::xml_attribute pgMarTop = pgMar.attribute("w:top");
     if (!pgMarTop) {
       pgMarTop = pgMar.append_attribute("w:top");
     }
-    auto pgMarBottom = pgMar.attribute("w:bottom");
+    pugi::xml_attribute pgMarBottom = pgMar.attribute("w:bottom");
     if (!pgMarBottom) {
       pgMarBottom = pgMar.append_attribute("w:bottom");
     }
-    auto pgMarLeft = pgMar.attribute("w:left");
+    pugi::xml_attribute pgMarLeft = pgMar.attribute("w:left");
     if (!pgMarLeft) {
       pgMarLeft = pgMar.append_attribute("w:left");
     }
-    auto pgMarRight = pgMar.attribute("w:right");
+    pugi::xml_attribute pgMarRight = pgMar.attribute("w:right");
     if (!pgMarRight) {
       pgMarRight = pgMar.append_attribute("w:right");
     }
@@ -1252,15 +1252,15 @@ namespace docx
   {
     if (!impl_) return;
     top = bottom = left = right = 0;
-    auto pgMar = impl_->w_sectPr_.child("w:pgMar");
+    pugi::xml_node pgMar = impl_->w_sectPr_.child("w:pgMar");
     if (!pgMar) return;
-    auto pgMarTop = pgMar.attribute("w:top");
+    pugi::xml_attribute pgMarTop = pgMar.attribute("w:top");
     if (!pgMarTop) return;
-    auto pgMarBottom = pgMar.attribute("w:bottom");
+    pugi::xml_attribute pgMarBottom = pgMar.attribute("w:bottom");
     if (!pgMarBottom) return;
-    auto pgMarLeft = pgMar.attribute("w:left");
+    pugi::xml_attribute pgMarLeft = pgMar.attribute("w:left");
     if (!pgMarLeft) return;
-    auto pgMarRight = pgMar.attribute("w:right");
+    pugi::xml_attribute pgMarRight = pgMar.attribute("w:right");
     if (!pgMarRight) return;
     top = pgMarTop.as_int();
     bottom = pgMarBottom.as_int();
@@ -1271,15 +1271,15 @@ namespace docx
   void Section::SetPageMargin(const int header, const int footer)
   {
     if (!impl_) return;
-    auto pgMar = impl_->w_sectPr_.child("w:pgMar");
+    pugi::xml_node pgMar = impl_->w_sectPr_.child("w:pgMar");
     if (!pgMar) {
       pgMar = impl_->w_sectPr_.append_child("w:pgMar");
     }
-    auto pgMarHeader = pgMar.attribute("w:header");
+    pugi::xml_attribute pgMarHeader = pgMar.attribute("w:header");
     if (!pgMarHeader) {
       pgMarHeader = pgMar.append_attribute("w:header");
     }
-    auto pgMarFooter = pgMar.attribute("w:footer");
+    pugi::xml_attribute pgMarFooter = pgMar.attribute("w:footer");
     if (!pgMarFooter) {
       pgMarFooter = pgMar.append_attribute("w:footer");
     }
@@ -1291,11 +1291,11 @@ namespace docx
   {
     if (!impl_) return;
     header = footer = 0;
-    auto pgMar = impl_->w_sectPr_.child("w:pgMar");
+    pugi::xml_node pgMar = impl_->w_sectPr_.child("w:pgMar");
     if (!pgMar) return;
-    auto pgMarHeader = pgMar.attribute("w:header");
+    pugi::xml_attribute pgMarHeader = pgMar.attribute("w:header");
     if (!pgMarHeader) return;
-    auto pgMarFooter = pgMar.attribute("w:footer");
+    pugi::xml_attribute pgMarFooter = pgMar.attribute("w:footer");
     if (!pgMarFooter) return;
     header = pgMarHeader.as_int();
     footer = pgMarFooter.as_int();
@@ -1305,29 +1305,29 @@ namespace docx
   {
     if (!impl_) return;
 
-    auto footerReference = impl_->w_sectPr_.child("w:footerReference");
+    pugi::xml_node footerReference = impl_->w_sectPr_.child("w:footerReference");
     if (!footerReference) {
       footerReference = impl_->w_sectPr_.append_child("w:footerReference");
     }
 
-    auto footerReferenceId = footerReference.attribute("r:id");
+    pugi::xml_attribute footerReferenceId = footerReference.attribute("r:id");
     if (!footerReferenceId) {
       footerReferenceId = footerReference.append_attribute("r:id");
     }
     footerReferenceId.set_value("rId1");
 
-    auto footerReferenceType = footerReference.attribute("w:type");
+    pugi::xml_attribute footerReferenceType = footerReference.attribute("w:type");
     if (!footerReferenceType) {
       footerReferenceType = footerReference.append_attribute("w:type");
     }
     footerReferenceType.set_value("default");
 
-    auto pgNumType = impl_->w_sectPr_.child("w:pgNumType");
+    pugi::xml_node pgNumType = impl_->w_sectPr_.child("w:pgNumType");
     if (!pgNumType) {
       pgNumType = impl_->w_sectPr_.append_child("w:pgNumType");
     }
 
-    auto pgNumTypeFmt = pgNumType.attribute("w:fmt");
+    pugi::xml_attribute pgNumTypeFmt = pgNumType.attribute("w:fmt");
     if (!pgNumTypeFmt) {
       pgNumTypeFmt = pgNumType.append_attribute("w:fmt");
     }
@@ -1360,7 +1360,7 @@ namespace docx
     }
     pgNumTypeFmt.set_value(fmtVal);
 
-    auto pgNumTypeStart = pgNumType.attribute("w:start");
+    pugi::xml_attribute pgNumTypeStart = pgNumType.attribute("w:start");
     if (start > 0) {
       if (!pgNumTypeStart) {
         pgNumTypeStart = pgNumType.append_attribute("w:start");
@@ -1378,12 +1378,12 @@ namespace docx
   {
     if (!impl_) return;
 
-    auto footerReference = impl_->w_sectPr_.child("w:footerReference");
+    pugi::xml_node footerReference = impl_->w_sectPr_.child("w:footerReference");
     if (footerReference) {
       impl_->w_sectPr_.remove_child(footerReference);
     }
 
-    auto pgNumType = impl_->w_sectPr_.child("w:pgNumType");
+    pugi::xml_node pgNumType = impl_->w_sectPr_.child("w:pgNumType");
     if (pgNumType) {
       impl_->w_sectPr_.remove_child(pgNumType);
     }
@@ -1407,7 +1407,7 @@ namespace docx
   Section Section::Next()
   {
     if (!impl_) return Section();
-    auto w_p = impl_->w_p_last_.next_sibling();
+    pugi::xml_node w_p = impl_->w_p_last_.next_sibling();
     if (w_p.empty()) return Section();
 
     Section::Impl* impl = new Section::Impl;
@@ -1504,8 +1504,8 @@ namespace docx
   void Run::AppendText(const std::string& text)
   {
     if (!impl_) return;
-    auto t = impl_->w_r_.append_child("w:t");
-    if (std::isspace(static_cast<unsigned char>(text.front()))) {
+    pugi::xml_node t = impl_->w_r_.append_child("w:t");
+    if (std::isspace(static_cast<unsigned char>(text[0]))) {
       t.append_attribute("xml:space") = "preserve";
     }
     t.text().set(text.c_str());
@@ -1515,7 +1515,7 @@ namespace docx
   {
     if (!impl_) return "";
     std::string text;
-    for (auto t = impl_->w_r_.child("w:t"); t; t = t.next_sibling("w:t")) {
+    for (pugi::xml_node t = impl_->w_r_.child("w:t"); t; t = t.next_sibling("w:t")) {
       text += t.text().get();
     }
     return text;
@@ -1536,11 +1536,11 @@ namespace docx
   void Run::SetFontSize(const double fontSize)
   {
     if (!impl_) return;
-    auto sz = impl_->w_rPr_.child("w:sz");
+    pugi::xml_node sz = impl_->w_rPr_.child("w:sz");
     if (!sz) {
       sz = impl_->w_rPr_.append_child("w:sz");
     }
-    auto szVal = sz.attribute("w:val");
+    pugi::xml_attribute szVal = sz.attribute("w:val");
     if (!szVal) {
       szVal = sz.append_attribute("w:val");
     }
@@ -1551,9 +1551,9 @@ namespace docx
   double Run::GetFontSize()
   {
     if (!impl_) return -1;
-    auto sz = impl_->w_rPr_.child("w:sz");
+    pugi::xml_node sz = impl_->w_rPr_.child("w:sz");
     if (!sz) return 0;
-    auto szVal = sz.attribute("w:val");
+    pugi::xml_attribute szVal = sz.attribute("w:val");
     if (!szVal) return 0;
     return szVal.as_int() / 2.0;
   }
@@ -1563,15 +1563,15 @@ namespace docx
     const std::string& fontEastAsia)
   {
     if (!impl_) return;
-    auto rFonts = impl_->w_rPr_.child("w:rFonts");
+    pugi::xml_node rFonts = impl_->w_rPr_.child("w:rFonts");
     if (!rFonts) {
       rFonts = impl_->w_rPr_.append_child("w:rFonts");
     }
-    auto rFontsAscii = rFonts.attribute("w:ascii");
+    pugi::xml_attribute rFontsAscii = rFonts.attribute("w:ascii");
     if (!rFontsAscii) {
       rFontsAscii = rFonts.append_attribute("w:ascii");
     }
-    auto rFontsEastAsia = rFonts.attribute("w:eastAsia");
+    pugi::xml_attribute rFontsEastAsia = rFonts.attribute("w:eastAsia");
     if (!rFontsEastAsia) {
       rFontsEastAsia = rFonts.append_attribute("w:eastAsia");
     }
@@ -1586,20 +1586,20 @@ namespace docx
     std::string& fontEastAsia)
   {
     if (!impl_) return;
-    auto rFonts = impl_->w_rPr_.child("w:rFonts");
+    pugi::xml_node rFonts = impl_->w_rPr_.child("w:rFonts");
     if (!rFonts) return;
 
-    auto rFontsAscii = rFonts.attribute("w:ascii");
+    pugi::xml_attribute rFontsAscii = rFonts.attribute("w:ascii");
     if (rFontsAscii) fontAscii = rFontsAscii.value();
 
-    auto rFontsEastAsia = rFonts.attribute("w:eastAsia");
+    pugi::xml_attribute rFontsEastAsia = rFonts.attribute("w:eastAsia");
     if (rFontsEastAsia) fontEastAsia = rFontsEastAsia.value();
   }
 
   void Run::SetFontStyle(const FontStyle f)
   {
     if (!impl_) return;
-    auto b = impl_->w_rPr_.child("w:b");
+    pugi::xml_node b = impl_->w_rPr_.child("w:b");
     if (f & Bold) {
       if (b.empty()) impl_->w_rPr_.append_child("w:b");
     }
@@ -1607,7 +1607,7 @@ namespace docx
       impl_->w_rPr_.remove_child(b);
     }
 
-    auto i = impl_->w_rPr_.child("w:i");
+    pugi::xml_node i = impl_->w_rPr_.child("w:i");
     if (f & Italic) {
       if (i.empty()) impl_->w_rPr_.append_child("w:i");
     }
@@ -1615,7 +1615,7 @@ namespace docx
       impl_->w_rPr_.remove_child(i);
     }
 
-    auto u = impl_->w_rPr_.child("w:u");
+    pugi::xml_node u = impl_->w_rPr_.child("w:u");
     if (f & Underline) {
       if (u.empty())
         impl_->w_rPr_.append_child("w:u").append_attribute("w:val") = "single";
@@ -1624,7 +1624,7 @@ namespace docx
       impl_->w_rPr_.remove_child(u);
     }
 
-    auto strike = impl_->w_rPr_.child("w:strike");
+    pugi::xml_node strike = impl_->w_rPr_.child("w:strike");
     if (f & Strikethrough) {
       if (strike.empty())
         impl_->w_rPr_.append_child("w:strike").append_attribute("w:val") = "true";
@@ -1648,11 +1648,11 @@ namespace docx
   void Run::SetCharacterSpacing(const int characterSpacing)
   {
     if (!impl_) return;
-    auto spacing = impl_->w_rPr_.child("w:spacing");
+    pugi::xml_node spacing = impl_->w_rPr_.child("w:spacing");
     if (!spacing) {
       spacing = impl_->w_rPr_.append_child("w:spacing");
     }
-    auto spacingVal = spacing.attribute("w:val");
+    pugi::xml_attribute spacingVal = spacing.attribute("w:val");
     if (!spacingVal) {
       spacingVal = spacing.append_attribute("w:val");
     }
@@ -1680,7 +1680,7 @@ namespace docx
   Run Run::Next()
   {
     if (!impl_) return Run();
-    auto w_r = impl_->w_r_.next_sibling("w:r");
+    pugi::xml_node w_r = impl_->w_r_.next_sibling("w:r");
     if (!w_r) return Run();
 
     Run::Impl* impl = new Run::Impl;
@@ -1778,12 +1778,12 @@ namespace docx
 
     // init table
     for (int i = 0; i < rows; i++) {
-      auto w_gridCol = impl_->w_tblGrid_.append_child("w:gridCol");
-      auto w_tr = impl_->w_tbl_.append_child("w:tr");
+      pugi::xml_node w_gridCol = impl_->w_tblGrid_.append_child("w:gridCol");
+      pugi::xml_node w_tr = impl_->w_tbl_.append_child("w:tr");
 
       for (int j = 0; j < cols; j++) {
-        auto w_tc = w_tr.append_child("w:tc");
-        auto w_tcPr = w_tc.append_child("w:tcPr");
+        pugi::xml_node w_tc = w_tr.append_child("w:tc");
+        pugi::xml_node w_tcPr = w_tc.append_child("w:tcPr");
 
         TableCell::Impl* impl = new TableCell::Impl;
         impl->c_ = &impl_->grid_[i][j];
@@ -1813,7 +1813,7 @@ namespace docx
   {
     if (!impl_) return TableCell();
     int i = 0;
-    auto w_tr = impl_->w_tbl_.child("w:tr");
+    pugi::xml_node w_tr = impl_->w_tbl_.child("w:tr");
     while (i < row && !w_tr.empty()) {
       i++;
       w_tr = w_tr.next_sibling("w:tr");
@@ -1823,7 +1823,7 @@ namespace docx
     }
 
     int j = 0;
-    auto w_tc = w_tr.child("w:tc");
+    pugi::xml_node w_tc = w_tr.child("w:tc");
     while (j < col && !w_tc.empty()) {
       j += impl_->grid_[row][j].cols;
       w_tc = w_tc.next_sibling("w:tc");
@@ -1927,8 +1927,8 @@ namespace docx
 
         // update cells
         if (top_cell->rows == 1) {
-          auto w_vMerge = top_tc->impl_->w_tcPr_.append_child("w:vMerge");
-          auto w_val = w_vMerge.append_attribute("w:val");
+          pugi::xml_node w_vMerge = top_tc->impl_->w_tcPr_.append_child("w:vMerge");
+          pugi::xml_attribute w_val = w_vMerge.append_attribute("w:val");
           w_val.set_value("restart");
         }
         if (bottom_cell->rows == 1) {
@@ -1990,17 +1990,17 @@ namespace docx
   void Table::SetWidth(const int w, const char* units)
   {
     if (!impl_) return;
-    auto w_tblW = impl_->w_tblPr_.child("w:tblW");
+    pugi::xml_node w_tblW = impl_->w_tblPr_.child("w:tblW");
     if (!w_tblW) {
       w_tblW = impl_->w_tblPr_.append_child("w:tblW");
     }
 
-    auto w_w = w_tblW.attribute("w:w");
+    pugi::xml_attribute w_w = w_tblW.attribute("w:w");
     if (!w_w) {
       w_w = w_tblW.append_attribute("w:w");
     }
 
-    auto w_type = w_tblW.attribute("w:type");
+    pugi::xml_attribute w_type = w_tblW.attribute("w:type");
     if (!w_type) {
       w_type = w_tblW.append_attribute("w:type");
     }
@@ -2032,22 +2032,22 @@ namespace docx
   void Table::SetCellMargin(const char* elemName, const int w, const char* units)
   {
     if (!impl_) return;
-    auto w_tblCellMar = impl_->w_tblPr_.child("w:tblCellMar");
+    pugi::xml_node w_tblCellMar = impl_->w_tblPr_.child("w:tblCellMar");
     if (!w_tblCellMar) {
       w_tblCellMar = impl_->w_tblPr_.append_child("w:tblCellMar");
     }
 
-    auto w_tblCellMarChild = w_tblCellMar.child(elemName);
+    pugi::xml_node w_tblCellMarChild = w_tblCellMar.child(elemName);
     if (!w_tblCellMarChild) {
       w_tblCellMarChild = w_tblCellMar.append_child(elemName);
     }
 
-    auto w_w = w_tblCellMarChild.attribute("w:w");
+    pugi::xml_attribute w_w = w_tblCellMarChild.attribute("w:w");
     if (!w_w) {
       w_w = w_tblCellMarChild.append_attribute("w:w");
     }
 
-    auto w_type = w_tblCellMarChild.attribute("w:type");
+    pugi::xml_attribute w_type = w_tblCellMarChild.attribute("w:type");
     if (!w_type) {
       w_type = w_tblCellMarChild.append_attribute("w:type");
     }
@@ -2072,11 +2072,11 @@ namespace docx
       break;
     }
 
-    auto w_jc = impl_->w_tblPr_.child("w:jc");
+    pugi::xml_node w_jc = impl_->w_tblPr_.child("w:jc");
     if (!w_jc) {
       w_jc = impl_->w_tblPr_.append_child("w:jc");
     }
-    auto w_val = w_jc.attribute("w:val");
+    pugi::xml_attribute w_val = w_jc.attribute("w:val");
     if (!w_val) {
       w_val = w_jc.append_attribute("w:val");
     }
@@ -2136,7 +2136,7 @@ namespace docx
   void Table::SetBorders_(const char* elemName, const BorderStyle style, const double width, const char* color)
   {
     if (!impl_) return;
-    auto w_tblBorders = impl_->w_tblPr_.child("w:tblBorders");
+    pugi::xml_node w_tblBorders = impl_->w_tblPr_.child("w:tblBorders");
     if (!w_tblBorders) {
       w_tblBorders = impl_->w_tblPr_.append_child("w:tblBorders");
     }
@@ -2200,17 +2200,17 @@ namespace docx
   void TableCell::SetWidth(const int w, const char* units)
   {
     if (!impl_) return;
-    auto w_tcW = impl_->w_tcPr_.child("w:tcW");
+    pugi::xml_node w_tcW = impl_->w_tcPr_.child("w:tcW");
     if (!w_tcW) {
       w_tcW = impl_->w_tcPr_.append_child("w:tcW");
     }
 
-    auto w_w = w_tcW.attribute("w:w");
+    pugi::xml_attribute w_w = w_tcW.attribute("w:w");
     if (!w_w) {
       w_w = w_tcW.append_attribute("w:w");
     }
 
-    auto w_type = w_tcW.attribute("w:type");
+    pugi::xml_attribute w_type = w_tcW.attribute("w:type");
     if (!w_type) {
       w_type = w_tcW.append_attribute("w:type");
     }
@@ -2222,12 +2222,12 @@ namespace docx
   void TableCell::SetVerticalAlignment(const Alignment align)
   {
     if (!impl_) return;
-    auto w_vAlign = impl_->w_tcPr_.child("w:vAlign");
+    pugi::xml_node w_vAlign = impl_->w_tcPr_.child("w:vAlign");
     if (!w_vAlign) {
       w_vAlign = impl_->w_tcPr_.append_child("w:vAlign");
     }
 
-    auto w_val = w_vAlign.attribute("w:val");
+    pugi::xml_attribute w_val = w_vAlign.attribute("w:val");
     if (!w_val) {
       w_val = w_vAlign.append_attribute("w:val");
     }
@@ -2250,7 +2250,7 @@ namespace docx
   void TableCell::SetCellSpanning_(const int cols)
   {
     if (!impl_) return;
-    auto w_gridSpan = impl_->w_tcPr_.child("w:gridSpan");
+    pugi::xml_node w_gridSpan = impl_->w_tcPr_.child("w:gridSpan");
     if (cols == 1) {
       if (w_gridSpan) {
         impl_->w_tcPr_.remove_child(w_gridSpan);
@@ -2261,7 +2261,7 @@ namespace docx
       w_gridSpan = impl_->w_tcPr_.append_child("w:gridSpan");
     }
 
-    auto w_val = w_gridSpan.attribute("w:val");
+    pugi::xml_attribute w_val = w_gridSpan.attribute("w:val");
     if (!w_val) {
       w_val = w_gridSpan.append_attribute("w:val");
     }
@@ -2272,8 +2272,8 @@ namespace docx
   Paragraph TableCell::AppendParagraph()
   {
     if (!impl_) return Paragraph();
-    auto w_p = impl_->w_tc_.append_child("w:p");
-    auto w_pPr = w_p.append_child("w:pPr");
+    pugi::xml_node w_p = impl_->w_tc_.append_child("w:p");
+    pugi::xml_node w_pPr = w_p.append_child("w:pPr");
 
     Paragraph::Impl* impl = new Paragraph::Impl;
     impl->w_body_ = impl_->w_tc_;
@@ -2285,8 +2285,8 @@ namespace docx
   Paragraph TableCell::FirstParagraph()
   {
     if (!impl_) return Paragraph();
-    auto w_p = impl_->w_tc_.child("w:p");
-    auto w_pPr = w_p.child("w:pPr");
+    pugi::xml_node w_p = impl_->w_tc_.child("w:p");
+    pugi::xml_node w_pPr = w_p.child("w:pPr");
 
     Paragraph::Impl* impl = new Paragraph::Impl;
     impl->w_body_ = impl_->w_tc_;
@@ -2325,11 +2325,11 @@ namespace docx
   void TextFrame::SetSize(const int w, const int h)
   {
     if (!impl_) return;
-    auto w_w = impl_->w_framePr_.attribute("w:w");
+    pugi::xml_attribute w_w = impl_->w_framePr_.attribute("w:w");
     if (!w_w) {
       w_w = impl_->w_framePr_.append_attribute("w:w");
     }
-    auto w_h = impl_->w_framePr_.attribute("w:h");
+    pugi::xml_attribute w_h = impl_->w_framePr_.attribute("w:h");
     if (!w_h) {
       w_h = impl_->w_framePr_.append_attribute("w:h");
     }
@@ -2365,7 +2365,7 @@ namespace docx
   void TextFrame::SetAnchor_(const char* attrName, const Anchor anchor)
   {
     if (!impl_) return;
-    auto w_anchor = impl_->w_framePr_.attribute(attrName);
+    pugi::xml_attribute w_anchor = impl_->w_framePr_.attribute(attrName);
     if (!w_anchor) {
       w_anchor = impl_->w_framePr_.append_attribute(attrName);
     }
@@ -2385,7 +2385,7 @@ namespace docx
   void TextFrame::SetPosition_(const char* attrName, const Position align)
   {
     if (!impl_) return;
-    auto w_align = impl_->w_framePr_.attribute(attrName);
+    pugi::xml_attribute w_align = impl_->w_framePr_.attribute(attrName);
     if (!w_align) {
       w_align = impl_->w_framePr_.append_attribute(attrName);
     }
@@ -2414,7 +2414,7 @@ namespace docx
   void TextFrame::SetPosition_(const char* attrName, const int twip)
   {
     if (!impl_) return;
-    auto w_Align = impl_->w_framePr_.attribute(attrName);
+    pugi::xml_attribute w_Align = impl_->w_framePr_.attribute(attrName);
     if (!w_Align) {
       w_Align = impl_->w_framePr_.append_attribute(attrName);
     }
@@ -2424,7 +2424,7 @@ namespace docx
   void TextFrame::SetTextWrapping(const Wrapping wrapping)
   {
     if (!impl_) return;
-    auto w_wrap = impl_->w_framePr_.attribute("w:wrap");
+    pugi::xml_attribute w_wrap = impl_->w_framePr_.attribute("w:wrap");
     if (!w_wrap) {
       w_wrap = impl_->w_framePr_.append_attribute("w:wrap");
     }
