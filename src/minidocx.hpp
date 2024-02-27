@@ -522,6 +522,9 @@ namespace docx
     // add text frame
     TextFrame AppendTextFrame(const int w, const int h);
 
+    // document settings
+    void SetReadOnly(const bool enabled = true);
+
   private:
     struct Impl;
     Impl* impl_;
