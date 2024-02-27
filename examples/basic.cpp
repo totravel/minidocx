@@ -22,6 +22,7 @@ int main()
   p4r2.SetFont(u8"黑体");
   p4r2.SetFontStyle(Run::Bold | Run::Italic);
 
+  doc.SetReadOnly();
   doc.Save();
   return 0;
 }
