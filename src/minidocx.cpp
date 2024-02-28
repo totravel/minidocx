@@ -291,8 +291,13 @@ namespace docx
   }
 
   Document::Document(const std::string& path)
-    : Document()
   {
+    impl_ = new Impl;
+    impl_->doc_.load_buffer(DOCUMENT_XML, std::strlen(DOCUMENT_XML), pugi::parse_declaration);
+    impl_->w_body_ = impl_->doc_.child("w:document").child("w:body");
+    impl_->w_sectPr_ = impl_->w_body_.child("w:sectPr");
+    impl_->settings_.load_buffer(SETTINGS_XML, std::strlen(SETTINGS_XML), pugi::parse_declaration);
+    impl_->w_settings_ = impl_->settings_.child("w:settings");
     impl_->path_ = path;
   }
 
@@ -656,7 +661,7 @@ namespace docx
     }
 
     for (pugi::xml_node p = docVars.child("w:docVar"); p; p = p.next_sibling("w:docVar")) {
-      vars.insert({ p.attribute("w:name").value(), p.attribute("w:val").value() });
+      vars.insert(std::pair<std::string, std::string>( p.attribute("w:name").value(), p.attribute("w:val").value() ));
     }
 
     return vars;
