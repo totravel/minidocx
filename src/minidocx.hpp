@@ -8,6 +8,7 @@
 #include <iostream> // std::ostream
 #include <string>
 #include <vector>
+#include <map>
 
 
 namespace docx
@@ -237,7 +238,7 @@ namespace docx
 
     operator bool();
     Run Next();
-    
+
     // text
     void AppendText(const std::string& text);
     std::string GetText();
@@ -316,7 +317,7 @@ namespace docx
     void GetPageMargin(int& header, int& footer);
 
     void SetColumn(const int num, const int space = 425);
-    
+
     enum class PageNumberFormat {
       Decimal,      // e.g., 1, 2, 3, 4, etc.
       NumberInDash, // e.g., -1-, -2-, -3-, -4-, etc.
@@ -330,9 +331,9 @@ namespace docx
 
     /**
      * Specifies the page numbers for pages in the section.
-     * 
+     *
      * @param fmt   Specifies the number format to be used for page numbers in the section.
-     * 
+     *
      * @param start Specifies the page number that appears on the first page of the section.
      *              If the value is omitted, numbering continues from the highest page number in the previous section.
      */
@@ -481,6 +482,7 @@ namespace docx
 
   public:
     // constructs an empty document
+    Document();
     Document(const std::string& path);
     ~Document();
 
@@ -524,6 +526,9 @@ namespace docx
 
     // document settings
     void SetReadOnly(const bool enabled = true);
+
+    std::map<std::string, std::string> GetVars();
+    void SetVars(const std::map<std::string, std::string>& vars);
 
   private:
     struct Impl;
