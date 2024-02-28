@@ -814,17 +814,7 @@ namespace docx
 
   void Paragraph::SetLineSpacingSingle()
   {
-    if (!impl_) return;
-    pugi::xml_node spacing = impl_->w_pPr_.child("w:spacing");
-    if (!spacing) return;
-    pugi::xml_attribute spacingLineRule = spacing.attribute("w:lineRule");
-    if (spacingLineRule) {
-      spacing.remove_attribute(spacingLineRule);
-    }
-    pugi::xml_attribute spacingLine = spacing.attribute("w:line");
-    if (spacingLine) {
-      spacing.remove_attribute(spacingLine);
-    }
+    SetLineSpacing(240, "auto");
   }
 
   void Paragraph::SetLineSpacingLines(const double at)
