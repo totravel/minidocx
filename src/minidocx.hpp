@@ -483,11 +483,10 @@ namespace docx
   public:
     // constructs an empty document
     Document();
-    Document(const std::string& path);
     ~Document();
 
     // save document to file
-    bool Save();
+    bool Save(const std::string& path);
     bool Open(const std::string& path);
 
     // get paragraph

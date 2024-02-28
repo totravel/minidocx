@@ -6,7 +6,7 @@ using namespace docx;
 
 int main()
 {
-  Document doc("./text_frame.docx");
+  Document doc;
 
   doc.AppendParagraph("Hello, World!");
 
@@ -18,6 +18,6 @@ int main()
   // frame.SetPositionY(CM2Twip(1), TextFrame::Anchor::Margin);
   frame.SetTextWrapping(TextFrame::Wrapping::Around);
 
-  doc.Save();
+  doc.Save("text_frame.docx");
   return 0;
 }

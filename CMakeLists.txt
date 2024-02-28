@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.27)
 project(minidocx VERSION 0.5.0 LANGUAGES C CXX) # C needed by zip.c
 
 option(BUILD_EXAMPLES  "Build examples"               ON)
@@ -11,6 +11,7 @@ set(PUGIXML_DIR     "${THIRD_PARTY_DIR}/pugixml-1.13"      CACHE PATH "pugixml")
 
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
 set(CMAKE_DEBUG_POSTFIX d)
+set(CMAKE_VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_library(zip INTERFACE)
 set_target_properties(zip PROPERTIES
@@ -48,6 +49,7 @@ if(BUILD_EXAMPLES)
   add_executable(table_advanced examples/table_advanced.cpp)
   add_executable(text_frame     examples/text_frame.cpp)
   add_executable(page_num       examples/page_num.cpp)
+  set_directory_properties(PROPERTIES VS_STARTUP_PROJECT basic)
 endif()
 
 install(TARGETS minidocx)

@@ -5,7 +5,7 @@ using namespace docx;
 
 int main()
 {
-  docx::Document doc("./page_num.docx");
+  docx::Document doc;
 
   auto p1 = doc.AppendParagraph("This is the 3rd paragraph in the 1st section.");
   auto p2 = doc.AppendParagraph("This is the 4th paragraph in the 1st section.");
@@ -21,6 +21,6 @@ int main()
   s2.SetPageNumber(docx::Section::PageNumberFormat::UpperLetter, 1);
 
   std::cout << doc << std::endl;
-  doc.Save();
+  doc.Save("page_num.docx");
   return 0;
 }
