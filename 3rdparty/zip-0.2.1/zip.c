@@ -39,7 +39,7 @@
 #include "miniz.h"
 #include "zip.h"
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #include <io.h>
 
 #define ftruncate(fd, sz) (-(_chsize_s((fd), (sz)) != 0))
