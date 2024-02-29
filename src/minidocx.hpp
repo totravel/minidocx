@@ -528,6 +528,7 @@ namespace docx
 
     std::map<std::string, std::string> GetVars();
     void SetVars(const std::map<std::string, std::string>& vars);
+    void AddVars(const std::map<std::string, std::string>& vars);
 
   private:
     struct Impl;
