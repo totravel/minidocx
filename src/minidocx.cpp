@@ -677,6 +677,24 @@ namespace docx
   }
 
 
+  void Document::AddVars(const std::map<std::string, std::string>& vars)
+  {
+    if (!impl_) return;
+
+    pugi::xml_node docVars = impl_->w_settings_.child("w:docVars");
+    if (!docVars) {
+      docVars = impl_->w_settings_.append_child("w:docVars");
+    }
+
+    std::map<std::string, std::string>::const_iterator it;
+    for (it = vars.begin(); it != vars.end(); it++) {
+      pugi::xml_node docVar = docVars.append_child("w:docVar");
+      docVar.append_attribute("w:name") = it->first.c_str();
+      docVar.append_attribute("w:val") = it->second.c_str();
+    }
+  }
+
+
   // class Paragraph
   Paragraph::Paragraph() : impl_(NULL)
   {
