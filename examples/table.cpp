@@ -6,7 +6,7 @@ using namespace docx;
 
 int main()
 {
-  Document doc("./table.docx");
+  Document doc;
 
   auto tbl = doc.AppendTable(4, 5);
 
@@ -32,6 +32,6 @@ int main()
   
   // std::cout << doc;
   
-  doc.Save();
+  doc.Save("table.docx");
   return 0;
 }

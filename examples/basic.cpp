@@ -5,7 +5,7 @@ using namespace docx;
 
 int main()
 {
-  Document doc("./a.docx");
+  Document doc;
 
   auto p1 = doc.AppendParagraph("Hello, World!", 12, "Times New Roman");
   auto p2 = doc.AppendParagraph(u8"你好，世界！", 14, u8"宋体");
@@ -23,6 +23,6 @@ int main()
   p4r2.SetFontStyle(Run::Bold | Run::Italic);
 
   doc.SetReadOnly();
-  doc.Save();
+  doc.Save("basic.docx");
   return 0;
 }

@@ -4,7 +4,7 @@
 
 int main()
 {
-  docx::Document doc("./breaks.docx");
+  docx::Document doc;
 
   auto p = doc.AppendParagraph();
   p.SetAlignment(docx::Paragraph::Alignment::Left);
@@ -17,6 +17,6 @@ int main()
 
   doc.AppendParagraph("see you next page.");
 
-  doc.Save();
+  doc.Save("breaks.docx");
   return 0;
 }

@@ -4,7 +4,7 @@
 
 int main()
 {
-  docx::Document doc("./section.docx");
+  docx::Document doc;
 
   auto p1 = doc.AppendParagraph("This is the 1st paragraph of the 1st section (A3).");
   auto p2 = doc.AppendSectionBreak();
@@ -69,6 +69,6 @@ int main()
   p4.SetAlignment(docx::Paragraph::Alignment::Centered);
   p6.SetAlignment(docx::Paragraph::Alignment::Right);
 
-  doc.Save();
+  doc.Save("section.docx");
   return 0;
 }

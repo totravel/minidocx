@@ -3,7 +3,7 @@
 
 int main()
 {
-  docx::Document doc("./paragraph.docx");
+  docx::Document doc;
 
   doc.AppendParagraph("This is the 2nd paragraph.");
   doc.AppendParagraph("This is the 3rd paragraph.");
@@ -27,6 +27,6 @@ int main()
   doc.InsertParagraphBefore(p4).AppendRun("New paragraph before the 4th paragraph.");
   doc.InsertParagraphAfter(p4).AppendRun("New paragraph after the 4th paragraph.");
 
-  doc.Save();
+  doc.Save("paragraph.docx");
   return 0;
 }

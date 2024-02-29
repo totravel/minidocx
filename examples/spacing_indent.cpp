@@ -7,7 +7,7 @@
 
 int main()
 {
-  docx::Document doc("./spacing_indent.docx");
+  docx::Document doc;
 
   // Page 1
   auto p1 = doc.AppendParagraph(text1);
@@ -49,6 +49,6 @@ int main()
   p9.SetBeforeSpacingLines(1.5);
   p9.SetAfterSpacing(docx::Pt2Twip(10));
 
-  doc.Save();
+  doc.Save("spacing_indent.docx");
   return 0;
 }

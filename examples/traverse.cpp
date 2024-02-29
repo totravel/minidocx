@@ -4,7 +4,7 @@
 
 int main()
 {
-  docx::Document doc("./traverse.docx");
+  docx::Document doc;
 
   // Section 1
   doc.AppendParagraph("This is the 1st paragraph.");
@@ -44,6 +44,6 @@ int main()
     if (p == last) break;
   }
 
-  doc.Save();
+  doc.Save("traverse.docx");
   return 0;
 }

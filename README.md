@@ -44,7 +44,7 @@ using namespace docx;
 
 int main()
 {
-  Document doc("./a.docx");
+  Document doc;
 
   auto p1 = doc.AppendParagraph("Hello, World!", 12, "Times New Roman");
   auto p2 = doc.AppendParagraph(u8"你好，世界！", 14, u8"宋体");
@@ -61,7 +61,7 @@ int main()
   p4r2.SetFont(u8"黑体");
   p4r2.SetFontStyle(Run::Bold | Run::Italic);
 
-  doc.Save();
+  doc.Save("a.docx");
   return 0;
 }
 ```
@@ -131,13 +131,13 @@ See [Lars Corneliussen's blog post](https://startbigthinksmall.wordpress.com/201
 `Document` is the class which is able to write a .docx file. To create a new document, it is very easy:
 
 ```cpp
-Document doc("./a.docx");
+Document doc;
 ```
 
 The last step is to save the document:
 
 ```cpp
-doc.Save();
+doc.Save("a.docx");
 ```
 
 ### Paragraph

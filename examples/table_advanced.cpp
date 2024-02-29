@@ -6,7 +6,7 @@ using namespace docx;
 
 int main()
 {
-  Document doc("./table_advanced.docx");
+  Document doc;
 
   doc.AppendParagraph("Table 1");
   auto t1 = doc.AppendTable(4, 5);
@@ -72,6 +72,6 @@ int main()
 
   // std::cout << doc;
 
-  doc.Save();
+  doc.Save("table_advanced.docx");
   return 0;
 }

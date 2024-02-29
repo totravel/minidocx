@@ -1,7 +1,7 @@
 ﻿/**
  * minidocx 0.5.0 - C++ library for creating Microsoft Word Document (.docx).
  * --------------------------------------------------------
- * Copyright (C) 2022-2023, by Xie Zequn (totravel@foxmail.com)
+ * Copyright (C) 2022-2024, by Xie Zequn (totravel@foxmail.com)
  * Report bugs and download new versions at https://github.com/totravel/minidocx
  */
 
@@ -167,7 +167,6 @@ namespace docx
 
   struct Document::Impl
   {
-    std::string        path_;
     pugi::xml_document doc_;
     pugi::xml_node     w_body_;
     pugi::xml_node     w_sectPr_;
@@ -290,17 +289,12 @@ namespace docx
     impl_->w_settings_ = impl_->settings_.child("w:settings");
   }
 
-  Document::Document(const std::string& path)
-  {
     impl_ = new Impl;
     impl_->doc_.load_buffer(DOCUMENT_XML, std::strlen(DOCUMENT_XML), pugi::parse_declaration);
     impl_->w_body_ = impl_->doc_.child("w:document").child("w:body");
     impl_->w_sectPr_ = impl_->w_body_.child("w:sectPr");
     impl_->settings_.load_buffer(SETTINGS_XML, std::strlen(SETTINGS_XML), pugi::parse_declaration);
     impl_->w_settings_ = impl_->settings_.child("w:settings");
-    impl_->path_ = path;
-  }
-
   Document::~Document()
   {
     if (impl_ != NULL) {
@@ -309,11 +303,11 @@ namespace docx
     }
   }
 
-  bool Document::Save()
+  bool Document::Save(const std::string& path)
   {
     if (!impl_) return false;
 
-    struct zip_t* zip = zip_open(impl_->path_.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'w');
+    struct zip_t* zip = zip_open(path.c_str(), ZIP_DEFAULT_COMPRESSION_LEVEL, 'w');
     if (zip == NULL) {
       return false;
     }
@@ -819,17 +813,7 @@ namespace docx
 
   void Paragraph::SetLineSpacingSingle()
   {
-    if (!impl_) return;
-    pugi::xml_node spacing = impl_->w_pPr_.child("w:spacing");
-    if (!spacing) return;
-    pugi::xml_attribute spacingLineRule = spacing.attribute("w:lineRule");
-    if (spacingLineRule) {
-      spacing.remove_attribute(spacingLineRule);
-    }
-    pugi::xml_attribute spacingLine = spacing.attribute("w:line");
-    if (spacingLine) {
-      spacing.remove_attribute(spacingLine);
-    }
+    SetLineSpacing(240, "auto");
   }
 
   void Paragraph::SetLineSpacingLines(const double at)
