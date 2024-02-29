@@ -39,10 +39,14 @@
 #include "miniz.h"
 #include "zip.h"
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__)
 #include <io.h>
 
+#if defined(__BORLANDC__)
+#define ftruncate(fd, sz) (-(chsize((fd), (sz)) != 0))
+#else
 #define ftruncate(fd, sz) (-(_chsize_s((fd), (sz)) != 0))
+#endif
 #define fileno _fileno
 #endif
 
