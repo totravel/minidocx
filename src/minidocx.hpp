@@ -244,6 +244,7 @@ namespace docx
     std::string GetText();
     void ClearText();
     void AppendLineBreak();
+    void AppendTabs(const unsigned int count = 1);
 
     // text formatting
     typedef unsigned int FontStyle;

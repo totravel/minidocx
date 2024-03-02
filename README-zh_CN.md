@@ -259,6 +259,17 @@ r.AppendText("a simple sentence.");
 auto r = p.AppendPageBreak();
 ```
 
+#### 制表符
+
+你可以用 `AppendTabs()` 方法插入一个或多个制表符。
+
+```cpp
+auto r = doc.AppendParagraph().AppendRun();
+r.AppendText(u8"甲方：");
+r.AppendTabs(4);
+r.AppendText(u8"乙方：");
+```
+
 ### 分节
 
 任何文档都至少包含一个分节且不可删除。

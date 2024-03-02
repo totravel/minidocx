@@ -1632,6 +1632,13 @@ namespace docx
     impl_->w_r_.append_child("w:br");
   }
 
+  void Run::AppendTabs(const unsigned int count)
+  {
+    if (!impl_) return;
+    for (unsigned int i = 0; i < count; i++)
+      impl_->w_r_.append_child("w:tab");
+  }
+
   void Run::SetFontSize(const double fontSize)
   {
     if (!impl_) return;
