@@ -170,8 +170,20 @@ namespace docx
     pugi::xml_document doc_;
     pugi::xml_node     w_body_;
     pugi::xml_node     w_sectPr_;
+
     pugi::xml_document settings_;
     pugi::xml_node     w_settings_;
+
+    unsigned int nextBookmarkId_;
+    std::vector<Bookmark> bookmarks_;
+  };
+
+  struct Bookmark::Impl
+  {
+    unsigned int id_;
+    std::string name_;
+    pugi::xml_node w_bookmarkStart_;
+    pugi::xml_node w_bookmarkEnd_;
   };
 
   struct Paragraph::Impl
@@ -278,6 +290,52 @@ namespace docx
   }
 
 
+  // class Bookmark
+  Bookmark::Bookmark() : impl_(NULL)
+  {
+
+  }
+
+  Bookmark::Bookmark(Impl* impl) : impl_(impl)
+  {
+
+  }
+
+  Bookmark::Bookmark(const Bookmark& rhs)
+  {
+    impl_ = new Impl;
+    impl_->id_ = rhs.impl_->id_;
+    impl_->name_ = rhs.impl_->name_;
+    impl_->w_bookmarkStart_ = rhs.impl_->w_bookmarkStart_;
+    impl_->w_bookmarkEnd_ = rhs.impl_->w_bookmarkEnd_;
+  }
+
+  Bookmark::~Bookmark()
+  {
+    if (impl_ != NULL) {
+      delete impl_;
+      impl_ = NULL;
+    }
+  }
+
+  bool Bookmark::operator==(const Bookmark& rhs)
+  {
+    if (!impl_ && !rhs.impl_) return true;
+    if (impl_ && rhs.impl_) return impl_->id_ == rhs.impl_->id_;
+    return false;
+  }
+
+  unsigned int Bookmark::GetId() const
+  {
+    return impl_->id_;
+  }
+
+  std::string Bookmark::GetName() const
+  {
+    return impl_->name_;
+  }
+
+
   // class Document
   Document::Document()
   {
@@ -287,6 +345,7 @@ namespace docx
     impl_->w_sectPr_ = impl_->w_body_.child("w:sectPr");
     impl_->settings_.load_buffer(SETTINGS_XML, std::strlen(SETTINGS_XML), pugi::parse_declaration);
     impl_->w_settings_ = impl_->settings_.child("w:settings");
+    impl_->nextBookmarkId_ = 0;
   }
 
   Document::~Document()
@@ -375,6 +434,7 @@ namespace docx
     }
 
     zip_close(zip);
+    FindBookmarks();
     return true;
   }
 
@@ -637,7 +697,6 @@ namespace docx
     documentProtectionEnforcement.set_value("1");
   }
 
-
   std::map<std::string, std::string> Document::GetVars()
   {
     std::map<std::string, std::string> vars;
@@ -649,12 +708,11 @@ namespace docx
     }
 
     for (pugi::xml_node p = docVars.child("w:docVar"); p; p = p.next_sibling("w:docVar")) {
-      vars.insert(std::pair<std::string, std::string>( p.attribute("w:name").value(), p.attribute("w:val").value() ));
+      vars.insert(std::pair<std::string, std::string>(p.attribute("w:name").value(), p.attribute("w:val").value()));
     }
 
     return vars;
   }
-
 
   void Document::SetVars(const std::map<std::string, std::string>& vars)
   {
@@ -676,7 +734,6 @@ namespace docx
     }
   }
 
-
   void Document::AddVars(const std::map<std::string, std::string>& vars)
   {
     if (!impl_) return;
@@ -692,6 +749,94 @@ namespace docx
       docVar.append_attribute("w:name") = it->first.c_str();
       docVar.append_attribute("w:val") = it->second.c_str();
     }
+  }
+
+  void Document::FindBookmarks()
+  {
+    if (!impl_) return;
+
+    unsigned int maxBookmarkId = 0;
+
+    for (pugi::xml_node i = impl_->w_body_.first_child(); i; i = i.next_sibling()) {
+      if (std::strcmp(i.name(), "w:p") != 0) continue;
+
+      for (pugi::xml_node j = i.first_child(); j; j = j.next_sibling()) {
+
+        if (std::strcmp(j.name(), "w:bookmarkStart") == 0) {
+
+          Bookmark::Impl* impl = new Bookmark::Impl;
+          impl->id_ = j.attribute("w:id").as_uint();
+          impl->name_ = j.attribute("w:name").as_string();
+          impl->w_bookmarkStart_ = j;
+
+          if (maxBookmarkId < impl->id_)
+            maxBookmarkId = impl->id_;
+
+          impl_->bookmarks_.push_back(impl);
+        }
+        else if (std::strcmp(j.name(), "w:bookmarkEnd") == 0) {
+
+          const unsigned int id = j.attribute("w:id").as_uint();
+          std::vector<Bookmark>::iterator it = std::find_if(
+            impl_->bookmarks_.begin(),
+            impl_->bookmarks_.end(),
+            [id](const Bookmark& b) {
+              return b.GetId() == id;
+            });
+          if (it != impl_->bookmarks_.end())
+            it->impl_->w_bookmarkEnd_ = j;
+        }
+        else {
+          continue;
+        }
+      }
+    }
+
+    if (impl_->bookmarks_.size() > 0)
+      impl_->nextBookmarkId_ = maxBookmarkId++;
+  }
+
+  std::vector<Bookmark> Document::GetBookmarks()
+  {
+    if (!impl_) return std::vector<Bookmark>();
+    return impl_->bookmarks_;
+  }
+
+  Bookmark Document::AddBookmark(const std::string& name, const Run& start, const Run& end)
+  {
+    if (!impl_) return Bookmark();
+
+    Bookmark::Impl* impl = new Bookmark::Impl;
+    impl->id_ = impl_->nextBookmarkId_++;
+    impl->name_ = name;
+
+    pugi::xml_node w_bookmarkStart = start.impl_->w_p_.insert_child_before("w:bookmarkStart", start.impl_->w_r_);
+    w_bookmarkStart.append_attribute("w:id") = impl->id_;
+    w_bookmarkStart.append_attribute("w:name") = impl->name_.c_str();
+
+    pugi::xml_node w_bookmarkEnd = end.impl_->w_p_.insert_child_after("w:bookmarkEnd", end.impl_->w_r_);
+    w_bookmarkEnd.append_attribute("w:id") = impl->id_;
+
+    impl->w_bookmarkStart_ = w_bookmarkStart;
+    impl->w_bookmarkStart_ = w_bookmarkEnd;
+
+    Bookmark b(impl);
+    impl_->bookmarks_.push_back(b);
+    return b;
+  }
+
+
+  void Document::RemoveBookmark(Bookmark& bookmark)
+  {
+    if (!impl_) return;
+
+    std::vector<Bookmark>::iterator it = std::find(
+      impl_->bookmarks_.begin(), impl_->bookmarks_.end(), bookmark);
+    if (it != impl_->bookmarks_.end())
+      impl_->bookmarks_.erase(it);
+
+    bookmark.impl_->w_bookmarkStart_.parent().remove_child(bookmark.impl_->w_bookmarkStart_);
+    bookmark.impl_->w_bookmarkEnd_.parent().remove_child(bookmark.impl_->w_bookmarkEnd_);
   }
 
 
