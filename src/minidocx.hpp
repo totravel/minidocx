@@ -226,6 +226,7 @@ namespace docx
 
   class Run
   {
+    friend class Document;
     friend class Paragraph;
     friend std::ostream& operator<<(std::ostream& out, const Run& r);
 
@@ -244,6 +245,7 @@ namespace docx
     std::string GetText();
     void ClearText();
     void AppendLineBreak();
+    void AppendTabs(const unsigned int count = 1);
 
     // text formatting
     typedef unsigned int FontStyle;
@@ -476,6 +478,27 @@ namespace docx
   }; // class TextFrame
 
 
+  class Bookmark
+  {
+    friend class Document;
+
+  public:
+    Bookmark();
+    Bookmark(const Bookmark& rhs);
+    ~Bookmark();
+    bool operator==(const Bookmark& rhs);
+
+    inline unsigned int GetId() const;
+    inline std::string GetName() const;
+
+  private:
+    struct Impl;
+    Impl* impl_;
+
+    Bookmark(Impl* impl);
+  };
+
+
   class Document
   {
     friend std::ostream& operator<<(std::ostream& out, const Document& doc);
@@ -529,6 +552,12 @@ namespace docx
     std::map<std::string, std::string> GetVars();
     void SetVars(const std::map<std::string, std::string>& vars);
     void AddVars(const std::map<std::string, std::string>& vars);
+
+    // bookmarks
+    void FindBookmarks();
+    std::vector<Bookmark> GetBookmarks();
+    Bookmark AddBookmark(const std::string& name, const Run& start, const Run& end);
+    void RemoveBookmark(Bookmark& b);
 
   private:
     struct Impl;

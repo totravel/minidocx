@@ -259,6 +259,17 @@ Page breaks are special run that can only be appended to a paragraph by calling 
 auto r = p.AppendPageBreak();
 ```
 
+#### Tab character
+
+You can append one or more tab character into a run with `AppendTabs()` method.
+
+```cpp
+auto r = doc.AppendParagraph().AppendRun();
+r.AppendText("The Seller: ");
+r.AppendTabs(4);
+r.AppendText("The Buyer: ");
+```
+
 ### Section
 
 Each document contains at least one section and you can't remove it.
