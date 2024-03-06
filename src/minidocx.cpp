@@ -777,14 +777,12 @@ namespace docx
         else if (std::strcmp(j.name(), "w:bookmarkEnd") == 0) {
 
           const unsigned int id = j.attribute("w:id").as_uint();
-          std::vector<Bookmark>::iterator it = std::find_if(
-            impl_->bookmarks_.begin(),
-            impl_->bookmarks_.end(),
-            [id](const Bookmark& b) {
-              return b.GetId() == id;
-            });
-          if (it != impl_->bookmarks_.end())
-            it->impl_->w_bookmarkEnd_ = j;
+          for (std::vector<Bookmark>::iterator it = impl_->bookmarks_.begin(); it != impl_->bookmarks_.end(); ++it) {
+            if ((*it).GetId() == id) {
+              it->impl_->w_bookmarkEnd_ = j;
+              break;
+            }
+          }
         }
         else {
           continue;
