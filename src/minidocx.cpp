@@ -6,6 +6,7 @@
  */
 
 #include "minidocx.hpp"
+#include <algorithm>
 #include <cstring> // std::strlen(), std::strcmp()
 #include <cstdlib> // std::free()
 #include <cctype> // std::isspace()
