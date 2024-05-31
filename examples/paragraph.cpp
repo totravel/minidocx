@@ -27,6 +27,9 @@ int main()
   doc.InsertParagraphBefore(p4).AppendRun("New paragraph before the 4th paragraph.");
   doc.InsertParagraphAfter(p4).AppendRun("New paragraph after the 4th paragraph.");
 
+  p4.SetFontColor("48f205");
+  p4.SetFontColor("f27941");
+
   doc.Save("paragraph.docx");
   return 0;
 }

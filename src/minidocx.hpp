@@ -177,7 +177,7 @@ namespace docx
 
     void RemoveCell_(TableCell tc);
 
-    // units: 
+    // units:
     //   auto - Specifies that width is determined by the overall table layout algorithm.
     //   dxa  - Specifies that the value is in twentieths of a point (1/1440 of an inch).
     //   nil  - Specifies a value of zero.
@@ -199,10 +199,10 @@ namespace docx
 
     // style - Specifies the style of the border.
     // width - Specifies the width of the border in points.
-    // color - Specifies the color of the border. 
-    //         Values are given as hex values (in RRGGBB format). 
-    //         No #, unlike hex values in HTML/CSS. E.g., color="FFFF00". 
-    //         A value of auto is also permitted and will allow the 
+    // color - Specifies the color of the border.
+    //         Values are given as hex values (in RRGGBB format).
+    //         No #, unlike hex values in HTML/CSS. E.g., color="FFFF00".
+    //         A value of auto is also permitted and will allow the
     //         consuming word processor to determine the color.
     void SetTopBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char* color = "auto");
     void SetBottomBorders(const BorderStyle style = BorderStyle::Single, const double width = 0.5, const char* color = "auto");
@@ -264,6 +264,8 @@ namespace docx
 
     void SetFontStyle(const FontStyle fontStyle);
     FontStyle GetFontStyle();
+
+    void SetFontColor(const std::string& color);
 
     void SetCharacterSpacing(const int characterSpacing);
     int GetCharacterSpacing();
@@ -426,6 +428,7 @@ namespace docx
     void SetFont(const std::string& fontAscii, const std::string& fontEastAsia = "");
     void SetFontStyle(const Run::FontStyle fontStyle);
     void SetCharacterSpacing(const int characterSpacing);
+    void SetFontColor(const std::string& s);
     std::string GetText();
 
     // section

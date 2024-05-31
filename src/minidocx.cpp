@@ -975,15 +975,15 @@ namespace docx
   void Paragraph::SetLineSpacingLines(const double at)
   {
     // A normal single-spaced paragaph has a w:line value of 240, or 12 points.
-    // 
-    // If the value of lineRule is auto, then the value of line 
+    //
+    // If the value of lineRule is auto, then the value of line
     // is interpreted as 240th of a line, e.g. 360 = 1.5 lines.
     SetLineSpacing(at * 240, "auto");
   }
 
   void Paragraph::SetLineSpacingAtLeast(const int at)
   {
-    // If the value of the lineRule attribute is atLeast or exactly, 
+    // If the value of the lineRule attribute is atLeast or exactly,
     // then the value of the line attribute is interpreted as 240th of a point.
     // (Not really. Actually, values are in twentieths of a point, e.g. 240 = 12 pt.)
     SetLineSpacing(at, "atLeast");
@@ -1043,7 +1043,7 @@ namespace docx
 
   void Paragraph::SetBeforeSpacingLines(const double beforeSpacing)
   {
-    // To specify units in hundreths of a line, 
+    // To specify units in hundreths of a line,
     // use attributes 'afterLines'/'beforeLines'.
     SetSpacing(beforeSpacing * 100, "w:beforeAutospacing", "w:beforeLines");
   }
@@ -1085,8 +1085,8 @@ namespace docx
 
   void Paragraph::SetLeftIndentChars(const double leftIndent)
   {
-    // To specify units in hundreths of a character, 
-    // use attributes leftChars/endChars, rightChars/endChars, etc. 
+    // To specify units in hundreths of a character,
+    // use attributes leftChars/endChars, rightChars/endChars, etc.
     SetIndent(leftIndent * 100, "w:leftChars");
   }
 
@@ -1204,6 +1204,13 @@ namespace docx
   {
     for (Run r = FirstRun(); r; r = r.Next()) {
       r.SetCharacterSpacing(characterSpacing);
+    }
+  }
+
+  void Paragraph::SetFontColor(const std::string &color)
+  {
+    for (Run r = FirstRun();r ;r = r.Next()) {
+        r.SetFontColor(color);
     }
   }
 
@@ -1895,6 +1902,16 @@ namespace docx
     return fontStyle;
   }
 
+  void Run::SetFontColor(const std::string &color)
+  {
+    if (!impl_) return;
+    auto n = impl_->w_rPr_.child("w:color");
+    if (n) {
+        n.attribute("w:val") = color.c_str();
+    }
+    else impl_->w_rPr_.append_child("w:color").append_attribute("w:val") = color.c_str();
+  }
+
   void Run::SetCharacterSpacing(const int characterSpacing)
   {
     if (!impl_) return;
@@ -2041,7 +2058,7 @@ namespace docx
         impl->w_tc_ = w_tc;
         impl->w_tcPr_ = w_tcPr;
         TableCell tc(impl);
-        // A table cell must contain at least one block-level element, 
+        // A table cell must contain at least one block-level element,
         // even if it is an empty <p/>.
         tc.AppendParagraph();
       }
