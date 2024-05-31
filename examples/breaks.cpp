@@ -10,12 +10,12 @@ int main()
   p.SetAlignment(docx::Paragraph::Alignment::Left);
 
   auto r = p.AppendRun();
-  r.AppendText("This is");
+  r.AppendText("Sample text here...");
   r.AppendLineBreak();
-  r.AppendText("a simple sentence.");
+  r.AppendText("And another line of sample text here...");
   p.AppendPageBreak();
 
-  doc.AppendParagraph("see you next page.");
+  doc.AppendParagraph("Page 2");
 
   doc.Save("breaks.docx");
   return 0;

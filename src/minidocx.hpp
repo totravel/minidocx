@@ -262,6 +262,9 @@ namespace docx
     void SetFont(const std::string& fontAscii, const std::string& fontEastAsia = "");
     void GetFont(std::string& fontAscii, std::string& fontEastAsia);
 
+    void SetFontColor(const std::string& hex);
+    std::string GetFontColor();
+
     void SetFontStyle(const FontStyle fontStyle);
     FontStyle GetFontStyle();
 

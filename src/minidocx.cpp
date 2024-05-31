@@ -1846,6 +1846,34 @@ namespace docx
     if (rFontsEastAsia) fontEastAsia = rFontsEastAsia.value();
   }
 
+  void Run::SetFontColor(const std::string& hex)
+  {
+    if (!impl_) return;
+    pugi::xml_node color = impl_->w_rPr_.child("w:color");
+    if (!color) {
+      color = impl_->w_rPr_.append_child("w:color");
+    }
+    pugi::xml_attribute colorVal = color.attribute("w:val");
+    if (!colorVal) {
+      colorVal = color.append_attribute("w:val");
+    }
+    colorVal.set_value(hex.c_str());
+  }
+
+  std::string Run::GetFontColor()
+  {
+    if (impl_) {
+      pugi::xml_node color = impl_->w_rPr_.child("w:color");
+      if (color) {
+        pugi::xml_attribute colorVal = color.attribute("w:val");
+        if (colorVal) {
+          return colorVal.as_string();
+        }
+      }
+    }
+    return "auto";
+  }
+
   void Run::SetFontStyle(const FontStyle f)
   {
     if (!impl_) return;
