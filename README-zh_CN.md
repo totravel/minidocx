@@ -1,4 +1,6 @@
 
+> **警告**: 当前代码库已完全 **废弃** ，具有全新接口的下一代正在大力开发中（尚未上传）。
+
 # minidocx
 
 ![License](https://img.shields.io/github/license/totravel/minidocx)

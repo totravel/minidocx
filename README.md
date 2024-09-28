@@ -1,4 +1,6 @@
 
+> **Warning**: The current codebase of minidocx has been completely **deprecated** and the next generation of minidocx with a brand new APIs is under heavy development (not yet uploaded).
+
 # minidocx
 
 ![License](https://img.shields.io/github/license/totravel/minidocx)
