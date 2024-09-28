@@ -2055,8 +2055,10 @@ namespace docx
     }
 
     // init table
-    for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++)
       pugi::xml_node w_gridCol = impl_->w_tblGrid_.append_child("w:gridCol");
+
+    for (int i = 0; i < rows; i++) {
       pugi::xml_node w_tr = impl_->w_tbl_.append_child("w:tr");
 
       for (int j = 0; j < cols; j++) {
