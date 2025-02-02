@@ -1,0 +1,67 @@
+{
+  "version": 8,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 28,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "x64-win-msbuild-v143",
+      "binaryDir": "${sourceDir}/out/${presetName}",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64",
+      "toolset": "v143",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "windows-msvc-x64"
+        }
+      }
+    },
+    {
+      "name": "x64-linux-ninja-gcc",
+      "binaryDir": "${sourceDir}/out/${presetName}",
+      "generator": "Ninja Multi-Config",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "linux-gcc-x64"
+        },
+        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+          "sourceDir": "$env{HOME}/Projects/$ms{projectDirName}"
+        }
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "x64-win-msbuild-v143-debug",
+      "configurePreset": "x64-win-msbuild-v143",
+      "configuration": "Debug"
+    },
+    {
+      "name": "x64-win-msbuild-v143-release",
+      "configurePreset": "x64-win-msbuild-v143",
+      "configuration": "Release"
+    },
+    {
+      "name": "x64-linux-ninja-gcc-debug",
+      "configurePreset": "x64-linux-ninja-gcc",
+      "configuration": "Debug"
+    },
+    {
+      "name": "x64-linux-ninja-gcc-release",
+      "configurePreset": "x64-linux-ninja-gcc",
+      "configuration": "Release"
+    }
+  ]
+}
