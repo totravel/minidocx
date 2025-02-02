@@ -45,7 +45,7 @@ int main()
     rich->properties().fontSize_ = 32;
     rich->properties().color_ = "FF0000";
 
-    doc.saveAs("example.docx");
+    doc.saveAs("a.docx");
   }
   catch (const exception& ex) {
     std::cerr << ex.what() << std::endl;
@@ -55,6 +55,12 @@ int main()
 ```
 
 See other [examples](./examples).
+
+## Screenshots 截屏
+
+example.docx                        | picture.docx
+----------------------------------- | -----------------------------------
+![](screenshots/20250203000323.png) | ![](screenshots/20250203000246.png)
 
 ## Building 编译
 
@@ -74,7 +80,7 @@ out/x64-win-msbuild-v143/examples/Debug/myapp.exe # Run
 # Linux
 cmake --preset x64-linux-ninja-gcc
 cmake --build --preset x64-linux-ninja-gcc-debug
-out/x64-win-msbuild-v143/examples/myapp.exe
+out/x64-linux-ninja-gcc/examples/myapp
 ```
 
 ## Donation 捐赠
