@@ -2,6 +2,7 @@
 #pragma once
 
 #include "wordprocessing/properties/base.hpp"
+#include "wordprocessing/constants.hpp"
 
 
 namespace NAMESPACE
@@ -15,12 +16,15 @@ namespace NAMESPACE
 
 
     // Page Size 纸张大小
-    // For landscape mode, just reverses the width and height.
+    // Specifies the size and orientation for all pages in the section.
+    // 指定分节中所有页面的大小和方向。
     struct Size {
-      size_t width_ = 11906;
-      size_t height_ = 16838;
+      // Specifies the page size in twentieths of a point (tw).
+      // 以缇为单位指定页面大小。
+      size_t width_ = A4_W;
+      size_t height_ = A4_H;
+      bool landscape_ = false; // Landscape 横向
     } size_;
-    // A4
 
 
     // Page Margins 页边距

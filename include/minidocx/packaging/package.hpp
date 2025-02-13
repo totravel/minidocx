@@ -39,11 +39,7 @@ namespace NAMESPACE
   private:
     std::map<PartName, Buffer> buffered_;
 
-    void writeBufferedParts()
-    {
-      for (auto& ref : buffered_)
-        addFileFromMem(ref.first, ref.second.data(), ref.second.size());
-    }
+    void writeBufferedParts();
 
   protected:
     void addBufferedPart(const PartName& name, Buffer buf)

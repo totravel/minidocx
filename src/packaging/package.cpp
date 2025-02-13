@@ -57,6 +57,17 @@ namespace NAMESPACE
     addFileFromStream(name, ss);
   }
 
+
+  void Package::writeBufferedParts()
+  {
+    for (auto& ref : buffered_) {
+#ifndef NDEBUG
+      std::clog << "-----> " << ref.first.generic_string() << std::endl;
+#endif
+      addFileFromMem(ref.first, ref.second.data(), ref.second.size());
+    }
+  }
+
   
   void Package::initContentTypes()
   {

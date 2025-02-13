@@ -72,7 +72,7 @@ namespace NAMESPACE
     if (this == &rhs)
       return *this;
     Zip tmp{ std::move(rhs) };
-    swap(rhs);
+    swap(tmp);
     return *this;
   }
 
