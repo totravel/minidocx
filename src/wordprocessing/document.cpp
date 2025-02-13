@@ -825,10 +825,15 @@ namespace NAMESPACE
     w_type.append_attribute("w:val") = "nextPage";
 
     pugi::xml_node w_pgSz = w_sectPr.append_child("w:pgSz");
-    w_pgSz.append_attribute("w:w") = prop.size_.width_;
-    w_pgSz.append_attribute("w:h") = prop.size_.height_;
-    if (prop.size_.landscape_)
+    if (prop.size_.landscape_) {
+      w_pgSz.append_attribute("w:w") = prop.size_.height_;
+      w_pgSz.append_attribute("w:h") = prop.size_.width_;
       w_pgSz.append_attribute("w:orient") = "landscape";
+    }
+    else {
+      w_pgSz.append_attribute("w:w") = prop.size_.width_;
+      w_pgSz.append_attribute("w:h") = prop.size_.height_;
+    }
 
     pugi::xml_node w_pgMar = w_sectPr.append_child("w:pgMar");
     w_pgMar.append_attribute("w:top") = prop.margins_.top_;
