@@ -11,12 +11,6 @@ minidocx is a free, open-source, cross-platform, modern, light-weight and user-f
 > [!NOTE]
 > Check out the master branch to view minidocx 0.6.
 
-## Preview
-
-Light Mode | Dark Mode
----------- | ---------
-![](./screenshots/20250214232857.png) | ![](./screenshots/20250214233038.png)
-
 ## Features
 
 - Section
@@ -26,6 +20,12 @@ Light Mode | Dark Mode
 - Picture
 - Style
 - List
+
+## Preview
+
+Light Mode | Dark Mode
+---------- | ---------
+![](./screenshots/20250214232857.png) | ![](./screenshots/20250214233038.png)
 
 ## Example
 
@@ -162,25 +162,15 @@ All properties can be access via `properties()` or `setProperties()` method. See
 
 Following sections describe other features supported by minidocx. Please note this description may not be complete but limited to the most useful ones. If you want to find less common features, please check header files under `include` directory.
 
-### Tables
-
-...
-
-### Pictures
-
-...
-
-### Styles
-
-...
-
-### Lists
-
 ...
 
 ## Donation
 
-...
+If you benefit from this project, please consider donating to help me sustain my projects actively and make more of my ideas come true.
+
+Alipay | WeChat Pay
+------ | ----------
+![](./qrcode/alipay.png) | ![](./qrcode/wechat.png)
 
 ## Sponsor
 

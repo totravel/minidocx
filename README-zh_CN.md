@@ -3,7 +3,7 @@
 
 # minidocx
 
-minidocx 是一个免费、开源、跨平台、现代、轻量、易用的 C++20 库，用于生成 Word 文档（.docx 文件），遵循 [ECMA 376 5th edition](https://www.ecma-international.org/publications-and-standards/standards/ecma-376) or [ISO/IEC 29500-1:2016](https://www.iso.org/standard/71691.html) 标准，不依赖 MS Office 或 WPS Office。
+minidocx 是一个免费、开源、跨平台、现代、轻量、易用的 C++20 库，用于生成 Word 文档（.docx 文件），遵循 [ECMA 376 5th edition](https://www.ecma-international.org/publications-and-standards/standards/ecma-376) 或 [ISO/IEC 29500-1:2016](https://www.iso.org/standard/71691.html) 标准，不依赖 MS Office 或 WPS Office。
 
 > [!WARNING]
 > minidocx 1.0 仍为预览版，不建议在生产环境中使用。
@@ -85,11 +85,15 @@ out/x64-linux-ninja-gcc/examples/myapp
 
 如果我的项目对你有所帮助，请考虑给我一些支持和鼓励！
 
+Alipay | WeChat Pay
+------ | ----------
+![](./qrcode/alipay.png) | ![](./qrcode/wechat.png)
+
 ## 赞助
 
 你可以通过 [爱发电](https://afdian.com/a/totravel) 赞助本项目。
 
-你的赞助让我可以在这个项目上投入更多的时间和精力。
+你的赞助将使我可以在这个项目上投入更多的时间和精力，从而使项目得到积极的维护和更新。
 
 ## 许可
 
