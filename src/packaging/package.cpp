@@ -101,7 +101,7 @@ namespace NAMESPACE
   {
     pugi::xml_document doc;
     if (!doc.load_string(extractFileToString(TYPES_PART).c_str()))
-      throw exception("Cannot load xml");
+      throw Exception("Cannot load xml");
 
     pugi::xml_node root = doc.child("Types");
     if (!root)
@@ -167,7 +167,7 @@ namespace NAMESPACE
   {
     pugi::xml_document doc;
     if (!doc.load_string(extractFileToString(name).c_str()))
-      throw exception("Could not read relationships part");
+      throw Exception("Could not read relationships part");
 
     pugi::xml_node root = doc.child("Relationships");
     if (!root)
@@ -248,6 +248,7 @@ namespace NAMESPACE
     root.append_attribute("xmlns")
       .set_value(toPartRootNamespace(PartType::ExtendedProperties));
 
+    root.append_child("Template").append_child(pugi::node_pcdata).set_value("Normal.dotm");
     root.append_child("Application").append_child(pugi::node_pcdata).set_value("minidocx");
     root.append_child("AppVersion").append_child(pugi::node_pcdata).set_value("10.0000"); // XX.YYYY
 

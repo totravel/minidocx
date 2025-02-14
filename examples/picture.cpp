@@ -44,7 +44,7 @@ int main()
 
     doc.saveAs("picture.docx");
   }
-  catch (const exception& ex)
+  catch (const Exception& ex)
   {
     std::cerr << ex.what() << std::endl;
   }

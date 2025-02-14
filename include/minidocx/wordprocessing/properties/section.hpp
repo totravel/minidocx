@@ -16,35 +16,38 @@ namespace NAMESPACE
 
 
     // Page Size 纸张大小
-    // Specifies the size and orientation for all pages in the section.
-    // 指定分节中所有页面的大小和方向。
+    // Specifies the page size in twentieths of a point (tw).
+    // 以缇为单位指定纸张大小
     struct Size {
-      // Specifies the page size in twentieths of a point (tw).
-      // 以缇为单位指定页面大小。
       size_t width_ = A4_W;
       size_t height_ = A4_H;
-      bool landscape_ = false; // Landscape 横向
     } size_;
+    
+    
+    // Page Orientation 纸张方向
+    bool landscape_ = false;
 
 
     // Page Margins 页边距
+    // Specifies the page margins in twentieths of a point (tw).
+    // 以缇为单位指定页边距。
     struct Margins {
       size_t top_ = 1440;
       size_t bottom_ = 1440;
+      // 1440 = 1 in = 2.54 cm
 
       size_t left_ = 1800;
       size_t right_ = 1800;
+      // 1800 = 1.25 in = 3.17 cm
 
       size_t header_ = 992;
       size_t footer_ = 851;
+      // 992 = 1.75 cm
+      // 851 = 1.5 cm
 
       // Page Gutter Spacing 装订线
       size_t gutter_ = 0;
     } margins_;
-    // top_ = bottom_ = 2.54 cm
-    // left_ = right_ = 3.17 cm
-    // header_ = 1.75 cm
-    // footer_ = 1.5 cm
 
 
     // Document grid 文档网格

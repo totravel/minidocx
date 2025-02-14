@@ -7,31 +7,31 @@
 
 namespace NAMESPACE
 {
-  class exception : public std::runtime_error
+  class Exception : public std::runtime_error
   {
   public:
-    exception(const std::string& message, const std::string& sender = "minidocx");
+    Exception(const std::string& message, const std::string& sender = "minidocx");
   };
 
-  class unsupported_feature : public exception
+  class unsupported_feature : public Exception
   {
   public:
     unsupported_feature();
   };
 
-  class invalid_parameter : public exception
+  class invalid_parameter : public Exception
   {
   public:
     invalid_parameter();
   };
 
-  class invalid_operation : public exception
+  class invalid_operation : public Exception
   {
   public:
     invalid_operation();
   };
 
-  class io_error : public exception
+  class io_error : public Exception
   {
   public:
     io_error(const std::string& filename, const std::string& message);

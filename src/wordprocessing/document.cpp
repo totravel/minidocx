@@ -825,7 +825,7 @@ namespace NAMESPACE
     w_type.append_attribute("w:val") = "nextPage";
 
     pugi::xml_node w_pgSz = w_sectPr.append_child("w:pgSz");
-    if (prop.size_.landscape_) {
+    if (prop.landscape_) {
       w_pgSz.append_attribute("w:w") = prop.size_.height_;
       w_pgSz.append_attribute("w:h") = prop.size_.width_;
       w_pgSz.append_attribute("w:orient") = "landscape";

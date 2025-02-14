@@ -35,7 +35,7 @@ int main()
 
     doc.saveAs("style.docx");
   }
-  catch (const exception& ex)
+  catch (const Exception& ex)
   {
     std::cerr << ex.what() << std::endl;
   }

@@ -9,6 +9,7 @@ int main()
   {
     Document doc;
     SectionPointer sect = doc.addSection();
+    sect->properties().landscape_ = true;
 
     ParagraphPointer para = sect->addParagraph();
     para->properties().align_ = Alignment::Centered;
@@ -31,7 +32,7 @@ int main()
     doc.properties().lastModifiedBy_ = "John";
     doc.saveAs("example.docx");
   }
-  catch (const exception& ex)
+  catch (const Exception& ex)
   {
     std::cerr << ex.what() << std::endl;
   }

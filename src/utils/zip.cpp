@@ -125,7 +125,7 @@ namespace NAMESPACE
 
       if (!mz_zip_reader_init(zip_, size, flags)) {
         file_->close();
-        throw exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
+        throw Exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
       }
 
       if (openMode == OpenMode::ReadOnly)
@@ -133,7 +133,7 @@ namespace NAMESPACE
 
       if (!mz_zip_writer_init_from_reader(zip_, NULL)) {
         file_->close();
-        throw exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
+        throw Exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
       }
       break;
 
@@ -144,7 +144,7 @@ namespace NAMESPACE
     case OpenMode::Create:
       if (!mz_zip_writer_init_v2(zip_, 0, flags)) {
         file_->close();
-        throw exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
+        throw Exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
       }
     }
 
@@ -239,7 +239,7 @@ namespace NAMESPACE
     for (uint32_t i{ 0 }; i < numEntries; i++) {
       mz_zip_archive_file_stat entryStat;
       if (!mz_zip_reader_file_stat(zip_, i, &entryStat))
-        throw exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
+        throw Exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
       entryNames[i] = entryStat.m_filename;
       entryPos[i].lf_ofs_ = entryStat.m_local_header_ofs;
       entryPos[i].cd_ofs_ = entryStat.m_central_dir_ofs;
@@ -373,7 +373,7 @@ namespace NAMESPACE
 
       mz_zip_archive_file_stat stat;
       if (!mz_zip_reader_file_stat(zip_, i, &stat))
-        throw exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
+        throw Exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
 
       names[i] = stat.m_filename;
     }
@@ -405,11 +405,11 @@ namespace NAMESPACE
 
     mz_uint32 entryIndex;
     if (!mz_zip_reader_locate_file_v2(zip_, entryName.generic_string().c_str(), 0, 0, &entryIndex))
-      throw exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
+      throw Exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
 
     mz_zip_archive_file_stat entryStat;
     if (!mz_zip_reader_file_stat(zip_, entryIndex, &entryStat))
-      throw exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
+      throw Exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
 
     return entryStat.m_is_directory ? 0 : entryStat.m_uncomp_size;
   }
@@ -432,14 +432,14 @@ namespace NAMESPACE
 
     mz_uint32 fileIndex;
     if (!mz_zip_reader_locate_file_v2(zip_, filename.generic_string().c_str(), 0, 0, &fileIndex))
-      throw exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
+      throw Exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
 
     if (!mz_zip_reader_extract_to_callback(zip_, fileIndex, writeStream, &dst, 0))
-      throw exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
+      throw Exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
 
     mz_zip_archive_file_stat fileStat;
     if (!mz_zip_reader_file_stat(zip_, fileIndex, &fileStat))
-      throw exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
+      throw Exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
 
     return std::chrono::system_clock::from_time_t(fileStat.m_time);
   }
@@ -481,7 +481,7 @@ namespace NAMESPACE
       zip_, filename.generic_string().data(),
       buf, bufsize, NULL, 0, MZ_DEFAULT_COMPRESSION,
       0, 0, &mtime, NULL, 0, NULL, 0))
-      throw exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
+      throw Exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
   }
 
   void Zip::addFileFromStream(const fs::path& name, std::istream& src,
@@ -510,7 +510,7 @@ namespace NAMESPACE
       zip_, filename.generic_string().data(),
       readStream, &src, maxSize, &mtime,
       NULL, 0, MZ_DEFAULT_COMPRESSION, NULL, 0, NULL, 0))
-      throw exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
+      throw Exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
   }
 
   void Zip::addFileFromDisk(const fs::path& name, const fs::path& src)
@@ -543,6 +543,6 @@ namespace NAMESPACE
       throw invalid_parameter();
 
     if (!mz_zip_writer_add_mem(zip_, dirname.generic_string().data(), NULL, 0, MZ_DEFAULT_COMPRESSION))
-      throw exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
+      throw Exception(mz_zip_get_error_string(mz_zip_get_last_error(zip_)), "miniz");
   }
 }
