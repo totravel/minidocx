@@ -11,12 +11,6 @@ minidocx 是一个免费、开源、跨平台、现代、轻量、易用的 C++2
 > [!NOTE]
 > minidocx 0.6 可在 master 分支查看。
 
-## 预览
-
-Light Mode | Dark Mode
----------- | ---------
-![](./screenshots/20250214232857.png) | ![](./screenshots/20250214233038.png)
-
 ## 特性
 
 - 分节
@@ -26,6 +20,12 @@ Light Mode | Dark Mode
 - 图片
 - 样式
 - 列表
+
+## 预览
+
+Light Mode | Dark Mode
+---------- | ---------
+![](./screenshots/20250214232857.png) | ![](./screenshots/20250214233038.png)
 
 ## 示例
 

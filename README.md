@@ -79,34 +79,11 @@ out/x64-linux-ninja-gcc/examples/myapp
 
 ## User Guide
 
-### Document Structure
+Following sections describe necessary information and features supported by minidocx. Please note this description may not be complete but limited to the most useful ones. If you want to find less common features, please check header files under `include` directory.
 
-A document consists of one or more sections. A section is a special container that have a specific set of properties used to define the pages on which its contents will appear, such as page size, page orientation, and page margins.
+### Measuring Units
 
-A container can contain two different types of block-level content: paragraphs and tables.
- 
-A paragraph is a division of content that begins on a new line with a common set of properties, such as outline level, alignment, indentation, spacing, and borders. A paragraph can contain two different types of non-block content: texts and pictures.
-
-Tables are another type of block-level content. A table is composed of a collection of cells. Cells are also containers.
-
-- Document
-  - Section (Container)
-    - Paragraph
-      - Text
-      - Picture
-    - Table
-      - Cell (Container)
-
-### Measuring units
-
-The main unit in OOXML is a twentieth of a point. This is used for specifying page dimensions, margins, tabs, etc.
-
-- Inch (in)
-- Point (pt)
-- Twentieth of a point (tw)
-- English Metric Unit (emu)
-
-The relationship between them is shown in the table below.
+The measuring units used in the document mainly include point (pt), twentieth of a point (tw), and English Metric Unit (emu), which are used to specify font size, page size, table width, etc. The relationship between them is shown in the table below.
 
 |   mm |   cm |   in |   pt |   tw |    emu |
 | ---: | ---: | ---: | ---: | ---: | -----: | 
@@ -118,7 +95,27 @@ The relationship between them is shown in the table below.
 
 For more information, see [Lars Corneliussen's blog post](https://startbigthinksmall.wordpress.com/2010/01/04/points-inches-and-emus-measuring-units-in-office-open-xml/).
 
-### Quick Start
+### Document Structure
+
+A document consists of the following objects:
+
+- Document
+  - Section (Container)
+    - Paragraph
+      - Text
+      - Picture
+    - Table
+      - Cell (Container)
+
+A document consists of one or more sections. A section is a special container that have a specific set of properties used to define the pages on which its contents will appear, such as page size, page orientation, and page margins.
+
+A container can contain two different types of block-level objects: paragraphs and tables.
+ 
+A paragraph is a division of content that begins on a new line with a common set of properties, such as outline level, alignment, indentation, spacing, and borders. A paragraph can contain two different types of inline objects: texts and pictures.
+
+Tables are another type of block-level objects. A table is composed of a collection of cells. Cells are also containers.
+
+### Headers and Namespace
 
 `minidocx.hpp` is the only one header you need to include in order to have access to all functions of minidocx and so that you do not have to care about the order of includes. All minidocx classes are member of the `md` namespace.
 
@@ -126,6 +123,8 @@ For more information, see [Lars Corneliussen's blog post](https://startbigthinks
 #include "minidocx/minidocx.hpp"
 using namespace md;
 ```
+
+### Error Handling
 
 All minidocx functions will throw an exception in case of an error. You should catch the exception to either fix it or report back to the user. All exceptions minidocx throws are objects of the class `Exception`. That's why we simply catch `Exception` objects.
 
@@ -140,29 +139,77 @@ catch (const Exception& ex)
 }
 ```
 
-A Document is represented by a `Document` object. To create a new document and save it as `example.docx`:
+### Object's Properties
+
+The several objects mentioned above are instances of `Configurable` subclass, meaning that each of them is associated with a `Properties` object to store additional information and formatting properties. These associated `Properties` objects can be accessed through object's `properties()` or `setProperties()` method.
+
+### Documents
+
+A document is represented by a `Document` object. To create a new document and save it as `example.docx`:
 
 ```cpp
 Document doc;
-doc.properties().title_ = "Chinese New Year";
-
-SectionPointer sect = doc.addSection();
-sect->properties().landscape_ = true;
-
-ParagraphPointer para = sect->addParagraph();
-para->properties().align_ = Alignment::Centered;
-
-RichTextPointer rich = para->addRichText("Happy Chinese New Year!");
-rich->properties().color_ = "FF0000";
-
+// Do something
 doc.saveAs("example.docx");
 ```
 
-All properties can be access via `properties()` or `setProperties()` method. See other avaliable properties in `include/properties` directory.
+A single `PackageProperties` object is created for each `Document` object. This associated `Properties` object is used to store additional information about the document, such as title, subject, author, and company.
 
-Following sections describe other features supported by minidocx. Please note this description may not be complete but limited to the most useful ones. If you want to find less common features, please check header files under `include` directory.
+```cpp
+doc.properties().title_ = "Chinese New Year";
+doc.properties().author_ = "John";
+doc.properties().lastModifiedBy_ = "Peter";
+```
 
-...
+See other avaliable document properties in [packaging/package.hpp](./include/minidocx/packaging/package.hpp).
+
+### Sections
+
+A section is represented by a `Section` object which can be created by making a call to `addSection()` method on `Document` object:
+
+```cpp
+SectionPointer sect = doc.addSection();
+```
+
+A single `SectionProperties` object used to store formatting properties for all pages in the section is created for each `Section` object.
+
+```cpp
+sect->properties().size_.width_ = A3_W;
+sect->properties().size_.height_ = A3_H;
+sect->properties().landscape_ = true;
+```
+
+See other avaliable section properties in [wordprocessing/properties/section.hpp](./include/minidocx/wordprocessing/properties/section.hpp).
+
+### Paragraphs
+
+A paragraph is represented by a `Paragraph` object which can be created by calling `addParagraph()` method on `Section` object:
+
+```cpp
+ParagraphPointer para = sect->addParagraph();
+```
+
+A single `ParagraphProperties` object is created for each `Paragraph` object to store formatting properties for the paragraph, such as alignment, outline level, indentation, and spacing.
+
+```cpp
+para->properties().align_ = Alignment::Centered;
+para->properties().outlineLevel_ = OutlineLevel::Level1;
+```
+
+See other avaliable paragraph properties in [wordprocessing/properties/paragraph.hpp](./include/minidocx/wordprocessing/properties/paragraph.hpp).
+
+### Rich Text
+
+A region of text with a common set of properties is represented by a `RichText` object and a single `RichTextProperties` object is created for it to store formatting properties for the text, such as font family, font size, font color, highlight, and spacing.
+
+```cpp
+RichTextPointer rich = para->addRichText();
+rich->properties().font_.ascii_ = "Aria";
+rich->properties().fontSize_ = 32;
+rich->properties().color_ = "FF0000";
+```
+
+See other avaliable properties in [wordprocessing/properties/richtext.hpp](./include/minidocx/wordprocessing/properties/richtext.hpp).
 
 ## Donation
 

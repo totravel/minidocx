@@ -44,6 +44,9 @@ namespace NAMESPACE
     SingLevel, MultiLevel, HybridMultiLevel
   };
 
+  const char * const CHAR_SOLID_CIRCLE = reinterpret_cast<const char *>(u8"\uF0B7");
+  const char * const CHAR_SOLID_SQUARE = reinterpret_cast<const char *>(u8"\uF0A7");
+
   struct AbstractNumberingDefinition
   {
     NumberingType type_ = NumberingType::HybridMultiLevel;
@@ -131,7 +134,7 @@ namespace NAMESPACE
       font.hAnsi_ = "Symbol";
       numDef.levels_[0].indent_ = indent;
       numDef.levels_[0].font_ = font;
-      numDef.levels_[0].numFmt_ = reinterpret_cast<const char *>(u8"\uF0B7"); // circle bullet
+      numDef.levels_[0].numFmt_ = CHAR_SOLID_CIRCLE;
       numDef.levels_[0].numStyle_ = NumberStyle::Bullet;
 
       indent.left_.value_ = 1440;
@@ -147,7 +150,7 @@ namespace NAMESPACE
       font.hAnsi_ = "Wingdings";
       numDef.levels_[2].indent_ = indent;
       numDef.levels_[2].font_ = font;
-      numDef.levels_[2].numFmt_ = reinterpret_cast<const char*>(u8"\uF0A7"); // square bullet
+      numDef.levels_[2].numFmt_ = CHAR_SOLID_SQUARE;
       numDef.levels_[2].numStyle_ = NumberStyle::Bullet;
 
 
@@ -156,7 +159,7 @@ namespace NAMESPACE
       font.hAnsi_ = "Symbol";
       numDef.levels_[3].indent_ = indent;
       numDef.levels_[3].font_ = font;
-      numDef.levels_[3].numFmt_ = reinterpret_cast<const char*>(u8"\uF0B7");
+      numDef.levels_[3].numFmt_ = CHAR_SOLID_CIRCLE;
       numDef.levels_[3].numStyle_ = NumberStyle::Bullet;
 
       indent.left_.value_ = 3600;
@@ -172,7 +175,7 @@ namespace NAMESPACE
       font.hAnsi_ = "Wingdings";
       numDef.levels_[5].indent_ = indent;
       numDef.levels_[5].font_ = font;
-      numDef.levels_[5].numFmt_ = reinterpret_cast<const char*>(u8"\uF0A7");
+      numDef.levels_[5].numFmt_ = CHAR_SOLID_SQUARE;
       numDef.levels_[5].numStyle_ = NumberStyle::Bullet;
 
 
@@ -181,7 +184,7 @@ namespace NAMESPACE
       font.hAnsi_ = "Symbol";
       numDef.levels_[6].indent_ = indent;
       numDef.levels_[6].font_ = font;
-      numDef.levels_[6].numFmt_ = reinterpret_cast<const char*>(u8"\uF0B7");
+      numDef.levels_[6].numFmt_ = CHAR_SOLID_CIRCLE;
       numDef.levels_[6].numStyle_ = NumberStyle::Bullet;
 
       indent.left_.value_ = 5760;
@@ -197,7 +200,7 @@ namespace NAMESPACE
       font.hAnsi_ = "Wingdings";
       numDef.levels_[8].indent_ = indent;
       numDef.levels_[8].font_ = font;
-      numDef.levels_[8].numFmt_ = reinterpret_cast<const char*>(u8"\uF0A7");
+      numDef.levels_[8].numFmt_ = CHAR_SOLID_SQUARE;
       numDef.levels_[8].numStyle_ = NumberStyle::Bullet;
 
       return numDef;
