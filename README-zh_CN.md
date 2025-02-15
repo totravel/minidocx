@@ -45,7 +45,7 @@ int main()
     ParagraphPointer para = sect->addParagraph();
     para->properties().align_ = Alignment::Centered;
 
-    RichTextPointer rich = para->addRichText("Happy Chinese New Year!");
+    RichTextPointer rich = para->addRichText(u8"中国新年快乐！");
     rich->properties().fontSize_ = 32;
     rich->properties().color_ = "FF0000";
 

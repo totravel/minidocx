@@ -171,7 +171,7 @@ A section is represented by a `Section` object which can be created by making a 
 SectionPointer sect = doc.addSection();
 ```
 
-A single `SectionProperties` object used to store formatting properties for all pages in the section is created for each `Section` object.
+A single `SectionProperties` object is created for each `Section` object. This object is used to store formatting properties for all pages in the section, such as page size, page orientaion, page margins, etc.
 
 ```cpp
 sect->properties().size_.width_ = A3_W;
@@ -189,7 +189,7 @@ A paragraph is represented by a `Paragraph` object which can be created by calli
 ParagraphPointer para = sect->addParagraph();
 ```
 
-A single `ParagraphProperties` object is created for each `Paragraph` object to store formatting properties for the paragraph, such as alignment, outline level, indentation, and spacing.
+A single `ParagraphProperties` object is created for each `Paragraph` object to store formatting properties for the paragraph, such as alignment, outline level, indentation, spacing, etc.
 
 ```cpp
 para->properties().align_ = Alignment::Centered;
@@ -200,14 +200,17 @@ See other avaliable paragraph properties in [wordprocessing/properties/paragraph
 
 ### Rich Text
 
-A region of text with a common set of properties is represented by a `RichText` object and a single `RichTextProperties` object is created for it to store formatting properties for the text, such as font family, font size, font color, highlight, and spacing.
+A region of text with a common set of properties is represented by a `RichText` object and a single `RichTextProperties` object is created for it to store formatting properties for the text, such as font family, font size, font color, highlight, spacing, etc.
 
 ```cpp
-RichTextPointer rich = para->addRichText();
+RichTextPointer rich = para->addRichText(u8"Happy Chinese New Year!\n中国新年快乐！");
 rich->properties().font_.ascii_ = "Aria";
+rich->properties().font_.eastAsia_ = u8"宋体";
 rich->properties().fontSize_ = 32;
 rich->properties().color_ = "FF0000";
 ```
+
+As you can see, escape character `\n` (line break) is allowed. By the way, the tab character `\t` is also allowd. Both of them are handled properly by minidocx. However, remember that all characters, including font names, should be encoded in UTF-8.
 
 See other avaliable properties in [wordprocessing/properties/richtext.hpp](./include/minidocx/wordprocessing/properties/richtext.hpp).
 
