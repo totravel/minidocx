@@ -1,4 +1,9 @@
-﻿
+﻿/**
+ * Copyright (C) 2024-2025, Xie Zequn <totravel@foxmail.com>. All rights reserved.
+ * Distributed under the MIT License (http://opensource.org/licenses/MIT)
+ * Report bugs and download new versions at https://github.com/totravel/zip
+ */
+
 #pragma once
 
 #include <iosfwd>
