@@ -204,13 +204,12 @@ A region of text with a common set of properties is represented by a `RichText` 
 
 ```cpp
 RichTextPointer rich = para->addRichText(u8"Happy Chinese New Year!\n中国新年快乐！");
-rich->properties().font_.ascii_ = "Aria";
-rich->properties().font_.eastAsia_ = u8"宋体";
+rich->properties().font_ = { .ascii_ = "Aria", .eastAsia_ = "Simsun" };
 rich->properties().fontSize_ = 32;
 rich->properties().color_ = "FF0000";
 ```
 
-As you can see, escape character `\n` (line break) is allowed. By the way, the tab character `\t` is also allowd. Both of them are handled properly by minidocx. However, remember that all characters, including font names, should be encoded in UTF-8.
+As you can see, the escape character `\n` (line break) is allowed. By the way, the tab character `\t` is also allowd. Both of them are handled properly by minidocx. However, remember that all characters, including font names, should be encoded in UTF-8.
 
 See other avaliable properties in [wordprocessing/properties/richtext.hpp](./include/minidocx/wordprocessing/properties/richtext.hpp).
 
