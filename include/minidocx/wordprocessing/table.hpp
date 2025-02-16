@@ -22,8 +22,6 @@ namespace NAMESPACE
 
   class Table : public Block, public Configurable<TableProperties>
   {
-    friend class Document;
-
   public:
     Table(const size_t rows, const size_t cols);
     ~Table() override = default;
@@ -35,28 +33,32 @@ namespace NAMESPACE
     inline const Rect& rect() const { return rect_; };
 
   private:
-    std::vector<std::vector<size_t>> indices_;
+    std::vector<std::vector<size_t>> grid_;
     std::vector<CellPointer> cells_;
     std::vector<Rect> merged_;
 
   public:
+    // Access specified cell without bounds checking.
     inline CellPointer cell(const size_t row, const size_t col) const
     {
-      return cells_[indices_[row][col]];
+      return cells_[grid_[row][col]];
     }
 
+    // Access specified cell with bounds checking.
     CellPointer cellAt(const size_t row, const size_t col) const;
 
-  public:
     CellPointer merge(const Rect rect);
 
+    // Merge cells within specified range into a single cell.
     inline CellPointer merge(const size_t row, const size_t col, const size_t rows, const size_t cols)
     {
-      return merge({ col, row, col + cols, row + rows });
+      return merge({ col, row, cols, rows });
     }
 
+    // Split specified merged cell.
     void split(const size_t row, const size_t col);
 
+    // Dump table's structure to console.
     void dumpStructure() const;
 
   public:

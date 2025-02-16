@@ -15,11 +15,11 @@ int main()
 
     TablePointer tbl = sect->addTable(5, 7);
     tbl->properties().width_.type_ = TableProperties::WidthType::Percent;
-    
-    tbl->merge({ 1, 1, 4, 3 });
-    tbl->merge({ 4, 2, 6, 4 });
-    tbl->merge({ 2, 3, 4, 5 });
-    tbl->merge({ 6, 0, 7, 5 });
+
+    tbl->merge(1, 1, 2, 3);
+    tbl->merge(2, 4, 2, 2);
+    tbl->merge(3, 2, 2, 2);
+    tbl->merge(0, 6, 5, 1);
     tbl->dumpStructure();
 
     tbl->cellAt(0, 0)->addParagraph()->addRichText("AAA");

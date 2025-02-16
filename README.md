@@ -95,7 +95,7 @@ The measuring units used in the document mainly include point (pt), twentieth of
 
 For more information, see [Lars Corneliussen's blog post](https://startbigthinksmall.wordpress.com/2010/01/04/points-inches-and-emus-measuring-units-in-office-open-xml/).
 
-### Document Structure
+### Data Structure
 
 A document consists of the following objects:
 
@@ -200,13 +200,13 @@ See other avaliable paragraph properties in [wordprocessing/properties/paragraph
 
 ### Rich Text
 
-A region of text with a common set of properties is represented by a `RichText` object which can be created by calling the `addRichText()` method on a `Paragraph` object with a piece of text encoded in UTF-8 as argument. Ensure that all characters, including font names mentioned below, are encoded in UTF-8.
+A sequence of characters with a set of properties is represented by a `RichText` object which can be created by calling the `addRichText()` method on a `Paragraph` object with a piece of text encoded in UTF-8 as argument. Ensure that all characters, including font names mentioned below, are encoded in UTF-8.
 
 ```cpp
 RichTextPointer rich = para->addRichText(u8"Happy Chinese New Year!\n中国新年快乐！");
 ```
 
-As you can see, the escape character `\n` (line break) is allowed. Note that the tab character `\t` is also allowd but the carriage return character `\r` is omitted. 
+As you can see, the escape character `\n` (line break) is allowed. Note that the tab character `\t` is also allowed but the carriage return character `\r` is omitted. 
 
 A single `RichTextProperties` object is created for each `RichText` object to store formatting properties for the text, such as font family, font size, font color, highlight, spacing, etc.
 

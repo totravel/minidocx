@@ -19,7 +19,6 @@ namespace NAMESPACE
     friend class Table;
 
   public:
-    Cell(const Rect& rect) : rect_{ rect } {};
     Cell(const size_t row, const size_t col) : rect_{ col, row } {};
 
   private:
