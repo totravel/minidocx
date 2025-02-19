@@ -25,10 +25,25 @@ namespace NAMESPACE
     PartName target_;
     TargetMode targetMode_ = TargetMode::Unknown;
 
-    static RelationshipId parseId(const std::string& id);
-    static std::string stringifyId(const RelationshipId id);
+    static RelationshipId parseId(const std::string& id)
+    {
+      return std::stoull(id.data() + 3);
+    }
 
-    static TargetMode parseTargetMode(const std::string& mode);
+    static std::string stringifyId(const RelationshipId id)
+    {
+      return "rId" + std::to_string(id);
+    }
+
+    static TargetMode parseTargetMode(const std::string& mode)
+    {
+      if (mode == "Internal")
+        return TargetMode::Internal;
+      else if (mode == "External")
+        return TargetMode::External;
+      else
+        return TargetMode::Unknown;
+    }
   };
 
   using RelationshipMap = std::map<RelationshipId, Relationship>;

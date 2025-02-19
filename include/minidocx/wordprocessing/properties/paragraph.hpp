@@ -132,20 +132,20 @@ namespace NAMESPACE
 
 
     // Keep with next 与下段同页
-    bool keepNext_ = false;
     // Specifies that the paragraph (or at least part of it)
     // should be rendered on the same page as the next paragraph
     // when possible.
+    bool keepNext_ = false;
 
     // Keep lines together 段中不分页
-    bool keepLines_ = false;
     // Specifies that all lines of the paragraph are to be kept
     // on a single page when possible.
+    bool keepLines_ = false;
 
     // Page break before 段前分页
-    bool pageBreakBefore_ = false;
-    // specifies that the contents of this paragraph are rendered
+    // Specifies that the contents of this paragraph are rendered
     // on the start of a new page.
+    bool pageBreakBefore_ = false;
   };
 
 }
