@@ -10,7 +10,7 @@
 #include <vector>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   namespace fs = std::filesystem;
 

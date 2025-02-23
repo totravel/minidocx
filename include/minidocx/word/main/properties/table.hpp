@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "wordprocessing/properties/base.hpp"
+#include "word/main/properties/base.hpp"
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   struct TableProperties
   {

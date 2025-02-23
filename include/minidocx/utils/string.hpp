@@ -9,7 +9,7 @@
 #include <string>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   std::string removeSpaces(std::string str);
 }

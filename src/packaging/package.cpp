@@ -15,7 +15,7 @@
 #include <sstream>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   void Package::init()
   {
@@ -225,20 +225,20 @@ namespace NAMESPACE
     root.append_attribute("xmlns:dc")
       .set_value("http://purl.org/dc/elements/1.1/");
 
-    if (props_.title_.size() > 0)
-      root.append_child("dc:title").append_child(pugi::node_pcdata).set_value(props_.title_.c_str());
+    if (prop_.title_.size() > 0)
+      root.append_child("dc:title").append_child(pugi::node_pcdata).set_value(prop_.title_.c_str());
 
-    if (props_.subject_.size() > 0)
-      root.append_child("dc:subject").append_child(pugi::node_pcdata).set_value(props_.subject_.c_str());
+    if (prop_.subject_.size() > 0)
+      root.append_child("dc:subject").append_child(pugi::node_pcdata).set_value(prop_.subject_.c_str());
 
-    if (props_.author_.size() > 0)
-      root.append_child("dc:creator").append_child(pugi::node_pcdata).set_value(props_.author_.c_str());
+    if (prop_.author_.size() > 0)
+      root.append_child("dc:creator").append_child(pugi::node_pcdata).set_value(prop_.author_.c_str());
 
-    if (props_.lastModifiedBy_.size() > 0)
-      root.append_child("cp:lastModifiedBy").append_child(pugi::node_pcdata).set_value(props_.lastModifiedBy_.c_str());
+    if (prop_.lastModifiedBy_.size() > 0)
+      root.append_child("cp:lastModifiedBy").append_child(pugi::node_pcdata).set_value(prop_.lastModifiedBy_.c_str());
 
-    if (props_.company_.size() > 0)
-      root.append_child("cp:company").append_child(pugi::node_pcdata).set_value(props_.company_.c_str());
+    if (prop_.company_.size() > 0)
+      root.append_child("cp:company").append_child(pugi::node_pcdata).set_value(prop_.company_.c_str());
 
     writePart(corePart_, doc);
   }

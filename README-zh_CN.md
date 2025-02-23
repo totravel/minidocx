@@ -25,7 +25,7 @@ minidocx 是一个免费、开源、跨平台、现代、轻量、易用的 C++2
 
 Light Mode | Dark Mode
 ---------- | ---------
-![](./screenshots/20250214232857.png) | ![](./screenshots/20250214233038.png)
+![](./assets/screenshots/20250214232857.png) | ![](./assets/screenshots/20250214233038.png)
 
 ## 示例
 
@@ -43,11 +43,11 @@ int main()
     SectionPointer sect = doc.addSection();
 
     ParagraphPointer para = sect->addParagraph();
-    para->properties().align_ = Alignment::Centered;
+    para->prop_.align_ = Alignment::Centered;
 
     RichTextPointer rich = para->addRichText(u8"中国新年快乐！");
-    rich->properties().fontSize_ = 32;
-    rich->properties().color_ = "FF0000";
+    rich->prop_.fontSize_ = 32;
+    rich->prop_.color_ = "FF0000";
 
     doc.saveAs("a.docx");
   }
@@ -67,14 +67,14 @@ git clone git@github.com:totravel/minidocx.git
 cd minidocx
 
 # Windows
-cmake --preset x64-win-msbuild-v143               # Configure
-cmake --build --preset x64-win-msbuild-v143-debug # Build
-out/x64-win-msbuild-v143/examples/Debug/myapp.exe # Run
+cmake --preset x64-win-msbuild-v143
+cmake --build --preset x64-win-msbuild-v143-debug
+./out/x64-win-msbuild-v143/bin/exe/Debug/myapp.exe
 
 # Linux
 cmake --preset x64-linux-ninja-gcc
 cmake --build --preset x64-linux-ninja-gcc-debug
-out/x64-linux-ninja-gcc/examples/myapp
+./out/x64-linux-ninja-gcc/bin/exe/myapp
 ```
 
 ## 用户指南
@@ -87,7 +87,7 @@ out/x64-linux-ninja-gcc/examples/myapp
 
 Alipay | WeChat Pay
 ------ | ----------
-![](./qrcode/alipay.png) | ![](./qrcode/wechat.png)
+![](./assets/qrcode/alipay.png) | ![](./assets/qrcode/wechat.png)
 
 ## 赞助
 

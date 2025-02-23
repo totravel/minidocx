@@ -4,14 +4,13 @@
  * Report bugs and download new versions at https://github.com/totravel/minidocx
  */
 
-#include "wordprocessing/document.hpp"
-#include "wordprocessing/section.hpp"
-#include "wordprocessing/paragraph.hpp"
-#include "wordprocessing/richtext.hpp"
-#include "wordprocessing/picture.hpp"
-#include "wordprocessing/table.hpp"
-#include "wordprocessing/cell.hpp"
-#include "wordprocessing/constants.hpp"
+#include "word/main/document.hpp"
+#include "word/main/section.hpp"
+#include "word/main/paragraph.hpp"
+#include "word/main/richtext.hpp"
+#include "word/main/picture.hpp"
+#include "word/main/table.hpp"
+#include "word/main/cell.hpp"
 #include "utils/file.hpp"
 #include "utils/string.hpp"
 #include "utils/exceptions.hpp"
@@ -19,7 +18,7 @@
 #include "pugixml.hpp"
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   Document::Document()
   {
@@ -565,8 +564,8 @@ namespace NAMESPACE
     pugi::xml_node w_r = w_p.append_child("w:r");
     pugi::xml_node w_rPr = w_r.append_child("w:rPr");
 
-    writeRichTextProperties(w_rPr, rich.properties());
-    writeText(w_r, rich.text().c_str(), rich.text().size(), rich.properties().whitespace_);
+    writeRichTextProperties(w_rPr, rich.prop_);
+    writeText(w_r, rich.text().c_str(), rich.text().size(), rich.prop_.whitespace_);
   }
 
   static size_t pictCount = 0;
@@ -576,7 +575,7 @@ namespace NAMESPACE
     const unsigned int index = ++pictCount;
     const std::string name("Picture " + std::to_string(index));
 
-    const PictureProperties& prop = pict.properties();
+    const PictureProperties& prop = pict.prop_;
     const auto width = prop.extent_.width_;
     const auto height = prop.extent_.height_;
 
@@ -677,7 +676,7 @@ namespace NAMESPACE
       w_numPr.append_child("w:ilvl").append_attribute("w:val") = static_cast<unsigned int>(para.level_);
     }
 
-    writeParagraphProperties(w_pPr, para.properties());
+    writeParagraphProperties(w_pPr, para.prop_);
 
     for (auto& run : para.runs())
       writeRun(w_p, *run);
@@ -752,7 +751,7 @@ namespace NAMESPACE
     pugi::xml_node w_tbl = w_body.append_child("w:tbl");
     pugi::xml_node w_tblPr = w_tbl.append_child("w:tblPr");
 
-    writeTableProperties(w_tblPr, tbl.properties());
+    writeTableProperties(w_tblPr, tbl.prop_);
 
     const Rect& tblRect = tbl.rect();
 
@@ -767,7 +766,7 @@ namespace NAMESPACE
 
       size_t j = 0;
       while (j < tblRect.cols()) {
-        const Cell& cell = *tbl.cell(i, j);
+        const Cell& cell = *tbl.cellAtUnsafe(i, j);
         const Rect& cellRect = cell.rect();
 
         pugi::xml_node w_tc = w_tr.append_child("w:tc");
@@ -883,7 +882,7 @@ namespace NAMESPACE
       if (!w_pPr)
         w_pPr = w_p.append_child("w:pPr");
 
-      writeSectionProperties(w_pPr, ptr->properties());
+      writeSectionProperties(w_pPr, ptr->prop_);
     }
 
     auto& ptr = sections_.back();
@@ -893,7 +892,7 @@ namespace NAMESPACE
     for (auto& block : ptr->blocks_)
       writeBlock(body, *block);
 
-    writeSectionProperties(body, ptr->properties());
+    writeSectionProperties(body, ptr->prop_);
 
     writePart(mainPart_, doc);
     pictCount = 0;
@@ -947,7 +946,7 @@ namespace NAMESPACE
 
   void Document::writeStyles()
   {
-    if (paragraphStyles_.size() + richTextStyles_.size() == 0)
+    if (paragraphStyles_.size() + characterStyles_.size() == 0)
       return;
     registerOverrideContentType(stylePart_, toPartMediaType(PartType::Style));
     addRelationshipFor(mainPart_, PartType::Style, stylePart_, Relationship::TargetMode::Internal);
@@ -970,11 +969,11 @@ namespace NAMESPACE
       if (ref.second.basedOn_ != "")
         w_style.append_child("w:basedOn").append_attribute("w:val") = removeSpaces(ref.second.basedOn_).c_str();
 
-      writeParagraphProperties(w_style.append_child("w:pPr"), ref.second.pPr_);
-      writeRichTextProperties(w_style.append_child("w:rPr"), ref.second.rPr_);
+      writeParagraphProperties(w_style.append_child("w:pPr"), ref.second);
+      writeRichTextProperties(w_style.append_child("w:rPr"), ref.second);
     }
 
-    for (const auto& ref : richTextStyles_) {
+    for (const auto& ref : characterStyles_) {
       pugi::xml_node w_style = root.append_child("w:style");
       w_style.append_attribute("w:type") = "character";
       w_style.append_attribute("w:styleId") = ref.first.c_str();
@@ -984,7 +983,7 @@ namespace NAMESPACE
       if (ref.second.basedOn_ != "")
         w_style.append_child("w:basedOn").append_attribute("w:val") = removeSpaces(ref.second.basedOn_).c_str();
 
-      writeRichTextProperties(w_style.append_child("w:rPr"), ref.second.rPr_);
+      writeRichTextProperties(w_style.append_child("w:rPr"), ref.second);
     }
 
     writePart(stylePart_, doc);
@@ -995,9 +994,9 @@ namespace NAMESPACE
     paragraphStyles_[removeSpaces(style.name_)] = style;
   }
 
-  void Document::addRichTextStyle(const RichTextStyle& style)
+  void Document::addCharacterStyle(const CharacterStyle& style)
   {
-    richTextStyles_[removeSpaces(style.name_)] = style;
+    characterStyles_[removeSpaces(style.name_)] = style;
   }
 
 

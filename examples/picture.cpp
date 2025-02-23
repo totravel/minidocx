@@ -32,17 +32,17 @@ int main()
 
     sect->addParagraph()->addRichText(TEXT1);
 
-    PicturePointer pict1 = sect->addParagraph()->addPicture(doc.addImage("samples/17528.jpg"));
-    pict1->properties().extent_.setSize(4725, 3173, 300, 20);
+    PicturePointer pict1 = sect->addParagraph()->addPicture(doc.addImage("assets/samples/17528.jpg"));
+    pict1->prop_.extent_.setSize(4725, 3173, 300, 20);
 
     sect->addParagraph()->addRichText(TEXT2);
 
-    PicturePointer pict2 = sect->addParagraph()->addPicture(doc.addImage("samples/17529.jpg"));
-    pict2->properties().extent_.setSize(4838, 3323, 300, 20);
+    PicturePointer pict2 = sect->addParagraph()->addPicture(doc.addImage("assets/samples/17529.jpg"));
+    pict2->prop_.extent_.setSize(4838, 3323, 300, 20);
 
     sect->addParagraph()->addRichText(TEXT3);
 
-    doc.saveAs("picture.docx");
+    doc.saveAs("out/picture.docx");
   }
   catch (const Exception& ex)
   {

@@ -14,7 +14,7 @@
 #include <chrono>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   namespace fs = std::filesystem;
 

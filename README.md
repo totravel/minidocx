@@ -8,6 +8,9 @@ minidocx is a free, open-source, cross-platform, modern, light-weight and user-f
 > [!WARNING]
 > minidocx 1.0 is currently in beta and should not be used in production.
 
+> [!WARNING]
+> minidocx 1.0 has an unstable API.
+
 > [!NOTE]
 > Check out the master branch to view minidocx 0.6.
 
@@ -25,7 +28,7 @@ minidocx is a free, open-source, cross-platform, modern, light-weight and user-f
 
 Light Mode | Dark Mode
 ---------- | ---------
-![](./screenshots/20250214232857.png) | ![](./screenshots/20250214233038.png)
+![](./assets/screenshots/20250214232857.png) | ![](./assets/screenshots/20250214233038.png)
 
 ## Example
 
@@ -43,11 +46,11 @@ int main()
     SectionPointer sect = doc.addSection();
 
     ParagraphPointer para = sect->addParagraph();
-    para->properties().align_ = Alignment::Centered;
+    para->prop_.align_ = Alignment::Centered;
 
     RichTextPointer rich = para->addRichText("Happy Chinese New Year!");
-    rich->properties().fontSize_ = 32;
-    rich->properties().color_ = "FF0000";
+    rich->prop_.fontSize_ = 32;
+    rich->prop_.color_ = "FF0000";
 
     doc.saveAs("a.docx");
   }
@@ -67,15 +70,17 @@ git clone git@github.com:totravel/minidocx.git
 cd minidocx
 
 # Windows
-cmake --preset x64-win-msbuild-v143               # Configure
-cmake --build --preset x64-win-msbuild-v143-debug # Build
-out/x64-win-msbuild-v143/examples/Debug/myapp.exe # Run
+cmake --preset x64-win-msbuild-v143
+cmake --build --preset x64-win-msbuild-v143-debug
+./out/x64-win-msbuild-v143/bin/exe/Debug/myapp.exe
 
 # Linux
 cmake --preset x64-linux-ninja-gcc
 cmake --build --preset x64-linux-ninja-gcc-debug
-out/x64-linux-ninja-gcc/examples/myapp
+./out/x64-linux-ninja-gcc/bin/exe/myapp
 ```
+
+A static library is built by default. If you want to use a shared build of minidocx, set the `BUILD_SHARED` CMake option to `true`.
 
 ## User Guide
 
@@ -101,10 +106,10 @@ A document consists of the following objects:
 
 - Document
   - Section (Container)
-    - Paragraph
-      - Text
-      - Picture
-    - Table
+    - Paragraph (Block)
+      - Text (Inline)
+      - Picture (Inline)
+    - Table (Block)
       - Cell (Container)
 
 A document consists of one or more sections. A section is a special container that have a specific set of properties used to define the pages on which its contents will appear, such as page size, page orientation, and page margins.
@@ -124,6 +129,8 @@ Tables are another type of block-level objects. A table is composed of a collect
 using namespace md;
 ```
 
+If you are linking against a precompiled shared build of minidocx, add `MINIDOCX_SHARED` compilation definition before including `minidocx.hpp`.
+
 ### Error Handling
 
 All minidocx functions will throw an exception in case of an error. You should catch the exception to either fix it or report back to the user. All exceptions minidocx throws are objects of the class `Exception`. That's why we simply catch `Exception` objects.
@@ -139,10 +146,6 @@ catch (const Exception& ex)
 }
 ```
 
-### Object's Properties
-
-The several objects mentioned above are instances of `Configurable` subclass, meaning that each of them is associated with a `Properties` object to store additional information and formatting properties. These associated `Properties` objects can be accessed through object's `properties()` or `setProperties()` method.
-
 ### Documents
 
 A document is represented by a `Document` object. To create a new document and save it as `example.docx`:
@@ -153,15 +156,15 @@ Document doc;
 doc.saveAs("example.docx");
 ```
 
-A single `PackageProperties` object is created for each `Document` object. This associated `Properties` object is used to store additional information about the document, such as title, subject, author, and company.
+The `prop_` public data member of the `Document` object is a `PackageProperties` object, which is used to store additional information about the document, such as title, subject, author, and company.
 
 ```cpp
-doc.properties().title_ = "Chinese New Year";
-doc.properties().author_ = "John";
-doc.properties().lastModifiedBy_ = "Peter";
+doc.prop_.title_ = "Chinese New Year";
+doc.prop_.author_ = "John";
+doc.prop_.lastModifiedBy_ = "Peter";
 ```
 
-See other avaliable document properties in [packaging/package.hpp](./include/minidocx/packaging/package.hpp).
+See other avaliable document properties in [PackageProperties](./include/minidocx/packaging/package.hpp).
 
 ### Sections
 
@@ -171,15 +174,15 @@ A section is represented by a `Section` object which can be created by making a 
 SectionPointer sect = doc.addSection();
 ```
 
-A single `SectionProperties` object is created for each `Section` object. This object is used to store formatting properties for all pages in the section, such as page size, page orientaion, page margins, etc.
+The `prop_` public data member of the `Section` object is a `SectionProperties` object, which is used to store formatting properties for all pages in the section, such as page size, page orientaion, page margins, etc.
 
 ```cpp
-sect->properties().size_.width_ = A3_W;
-sect->properties().size_.height_ = A3_H;
-sect->properties().landscape_ = true;
+sect->prop_.size_.width_ = A3_W;
+sect->prop_.size_.height_ = A3_H;
+sect->prop_.landscape_ = true;
 ```
 
-See other avaliable section properties in [wordprocessing/properties/section.hpp](./include/minidocx/wordprocessing/properties/section.hpp).
+See other avaliable section properties in [SectionProperties](./include/minidocx/word/main/properties/section.hpp).
 
 ### Paragraphs
 
@@ -189,18 +192,18 @@ A paragraph is represented by a `Paragraph` object which can be created by calli
 ParagraphPointer para = sect->addParagraph();
 ```
 
-A single `ParagraphProperties` object is created for each `Paragraph` object to store formatting properties for the paragraph, such as alignment, outline level, indentation, spacing, etc.
+The `prop_` public data member of the `Paragraph` object is a `ParagraphProperties` object, which is used to store formatting properties for the paragraph, such as alignment, outline level, indentation, spacing, etc.
 
 ```cpp
-para->properties().align_ = Alignment::Centered;
-para->properties().outlineLevel_ = OutlineLevel::Level1;
+para->prop_.align_ = Alignment::Centered;
+para->prop_.outlineLevel_ = OutlineLevel::Level1;
 ```
 
-See other avaliable paragraph properties in [wordprocessing/properties/paragraph.hpp](./include/minidocx/wordprocessing/properties/paragraph.hpp).
+See other avaliable paragraph properties in [ParagraphProperties](./include/minidocx/word/main/properties/paragraph.hpp).
 
 ### Rich Text
 
-A sequence of characters with a set of properties is represented by a `RichText` object which can be created by calling the `addRichText()` method on a `Paragraph` object with a piece of text encoded in UTF-8 as argument. Ensure that all characters, including font names mentioned below, are encoded in UTF-8.
+A sequence of characters with a set of properties is represented by a `RichText` object which can be created by calling the `addRichText()` method on a `Paragraph` object with a piece of text encoded in UTF-8 as argument. Note that all characters, including font names mentioned below, should be encoded in UTF-8.
 
 ```cpp
 RichTextPointer rich = para->addRichText(u8"Happy Chinese New Year!\n中国新年快乐！");
@@ -208,15 +211,15 @@ RichTextPointer rich = para->addRichText(u8"Happy Chinese New Year!\n中国新�
 
 As you can see, the escape character `\n` (line break) is allowed. Note that the tab character `\t` is also allowed but the carriage return character `\r` is omitted. 
 
-A single `RichTextProperties` object is created for each `RichText` object to store formatting properties for the text, such as font family, font size, font color, highlight, spacing, etc.
+The `prop_` public data member of the `RichText` object is a `RichTextProperties` object, which is used to store formatting properties for the text, such as font family, font size, font color, highlight, spacing, etc.
 
 ```cpp
-rich->properties().font_ = { .ascii_ = "Aria", .eastAsia_ = "Simsun" };
-rich->properties().fontSize_ = 32;
-rich->properties().color_ = "FF0000";
+rich->prop_.font_ = { .ascii_ = "Aria", .eastAsia_ = "Simsun" };
+rich->prop_.fontSize_ = 32;
+rich->prop_.color_ = "FF0000";
 ```
 
-See other avaliable properties in [wordprocessing/properties/richtext.hpp](./include/minidocx/wordprocessing/properties/richtext.hpp).
+See other avaliable properties in [RichTextProperties](./include/minidocx/word/main/properties/richtext.hpp).
 
 ## Donation
 
@@ -224,7 +227,7 @@ If you benefit from this project, please consider donating to help me sustain my
 
 Alipay | WeChat Pay
 ------ | ----------
-![](./qrcode/alipay.png) | ![](./qrcode/wechat.png)
+![](./assets/qrcode/alipay.png) | ![](./assets/qrcode/wechat.png)
 
 ## Sponsor
 

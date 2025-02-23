@@ -7,7 +7,7 @@
 #include "packaging/part.hpp"
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   PartName toRelationshipsPartName(const PartName& src)
   {

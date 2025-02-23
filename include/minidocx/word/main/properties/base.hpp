@@ -10,7 +10,7 @@
 #include <string>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   enum class Alignment {
     Left,       // 左对齐

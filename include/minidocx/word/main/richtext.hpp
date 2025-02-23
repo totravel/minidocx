@@ -6,16 +6,16 @@
 
 #pragma once
 
-#include "wordprocessing/base.hpp"
-#include "wordprocessing/properties/richtext.hpp"
+#include "word/main/base.hpp"
+#include "word/main/properties/richtext.hpp"
 
 #include <string>
 #include <utility>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
-  class RichText : public Run, public Configurable<RichTextProperties>
+  class MINIDOCX_API RichText : public Run
   {
   public:
     RichText(const char* text)
@@ -28,6 +28,8 @@ namespace NAMESPACE
       : Run(RunType::RichText), text_{ std::move(text) } {}
 
     ~RichText() override = default;
+    
+    RichTextProperties prop_;
 
   private:
     std::string text_;

@@ -15,7 +15,7 @@
 #include <sstream>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   struct Zip::mz_zip_archive_ex : mz_zip_archive
   {

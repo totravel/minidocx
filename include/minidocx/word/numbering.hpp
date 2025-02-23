@@ -6,16 +6,15 @@
 
 #pragma once
 
-#include "wordprocessing/base.hpp"
-#include "wordprocessing/properties/paragraph.hpp"
-#include "wordprocessing/properties/richtext.hpp"
+#include "word/main/properties/paragraph.hpp"
+#include "word/main/properties/richtext.hpp"
 
 #include <string>
 #include <array>
 #include <map>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   using NumberingId = size_t;
 

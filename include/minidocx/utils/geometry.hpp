@@ -6,10 +6,11 @@
 
 #pragma once
 
+#include "config.hpp"
 #include <algorithm>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   struct Point
   {

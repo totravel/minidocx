@@ -12,7 +12,7 @@
 #include <map>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   using RelationshipId = size_t;
 

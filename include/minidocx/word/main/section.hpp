@@ -6,13 +6,15 @@
 
 #pragma once
 
-#include "wordprocessing/container.hpp"
-#include "wordprocessing/properties/section.hpp"
+#include "word/main/container.hpp"
+#include "word/main/properties/section.hpp"
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
-  class Section : public Container, public Configurable<SectionProperties>
+  class MINIDOCX_API Section : public Container
   {
+  public:
+    SectionProperties prop_;
   };
 }

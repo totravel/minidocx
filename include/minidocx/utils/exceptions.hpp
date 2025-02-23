@@ -6,37 +6,38 @@
 
 #pragma once
 
+#include "config.hpp"
 #include <stdexcept>
 #include <string>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
-  class Exception : public std::runtime_error
+  class MINIDOCX_API Exception : public std::runtime_error
   {
   public:
     Exception(const std::string& message, const std::string& sender = "minidocx");
   };
 
-  class unsupported_feature : public Exception
+  class MINIDOCX_API unsupported_feature : public Exception
   {
   public:
     unsupported_feature();
   };
 
-  class invalid_parameter : public Exception
+  class MINIDOCX_API invalid_parameter : public Exception
   {
   public:
     invalid_parameter();
   };
 
-  class invalid_operation : public Exception
+  class MINIDOCX_API invalid_operation : public Exception
   {
   public:
     invalid_operation();
   };
 
-  class io_error : public Exception
+  class MINIDOCX_API io_error : public Exception
   {
   public:
     io_error(const std::string& filename, const std::string& message);

@@ -14,7 +14,7 @@ int main()
     sect->addParagraph()->addRichText("Example:");
 
     TablePointer tbl = sect->addTable(5, 7);
-    tbl->properties().width_.type_ = TableProperties::WidthType::Percent;
+    tbl->prop_.width_.type_ = TableProperties::WidthType::Percent;
 
     tbl->merge(1, 1, 2, 3);
     tbl->merge(2, 4, 2, 2);
@@ -30,7 +30,7 @@ int main()
     tbl->cellAt(0, 5)->addParagraph()->addRichText("FFF");
     tbl->cellAt(0, 6)->addParagraph()->addRichText("GGG");
 
-    doc.saveAs("table.docx");
+    doc.saveAs("out/table.docx");
   }
   catch (const Exception& ex)
   {

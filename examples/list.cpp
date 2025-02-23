@@ -46,7 +46,7 @@ int main()
     para6->numId_ = numId2;
     para6->level_ = NumberingLevel::Level3;
 
-    doc.saveAs("list.docx");
+    doc.saveAs("out/list.docx");
   }
   catch (const Exception& ex)
   {

@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "wordprocessing/properties/paragraph.hpp"
-#include "wordprocessing/properties/richtext.hpp"
+#include "word/main/properties/paragraph.hpp"
+#include "word/main/properties/richtext.hpp"
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   struct StyleDefinition
   {
@@ -18,15 +18,13 @@ namespace NAMESPACE
     std::string basedOn_;
   };
 
-  struct RichTextStyle : StyleDefinition
+  struct CharacterStyle : StyleDefinition, RichTextProperties
   {
-    RichTextProperties rPr_;
   };
 
-  struct ParagraphStyle : RichTextStyle
+  struct ParagraphStyle : CharacterStyle, ParagraphProperties
   {
     std::string next_;
-    ParagraphProperties pPr_;
   };
 
 }

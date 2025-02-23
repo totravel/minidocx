@@ -7,7 +7,7 @@
 #include "utils/string.hpp"
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   std::string removeSpaces(std::string str) {
     std::string tmp{ std::move(str) };

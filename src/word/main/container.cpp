@@ -4,13 +4,13 @@
  * Report bugs and download new versions at https://github.com/totravel/minidocx
  */
 
-#include "wordprocessing/container.hpp"
-#include "wordprocessing/paragraph.hpp"
-#include "wordprocessing/table.hpp"
+#include "word/main/container.hpp"
+#include "word/main/paragraph.hpp"
+#include "word/main/table.hpp"
 #include "utils/exceptions.hpp"
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   ParagraphPointer Container::addParagraph()
   {

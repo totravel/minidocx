@@ -6,13 +6,14 @@
 
 #pragma once
 
-#include "wordprocessing/base.hpp"
+#include "config.hpp"
+#include "word/main/base.hpp"
 
 #include <memory>
 #include <list>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   class Paragraph;
   class Table;
@@ -21,7 +22,7 @@ namespace NAMESPACE
   using TablePointer = std::shared_ptr<Table>;
 
 
-  class Container : public Destroyable
+  class MINIDOCX_API Container : public Destroyable
   {
     friend class Document;
 

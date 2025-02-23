@@ -9,14 +9,14 @@ int main()
   {
     Document doc;
     SectionPointer sect = doc.addSection();
-    sect->properties().landscape_ = true;
+    sect->prop_.landscape_ = true;
 
     ParagraphPointer para = sect->addParagraph();
-    para->properties().align_ = Alignment::Centered;
+    para->prop_.align_ = Alignment::Centered;
 
     RichTextPointer rich = para->addRichText("Happy Chinese New Year!");
-    rich->properties().fontSize_ = 32;
-    rich->properties().color_ = "FF0000";
+    rich->prop_.fontSize_ = 32;
+    rich->prop_.color_ = "FF0000";
 
     sect->addParagraph()->addRichText(
       "Spring Festival, known as the Chinese New Year, "
@@ -24,13 +24,13 @@ int main()
       "UNESCO inscribed Spring Festival on the Representative List of "
       "the Intangible Cultural Heritage of Humanity in 2024.");
 
-    PicturePointer pict = sect->addParagraph()->addPicture(doc.addImage("samples/17533.jpg"));
-    pict->properties().extent_.setSize(4643, 6199, 300, 20);
+    PicturePointer pict = sect->addParagraph()->addPicture(doc.addImage("assets/samples/17533.jpg"));
+    pict->prop_.extent_.setSize(4643, 6199, 300, 20);
 
-    doc.properties().title_ = "Chinese New Year";
-    doc.properties().author_ = "Quinn";
-    doc.properties().lastModifiedBy_ = "John";
-    doc.saveAs("example.docx");
+    doc.prop_.title_ = "Chinese New Year";
+    doc.prop_.author_ = "Quinn";
+    doc.prop_.lastModifiedBy_ = "John";
+    doc.saveAs("out/example.docx");
   }
   catch (const Exception& ex)
   {

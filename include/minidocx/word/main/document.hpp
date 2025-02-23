@@ -6,9 +6,10 @@
 
 #pragma once
 
+#include "config.hpp"
 #include "packaging/package.hpp"
-#include "wordprocessing/styles.hpp"
-#include "wordprocessing/numbering.hpp"
+#include "word/styles.hpp"
+#include "word/numbering.hpp"
 
 #include <memory>
 #include <string>
@@ -16,7 +17,7 @@
 #include <map>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   class Section;
   class Paragraph;
@@ -25,7 +26,7 @@ namespace NAMESPACE
 
   using SectionPointer = std::shared_ptr<Section>;
 
-  class Document : public Package
+  class MINIDOCX_API Document : public Package
   {
   public:
     Document();
@@ -71,13 +72,13 @@ namespace NAMESPACE
     PartName stylePart_{ STYLE_PART };
 
     std::map<std::string, ParagraphStyle> paragraphStyles_;
-    std::map<std::string, RichTextStyle> richTextStyles_;
+    std::map<std::string, CharacterStyle> characterStyles_;
 
     void writeStyles();
 
   public:
     void addParagraphStyle(const ParagraphStyle& style);
-    void addRichTextStyle(const RichTextStyle& style);
+    void addCharacterStyle(const CharacterStyle& style);
 
   private:
     PartName numPart_{ NUM_PART };

@@ -7,7 +7,7 @@
 #include "utils/exceptions.hpp"
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   Exception::Exception(const std::string& message, const std::string& sender)
     : runtime_error{ sender + ": "  + message}

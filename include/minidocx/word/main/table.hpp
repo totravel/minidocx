@@ -6,25 +6,28 @@
 
 #pragma once
 
-#include "wordprocessing/base.hpp"
-#include "wordprocessing/properties/table.hpp"
+#include "word/main/base.hpp"
+#include "word/main/properties/table.hpp"
 #include "utils/geometry.hpp"
 
+#include <memory>
 #include <vector>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
 
   class Cell;
   using CellPointer = std::shared_ptr<Cell>;
 
 
-  class Table : public Block, public Configurable<TableProperties>
+  class MINIDOCX_API Table : public Block
   {
   public:
     Table(const size_t rows, const size_t cols);
     ~Table() override = default;
+
+    TableProperties prop_;
 
   private:
     Rect rect_;
@@ -39,7 +42,7 @@ namespace NAMESPACE
 
   public:
     // Access specified cell without bounds checking.
-    inline CellPointer cell(const size_t row, const size_t col) const
+    inline CellPointer cellAtUnsafe(const size_t row, const size_t col) const
     {
       return cells_[grid_[row][col]];
     }

@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "utils/base.hpp"
 #include "utils/zip.hpp"
 #include "utils/file.hpp"
 #include "packaging/part.hpp"
@@ -19,7 +18,7 @@
 
 namespace pugi { class xml_document; }
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   struct PackageProperties
   {
@@ -31,8 +30,11 @@ namespace NAMESPACE
   };
   
 
-  class Package : protected Zip, public Configurable<PackageProperties>
+  class Package : protected Zip
   {
+  public:
+    PackageProperties prop_;
+
   protected:
     void init();
     void flush();

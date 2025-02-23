@@ -6,19 +6,20 @@
 
 #pragma once
 
-#include "wordprocessing/base.hpp"
-#include "wordprocessing/properties/picture.hpp"
+#include "word/main/base.hpp"
+#include "word/main/properties/picture.hpp"
 #include "packaging/relationship.hpp"
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
-  class Picture : public Run, public Configurable<PictureProperties>
+  class MINIDOCX_API Picture : public Run
   {
   public:
     Picture(const RelationshipId id) : Run(RunType::Picture), id_{ id } {}
     ~Picture() override = default;
 
+    PictureProperties prop_;
     RelationshipId id_;
   };
 }

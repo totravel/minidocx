@@ -4,13 +4,13 @@
  * Report bugs and download new versions at https://github.com/totravel/minidocx
  */
 
-#include "wordprocessing/paragraph.hpp"
-#include "wordprocessing/richtext.hpp"
-#include "wordprocessing/picture.hpp"
+#include "word/main/paragraph.hpp"
+#include "word/main/richtext.hpp"
+#include "word/main/picture.hpp"
 #include "utils/exceptions.hpp"
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   RichTextPointer Paragraph::addRichText(const char* text)
   {

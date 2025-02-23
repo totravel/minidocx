@@ -4,17 +4,17 @@
  * Report bugs and download new versions at https://github.com/totravel/minidocx
  */
 
-#include "wordprocessing/table.hpp"
-#include "wordprocessing/cell.hpp"
+#include "word/main/table.hpp"
+#include "word/main/cell.hpp"
 #include "utils/exceptions.hpp"
 
 #include <iostream>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   Table::Table(const size_t rows, const size_t cols)
-    : Block(BlockType::Table), rect_{ 0, 0, cols, rows }, grid_(rows, std::vector<size_t>(cols))
+    : Block(BlockType::Table), rect_{0, 0, cols, rows}, grid_(rows, std::vector<size_t>(cols))
   {
     size_t k = 0;
     cells_.reserve(rows * cols);

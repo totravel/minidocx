@@ -6,15 +6,15 @@
 
 #pragma once
 
-#include "wordprocessing/container.hpp"
+#include "word/main/container.hpp"
 #include "utils/geometry.hpp"
 
 #include <list>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
-  class Cell : public Container
+  class MINIDOCX_API Cell : public Container
   {
     friend class Table;
 

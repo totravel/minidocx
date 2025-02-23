@@ -9,12 +9,12 @@
 #include "utils/base.hpp"
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   enum class BlockType { Paragraph, Table };
-  using Block = Node<BlockType>;
-
   enum class RunType { RichText, Picture };
+  
+  using Block = Node<BlockType>;
   using Run = Node<RunType>;
 
 }

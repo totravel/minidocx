@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "wordprocessing/properties/base.hpp"
+#include "word/main/properties/base.hpp"
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   struct ParagraphProperties
   {
@@ -146,6 +146,11 @@ namespace NAMESPACE
     // Specifies that the contents of this paragraph are rendered
     // on the start of a new page.
     bool pageBreakBefore_ = false;
+
+    // Page break after 段后分页
+    // Specifies that the contents of the next paragraph are rendered
+    // on the start of a new page.
+    bool pageBreakAfter_ = false;
   };
 
 }

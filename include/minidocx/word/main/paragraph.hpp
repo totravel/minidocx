@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "wordprocessing/base.hpp"
-#include "wordprocessing/properties/paragraph.hpp"
-#include "wordprocessing/numbering.hpp"
+#include "word/main/base.hpp"
+#include "word/main/properties/paragraph.hpp"
+#include "word/numbering.hpp"
 #include "packaging/relationship.hpp"
 #include "utils/file.hpp"
 
@@ -16,7 +16,7 @@
 #include <list>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   class RichText;
   class Picture;
@@ -25,12 +25,13 @@ namespace NAMESPACE
   using PicturePointer = std::shared_ptr<Picture>;
 
 
-  class Paragraph : public Block, public Configurable<ParagraphProperties>
+  class MINIDOCX_API Paragraph : public Block
   {
   public:
-    Paragraph() : Block(BlockType::Paragraph) {};
+    Paragraph(): Block(BlockType::Paragraph) {}
     ~Paragraph() override = default;
 
+    ParagraphProperties prop_;
     NumberingId numId_ = 0;
     NumberingLevel level_ = NumberingLevel::Level1;
 

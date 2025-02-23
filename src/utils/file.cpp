@@ -10,7 +10,7 @@
 #include <fstream>
 
 
-namespace NAMESPACE
+namespace MINIDOCX_NAMESPACE
 {
   FileType getFileType(const FileName& filename)
   {
