@@ -7,7 +7,6 @@
 #include "word/main/container.hpp"
 #include "word/main/paragraph.hpp"
 #include "word/main/table.hpp"
-#include "utils/exceptions.hpp"
 
 
 namespace MINIDOCX_NAMESPACE
@@ -16,6 +15,13 @@ namespace MINIDOCX_NAMESPACE
   {
     auto block{ std::make_shared<Paragraph>() };
     blocks_.push_back(block);
+    return block;
+  }
+
+  ParagraphPointer Container::addParagraph(ParagraphProperties prop)
+  {
+    auto block{ addParagraph() };
+    block->prop_ = std::move(prop);
     return block;
   }
 

@@ -16,6 +16,7 @@
 namespace MINIDOCX_NAMESPACE
 {
   class Paragraph;
+  class ParagraphProperties;
   class Table;
   using BlockPointer = std::shared_ptr<Block>;
   using ParagraphPointer = std::shared_ptr<Paragraph>;
@@ -24,8 +25,6 @@ namespace MINIDOCX_NAMESPACE
 
   class MINIDOCX_API Container : public Destroyable
   {
-    friend class Document;
-
   private:
     std::list<BlockPointer> blocks_;
 
@@ -33,6 +32,8 @@ namespace MINIDOCX_NAMESPACE
     inline std::list<BlockPointer> blocks() const { return blocks_; }
 
     ParagraphPointer addParagraph();
+    ParagraphPointer addParagraph(ParagraphProperties prop);
+    
     TablePointer addTable(const size_t rows, const size_t cols);
     
     void deleteBlock(const BlockPointer& block);

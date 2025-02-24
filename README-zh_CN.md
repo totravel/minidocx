@@ -3,7 +3,7 @@
 
 # minidocx
 
-minidocx 是一个免费、开源、跨平台、现代、轻量、易用的 C++20 库，用于生成 Word 文档（.docx 文件），遵循 [ECMA 376 5th edition](https://www.ecma-international.org/publications-and-standards/standards/ecma-376) 或 [ISO/IEC 29500-1:2016](https://www.iso.org/standard/71691.html) 标准，不依赖 MS Office 或 WPS Office。
+minidocx 是一个现代、免费、开源、跨平台、轻量、易用的 C++20 库，用于生成 Word 文档（.docx 文件），遵循 [ECMA 376 5th edition](https://www.ecma-international.org/publications-and-standards/standards/ecma-376) 或 [ISO/IEC 29500-1:2016](https://www.iso.org/standard/71691.html) 标准，不依赖 MS Office 或 WPS Office。
 
 > [!WARNING]
 > minidocx 1.0 仍为预览版，不建议在生产环境中使用。
@@ -76,6 +76,8 @@ cmake --preset x64-linux-ninja-gcc
 cmake --build --preset x64-linux-ninja-gcc-debug
 ./out/x64-linux-ninja-gcc/bin/exe/myapp
 ```
+
+默认编译成静态库。如需编译成动态库，开启 CMake 选项 `BUILD_SHARED`。
 
 ## 用户指南
 

@@ -16,7 +16,6 @@
 
 namespace MINIDOCX_NAMESPACE
 {
-
   class Cell;
   using CellPointer = std::shared_ptr<Cell>;
 

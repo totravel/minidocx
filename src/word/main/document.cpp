@@ -868,14 +868,14 @@ namespace MINIDOCX_NAMESPACE
     for (auto iter = sections_.begin(); iter != std::prev(sections_.end()); iter++) {
       auto& ptr = *iter;
 
-      if (ptr->blocks_.size() == 0)
+      if (ptr->blocks().size() == 0)
         ptr->addParagraph();
 
       pugi::xml_node w_p;
-      for (auto& block : ptr->blocks_)
+      for (auto& block : ptr->blocks())
         w_p = writeBlock(body, *block);
 
-      if (ptr->blocks_.back()->type() == BlockType::Table) {}
+      if (ptr->blocks().back()->type() == BlockType::Table) {}
       w_p = body.append_child("w:p");
 
       pugi::xml_node w_pPr = w_p.child("w:pPr");
@@ -886,10 +886,10 @@ namespace MINIDOCX_NAMESPACE
     }
 
     auto& ptr = sections_.back();
-    if (ptr->blocks_.size() == 0)
+    if (ptr->blocks().size() == 0)
       ptr->addParagraph();
 
-    for (auto& block : ptr->blocks_)
+    for (auto& block : ptr->blocks())
       writeBlock(body, *block);
 
     writeSectionProperties(body, ptr->prop_);

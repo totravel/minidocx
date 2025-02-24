@@ -24,7 +24,8 @@ int main()
       "UNESCO inscribed Spring Festival on the Representative List of "
       "the Intangible Cultural Heritage of Humanity in 2024.");
 
-    PicturePointer pict = sect->addParagraph()->addPicture(doc.addImage("assets/samples/17533.jpg"));
+    PicturePointer pict = sect->addParagraph({ .align_ = Alignment::Centered })
+      ->addPicture(doc.addImage("assets/samples/17533.jpg"));
     pict->prop_.extent_.setSize(4643, 6199, 300, 20);
 
     doc.prop_.title_ = "Chinese New Year";

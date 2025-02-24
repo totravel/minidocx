@@ -1,15 +1,18 @@
 
 English | [简体中文](./README-zh_CN.md)
 
-# minidocx
+<div align="center">
+  <img src="./assets/logo.png" width="20%">
+  <h1>minidocx</h1>
+  <p>C++ library for manipulating Microsoft Word Document</p>
+</div>
 
-minidocx is a free, open-source, cross-platform, modern, light-weight and user-friendly C++20 library for creating Microsoft Word Document (.docx file) as described in [ECMA 376 5th edition](https://www.ecma-international.org/publications-and-standards/standards/ecma-376) or [ISO/IEC 29500-1:2016](https://www.iso.org/standard/71691.html) without installing MS Office or WPS Office.
+## About
+
+minidocx is a modern, free, open-source, cross-platform, light-weight, and user-friendly C++20 library for manipulating Microsoft Word Document (.docx file) as described in [ECMA 376 5th edition](https://www.ecma-international.org/publications-and-standards/standards/ecma-376) or [ISO/IEC 29500-1:2016](https://www.iso.org/standard/71691.html) without installing MS Office or WPS Office.
 
 > [!WARNING]
 > minidocx 1.0 is currently in beta and should not be used in production.
-
-> [!WARNING]
-> minidocx 1.0 has an unstable API.
 
 > [!NOTE]
 > Check out the master branch to view minidocx 0.6.
@@ -237,4 +240,4 @@ Your sponsorship means a lot to me. It will help me sustain my projects actively
 
 ## License
 
-Distribution of library and components is under the MIT as listed in the file LICENSE. Examples and tests are Public Domain.
+minidocx is released to the public for free under the terms of the MIT License. See [LICENSE](./LICENSE) for the full text of the license. [LICENSE](./LICENSE) should be distributed alongside any assemblies that use minidocx in source or compiled form.

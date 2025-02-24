@@ -13,13 +13,13 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_DEBUG_POSTFIX d)
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
-set(CMAKE_VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+set(CMAKE_VS_DEBUGGER_WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin/exe")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin/lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin/dll")
 
-set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" CACHE PATH "3rdparty")
+set(THIRD_PARTY_DIR "${PROJECT_SOURCE_DIR}/3rdparty" CACHE PATH "3rdparty")
 set(MINIZ_DIR "${THIRD_PARTY_DIR}/miniz-3.0.2" CACHE PATH "miniz")
 set(PUGIXML_DIR "${THIRD_PARTY_DIR}/pugixml-1.13" CACHE PATH "pugixml")
 
@@ -44,9 +44,9 @@ else()
 endif()
 aux_inc_directory(include headers)
 aux_src_directory(src sources)
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/include/minidocx"
+source_group(TREE "${PROJECT_SOURCE_DIR}/include/minidocx"
   PREFIX "Header Files" FILES ${headers})
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src"
+source_group(TREE "${PROJECT_SOURCE_DIR}/src"
   PREFIX "Source Files" FILES ${sources})
 target_sources(minidocx PRIVATE ${headers} ${sources})
 target_include_directories(minidocx PRIVATE include/minidocx)
