@@ -2,7 +2,7 @@
 English | [简体中文](./README-zh_CN.md)
 
 <div align="center">
-  <img src="./assets/logo.png" width="20%">
+  <img src="./assets/logo.png" width="100px">
   <h1>minidocx</h1>
   <p>C++ library for manipulating Microsoft Word Document</p>
 </div>
