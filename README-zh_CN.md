@@ -79,9 +79,9 @@ cmake --build --preset x64-linux-ninja-gcc-debug
 
 默认编译成静态库。如需编译成动态库，开启 CMake 选项 `BUILD_SHARED`。
 
-## 用户指南
+## 文档
 
-施工中……
+- [用户指南](./guide.md)
 
 ## 捐赠
 

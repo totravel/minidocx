@@ -60,7 +60,7 @@ namespace MINIDOCX_NAMESPACE
         grid_[i][j] = k;
       }
     }
-    cells_[k]->rect_.setBottomRight(rect.bottom(), rect.right());
+    cells_[k]->span(rect.rows(), rect.cols());
     return cells_[k];
   }
 
@@ -79,7 +79,7 @@ namespace MINIDOCX_NAMESPACE
           size_t l = k;
           for (size_t j = merged.col(); j < merged.endCol(); j++) {
             grid_[i][j] = l;
-            cells_[l]->rect_.setSize(1, 1);
+            cells_[l]->span(1, 1);
             l++;
           }
           k += rect().cols();

@@ -24,6 +24,11 @@ namespace MINIDOCX_NAMESPACE
   private:
     Rect rect_;
 
+    inline void span(const size_t rows, const size_t cols)
+    {
+      rect_.setGrid(rows, cols);
+    }
+
   public:
     inline const Rect& rect() const { return rect_; };
   };
