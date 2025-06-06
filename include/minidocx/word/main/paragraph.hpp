@@ -44,6 +44,7 @@ namespace MINIDOCX_NAMESPACE
     RichTextPointer addRichText(const char* text);
     inline RichTextPointer addRichText(const char8_t* text) { return addRichText(reinterpret_cast<const char*>(text)); }
     RichTextPointer addRichText(std::string text);
+    inline RichTextPointer addRichText(std::u8string text) { return addRichText(std::string(reinterpret_cast<const char*>(text.c_str()), text.size())); }
 
     PicturePointer addPicture(const RelationshipId id);
 

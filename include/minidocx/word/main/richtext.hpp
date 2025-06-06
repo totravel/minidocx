@@ -26,6 +26,9 @@ namespace MINIDOCX_NAMESPACE
 
     RichText(std::string text)
       : Run(RunType::RichText), text_{ std::move(text) } {}
+	  
+    RichText(std::u8string text)
+      : RichText(std::string(reinterpret_cast<const char*>(text.c_str()), text.size())) {}
 
     ~RichText() override = default;
     
@@ -41,6 +44,7 @@ namespace MINIDOCX_NAMESPACE
     inline void setText(const char* text) { text_ = text; }
     inline void setText(const char8_t* text) { setText(reinterpret_cast<const char*>(text)); }
     inline void setText(std::string text) { text_ = std::move(text); }
+    inline void setText(std::u8string text) { setText(std::string(reinterpret_cast<const char*>(text.c_str()), text.size())); }
 
   public:
     void clear() override
