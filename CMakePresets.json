@@ -40,6 +40,24 @@
           "sourceDir": "$env{HOME}/Projects/$ms{projectDirName}"
         }
       }
+    },
+    {
+      "name": "x64-win-ninja-gcc",
+      "inherits": "x64-linux-ninja-gcc",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "linux-gcc-x64"
+        }
+      }
     }
   ],
   "buildPresets": [
@@ -51,6 +69,16 @@
     {
       "name": "x64-win-msbuild-v143-release",
       "configurePreset": "x64-win-msbuild-v143",
+      "configuration": "Release"
+    },
+    {
+      "name": "x64-win-ninja-gcc-debug",
+      "configurePreset": "x64-win-ninja-gcc",
+      "configuration": "Debug"
+    },
+    {
+      "name": "x64-win-ninja-gcc-release",
+      "configurePreset": "x64-win-ninja-gcc",
       "configuration": "Release"
     },
     {
