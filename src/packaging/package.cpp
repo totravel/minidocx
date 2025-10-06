@@ -14,6 +14,8 @@
 #endif
 #include <sstream>
 
+// for strcmp
+#include <cstring>
 
 namespace MINIDOCX_NAMESPACE
 {

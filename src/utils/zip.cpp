@@ -14,6 +14,8 @@
 #include <memory>
 #include <sstream>
 
+// for memmove
+#include <cstring>
 
 namespace MINIDOCX_NAMESPACE
 {
