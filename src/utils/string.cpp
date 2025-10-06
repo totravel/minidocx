@@ -5,13 +5,13 @@
  */
 
 #include "utils/string.hpp"
-
+#include <algorithm>
 
 namespace MINIDOCX_NAMESPACE
 {
   std::string removeSpaces(std::string str) {
     std::string tmp{ std::move(str) };
-    tmp.erase(std::remove_if(tmp.begin(), tmp.end(), std::isspace), tmp.end());
+    tmp.erase(std::remove_if(tmp.begin(), tmp.end(), [](unsigned char x) {return std::isspace(x); }), tmp.end());
     return tmp;
   }
 }
