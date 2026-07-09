@@ -772,6 +772,23 @@ namespace MINIDOCX_NAMESPACE
         pugi::xml_node w_tc = w_tr.append_child("w:tc");
         pugi::xml_node w_tcPr = w_tc.append_child("w:tcPr");
 
+        if (cell.prop_.wrap_.has_value() && (!cell.prop_.wrap_.value()))
+            w_tcPr.append_child("w:noWrap");
+        
+        if ((cell.prop_.shade_.has_value()))
+        {
+            pugi::xml_node w_shad = w_tcPr.append_child("w:shd");
+		    auto& shade = cell.prop_.shade_.value();
+            if (!shade.val_.empty())
+                w_shad.append_attribute("w:val") = shade.val_.c_str();
+            else
+                w_shad.append_attribute("w:val") = "clear";
+            if (shade.color_.has_value())
+                w_shad.append_attribute("w:color") = shade.color_.value().c_str();
+            if (shade.fill_.has_value())
+                w_shad.append_attribute("w:fill") = shade.fill_.value().c_str();
+        }
+
         if (cellRect.cols() > 1)
           w_tcPr.append_child("w:gridSpan").append_attribute("w:val") = cellRect.cols();
 
@@ -780,8 +797,34 @@ namespace MINIDOCX_NAMESPACE
             w_tcPr.append_child("w:vMerge").append_attribute("w:val") = "restart";
 
           pugi::xml_node w_tcW = w_tcPr.append_child("w:tcW");
-          w_tcW.append_attribute("w:type") = "pct";
-          w_tcW.append_attribute("w:w") = colWidth * cellRect.cols();
+          if (!cell.prop_.width_.has_value())
+          {
+              w_tcW.append_attribute("w:type") = "pct";
+              w_tcW.append_attribute("w:w") = colWidth * cellRect.cols();
+          }
+          else {
+			  auto width_val = cell.prop_.width_.value();
+              switch (width_val.type_)
+              {
+              case TableProperties::WidthType::Auto:
+                  w_tcW.append_attribute("w:type") = "auto";
+                  break;
+
+              case TableProperties::WidthType::Percent:
+                  w_tcW.append_attribute("w:type") = "pct";
+                  w_tcW.append_attribute("w:w") = width_val.value_;
+                  break;
+
+              case TableProperties::WidthType::Absolute:
+                  w_tcW.append_attribute("w:type") = "dxa";
+                  w_tcW.append_attribute("w:w") = width_val.value_;
+                  break;
+              default:
+                  w_tcW.append_attribute("w:type") = "pct";
+                  w_tcW.append_attribute("w:w") = colWidth * cellRect.cols();
+                  break;
+              }
+          }
 
           if (cell.blocks().size() == 0) {
             w_tc.append_child("w:p");
