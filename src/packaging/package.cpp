@@ -234,6 +234,9 @@ namespace MINIDOCX_NAMESPACE
     if (prop_.author_.size() > 0)
       root.append_child("dc:creator").append_child(pugi::node_pcdata).set_value(prop_.author_.c_str());
 
+    if (prop_.description_.size() > 0)
+        root.append_child("dc:description").append_child(pugi::node_pcdata).set_value(prop_.description_.c_str());
+
     if (prop_.lastModifiedBy_.size() > 0)
       root.append_child("cp:lastModifiedBy").append_child(pugi::node_pcdata).set_value(prop_.lastModifiedBy_.c_str());
 

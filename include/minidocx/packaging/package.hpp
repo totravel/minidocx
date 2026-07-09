@@ -25,6 +25,7 @@ namespace MINIDOCX_NAMESPACE
     std::string title_;
     std::string subject_;
     std::string author_;
+    std::string description_; //displayed as comments
     std::string company_;
     std::string lastModifiedBy_;
   };
