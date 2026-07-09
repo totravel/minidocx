@@ -221,6 +221,11 @@ namespace MINIDOCX_NAMESPACE
     case BorderStyle::DoubleWave:
       w_border.append_attribute("w:val") = "doubleWave";
       break;
+	  
+    case BorderStyle::None:
+      w_border.append_attribute("w:val") = "none";
+      //size and color are not applicable
+      return;
     }
 
     w_border.append_attribute("w:sz") = prop.width_;
@@ -231,17 +236,28 @@ namespace MINIDOCX_NAMESPACE
   {
     pugi::xml_node w_pBdr = w_pPr.append_child("w:pBdr");
 
-    pugi::xml_node w_top = w_pBdr.append_child("w:top");
-    pugi::xml_node w_bottom = w_pBdr.append_child("w:bottom");
-    pugi::xml_node w_between = w_pBdr.append_child("w:between");
-    pugi::xml_node w_left = w_pBdr.append_child("w:left");
-    pugi::xml_node w_right = w_pBdr.append_child("w:right");
-
-    writeBorderProperties(w_top, borders.top_);
-    writeBorderProperties(w_bottom, borders.bottom_);
-    writeBorderProperties(w_between, borders.bottom_);
-    writeBorderProperties(w_left, borders.left_);
-    writeBorderProperties(w_right, borders.right_);
+    if (borders.top_.visible_)
+    {
+      pugi::xml_node w_top = w_pBdr.append_child("w:top");
+      writeBorderProperties(w_top, borders.top_);
+    }
+    if (borders.bottom_.visible_)
+    {
+      pugi::xml_node w_bottom = w_pBdr.append_child("w:bottom");
+      pugi::xml_node w_between = w_pBdr.append_child("w:between");
+      writeBorderProperties(w_bottom, borders.bottom_);
+      writeBorderProperties(w_between, borders.bottom_);
+    }
+    if (borders.left_.visible_)
+    {
+      pugi::xml_node w_left = w_pBdr.append_child("w:left");
+      writeBorderProperties(w_left, borders.left_);
+    }
+    if (borders.right_.visible_)
+    {
+      pugi::xml_node w_right = w_pBdr.append_child("w:right");
+      writeBorderProperties(w_right, borders.right_);
+    }
   }
 
   static void writeParagraphProperties(pugi::xml_node w_pPr, const ParagraphProperties& prop)
@@ -688,19 +704,36 @@ namespace MINIDOCX_NAMESPACE
   {
     pugi::xml_node w_tblBorders = w_tblPr.append_child("w:tblBorders");
 
-    pugi::xml_node w_top = w_tblBorders.append_child("w:top");
-    pugi::xml_node w_bottom = w_tblBorders.append_child("w:bottom");
-    pugi::xml_node w_start = w_tblBorders.append_child("w:start");
-    pugi::xml_node w_end = w_tblBorders.append_child("w:end");
-    pugi::xml_node w_insideH = w_tblBorders.append_child("w:insideH");
-    pugi::xml_node w_insideV = w_tblBorders.append_child("w:insideV");
-
-    writeBorderProperties(w_top, borders.top_);
-    writeBorderProperties(w_bottom, borders.bottom_);
-    writeBorderProperties(w_start, borders.left_);
-    writeBorderProperties(w_end, borders.right_);
-    writeBorderProperties(w_insideH, borders.insideHorizontal_);
-    writeBorderProperties(w_insideV, borders.insideVertical_);
+    if (borders.top_.visible_)
+    {
+      pugi::xml_node w_top = w_tblBorders.append_child("w:top");
+      writeBorderProperties(w_top, borders.top_);
+    }
+    if (borders.bottom_.visible_)
+    {
+      pugi::xml_node w_bottom = w_tblBorders.append_child("w:bottom");
+      writeBorderProperties(w_bottom, borders.bottom_);
+    }
+    if (borders.left_.visible_)
+    {
+      pugi::xml_node w_start = w_tblBorders.append_child("w:start");
+      writeBorderProperties(w_start, borders.left_);
+    }
+    if (borders.right_.visible_)
+    {
+      pugi::xml_node w_end = w_tblBorders.append_child("w:end");
+      writeBorderProperties(w_end, borders.right_);
+    }
+    if (borders.insideHorizontal_.visible_)
+    {
+      pugi::xml_node w_insideH = w_tblBorders.append_child("w:insideH");
+      writeBorderProperties(w_insideH, borders.insideHorizontal_);
+    }
+    if (borders.insideVertical_.visible_)
+    {
+      pugi::xml_node w_insideV = w_tblBorders.append_child("w:insideV");
+      writeBorderProperties(w_insideV, borders.insideVertical_);
+    }
   }
 
   static void writeTableProperties(pugi::xml_node w_tblPr, const TableProperties& prop)
