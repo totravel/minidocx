@@ -240,9 +240,6 @@ namespace MINIDOCX_NAMESPACE
     if (prop_.lastModifiedBy_.size() > 0)
       root.append_child("cp:lastModifiedBy").append_child(pugi::node_pcdata).set_value(prop_.lastModifiedBy_.c_str());
 
-    if (prop_.company_.size() > 0)
-      root.append_child("cp:company").append_child(pugi::node_pcdata).set_value(prop_.company_.c_str());
-
     writePart(corePart_, doc);
   }
 
@@ -260,6 +257,9 @@ namespace MINIDOCX_NAMESPACE
     root.append_child("Application").append_child(pugi::node_pcdata).set_value("minidocx");
     root.append_child("AppVersion").append_child(pugi::node_pcdata).set_value("10.0000"); // XX.YYYY
 
+    if (prop_.company_.size() > 0)
+      root.append_child("Company").append_child(pugi::node_pcdata).set_value(prop_.company_.c_str());
+    
     writePart(appPart_, doc);
   }
 
