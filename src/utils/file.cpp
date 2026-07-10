@@ -31,6 +31,15 @@ namespace MINIDOCX_NAMESPACE
     if (ext == ".webp")
       return FileType::WEBP;
 
+    if (ext == ".bmp")
+      return FileType::BMP;
+
+    if (ext == ".tif")
+      return FileType::TIF;
+
+    if (ext == ".tiff")
+      return FileType::TIFF;
+
     return FileType::Unknown;
   }
 
@@ -52,6 +61,15 @@ namespace MINIDOCX_NAMESPACE
 
     case FileType::WEBP:
       return ".webp";
+
+    case FileType::BMP:
+      return ".bmp";
+
+    case FileType::TIF:
+      return ".tif";
+
+    case FileType::TIFF:
+      return ".tiff";
 
     default:
       return nullptr;
@@ -76,6 +94,13 @@ namespace MINIDOCX_NAMESPACE
 
     case FileType::WEBP:
       return "image/webp";
+
+    case FileType::BMP:
+      return "image/bmp";
+
+    case FileType::TIF:
+    case FileType::TIFF:
+      return "image/tiff";
 
     default:
       return nullptr;

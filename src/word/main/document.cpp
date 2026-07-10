@@ -570,7 +570,10 @@ namespace MINIDOCX_NAMESPACE
         }
       }
       if (start < end) {
-        w_r.append_child("w:t").text().set(start);
+          pugi::xml_node w_t = w_r.append_child("w:t");
+          if (whitespace)
+              w_t.append_attribute("xml:space") = "preserve";
+          w_t.text().set(start);
       }
     }
   }
