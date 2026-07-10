@@ -23,7 +23,10 @@ namespace MINIDOCX_NAMESPACE
     PNG,
     GIF,
     SVG,
-    WEBP
+    WEBP,
+    BMP,
+    TIF,
+    TIFF
   };
 
   FileType getFileType(const FileName& ext);
