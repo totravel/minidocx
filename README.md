@@ -9,7 +9,7 @@ English | [简体中文](./README-zh_CN.md)
 
 ## About
 
-minidocx is a modern, free, open-source, cross-platform, light-weight, and user-friendly C++20 library for manipulating Microsoft Word Document (.docx file) as described in [ECMA 376 5th edition](https://www.ecma-international.org/publications-and-standards/standards/ecma-376) or [ISO/IEC 29500-1:2016](https://www.iso.org/standard/71691.html) without installing MS Office or WPS Office.
+minidocx is a modern, free, open-source, cross-platform, light-weight, and user-friendly C++20 library for manipulating Microsoft Word Document (.docx file) as described in [ECMA 376 5th edition](https://www.ecma-international.org/publications-and-standards/standards/ecma-376) or [ISO/IEC 29500-1:2016](https://www.iso.org/standard/71691.html) without installing MS Office, LibreOffice or WPS Office, etc.
 
 > [!WARNING]
 > minidocx 1.0 is currently in beta and should not be used in production.
@@ -75,7 +75,7 @@ cd minidocx
 # Windows
 cmake --preset x64-win-msbuild-v143
 cmake --build --preset x64-win-msbuild-v143-debug
-./out/x64-win-msbuild-v143/bin/exe/Debug/myapp.exe
+out\x64-win-msbuild-v143\bin\exe\Debug\myapp.exe
 
 # Linux
 cmake --preset x64-linux-ninja-gcc
@@ -88,20 +88,6 @@ A static library is built by default. If you want to use a shared build of minid
 ## Documentation
 
 - [User Guide](./guide.md)
-
-## Donation
-
-If you benefit from this project, please consider donating to help me sustain my projects actively and make more of my ideas come true.
-
-Alipay | WeChat Pay
------- | ----------
-![](./assets/qrcode/alipay.png) | ![](./assets/qrcode/wechat.png)
-
-## Sponsor
-
-You can sponsor this library at [AFDIAN](https://afdian.com/a/totravel).
-
-Your sponsorship means a lot to me. It will help me sustain my projects actively and make more of my ideas come true. Much appreciated! 💖 🙏
 
 ## License
 
