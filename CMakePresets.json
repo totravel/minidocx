@@ -7,11 +7,17 @@
   },
   "configurePresets": [
     {
-      "name": "x64-win-msbuild-v143",
+      "name": "x64-win-ninja-v145",
       "binaryDir": "${sourceDir}/out/${presetName}",
-      "generator": "Visual Studio 17 2022",
-      "architecture": "x64",
-      "toolset": "v143",
+      "generator": "Ninja Multi-Config",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "toolset": {
+        "value": "v145",
+        "strategy": "external"
+      },
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -22,6 +28,37 @@
           "intelliSenseMode": "windows-msvc-x64"
         }
       }
+    },
+    {
+      "name": "x64-win-msbuild-v145",
+      "binaryDir": "${sourceDir}/out/${presetName}",
+      "generator": "Visual Studio 18 2026",
+      "architecture": "x64",
+      "toolset": "v145",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "windows-msvc-x64"
+        }
+      }
+    },
+    {
+      "name": "x64-win-ninja-v143",
+      "inherits": "x64-win-ninja-v145",
+      "toolset": {
+        "value": "v143",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "x64-win-msbuild-v143",
+      "inherits": "x64-win-msbuild-v145",
+      "generator": "Visual Studio 17 2022",
+      "toolset": "v143"
     },
     {
       "name": "x64-linux-ninja-gcc",
@@ -43,6 +80,36 @@
     }
   ],
   "buildPresets": [
+    {
+      "name": "x64-win-ninja-v145-debug",
+      "configurePreset": "x64-win-ninja-v145",
+      "configuration": "Debug"
+    },
+    {
+      "name": "x64-win-ninja-v145-release",
+      "configurePreset": "x64-win-ninja-v145",
+      "configuration": "Release"
+    },
+    {
+      "name": "x64-win-msbuild-v145-debug",
+      "configurePreset": "x64-win-msbuild-v145",
+      "configuration": "Debug"
+    },
+    {
+      "name": "x64-win-msbuild-v145-release",
+      "configurePreset": "x64-win-msbuild-v145",
+      "configuration": "Release"
+    },
+    {
+      "name": "x64-win-ninja-v143-debug",
+      "configurePreset": "x64-win-ninja-v143",
+      "configuration": "Debug"
+    },
+    {
+      "name": "x64-win-ninja-v143-release",
+      "configurePreset": "x64-win-ninja-v143",
+      "configuration": "Release"
+    },
     {
       "name": "x64-win-msbuild-v143-debug",
       "configurePreset": "x64-win-msbuild-v143",
