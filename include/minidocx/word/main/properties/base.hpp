@@ -28,7 +28,8 @@ namespace MINIDOCX_NAMESPACE
     Dashed,    // 短划线
     DotDash,   // 点划线
     Wave,      // 波浪线
-    DoubleWave // 双波浪线
+    DoubleWave, // 双波浪线
+    None
   };
 
   struct BorderProperties
@@ -36,6 +37,7 @@ namespace MINIDOCX_NAMESPACE
     BorderStyle style_ = BorderStyle::Single;
     size_t width_ = 4; // 8 = 1 pt
     std::string color_ = "auto"; // "auto" or "RRGGBB"
+	bool visible_ = true; //if false, no border elements will be generated for this border
   };
 
   struct OutsideBorders

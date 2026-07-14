@@ -221,6 +221,11 @@ namespace MINIDOCX_NAMESPACE
     case BorderStyle::DoubleWave:
       w_border.append_attribute("w:val") = "doubleWave";
       break;
+	  
+    case BorderStyle::None:
+      w_border.append_attribute("w:val") = "none";
+      //size and color are not applicable
+      return;
     }
 
     w_border.append_attribute("w:sz") = prop.width_;
@@ -231,17 +236,28 @@ namespace MINIDOCX_NAMESPACE
   {
     pugi::xml_node w_pBdr = w_pPr.append_child("w:pBdr");
 
-    pugi::xml_node w_top = w_pBdr.append_child("w:top");
-    pugi::xml_node w_bottom = w_pBdr.append_child("w:bottom");
-    pugi::xml_node w_between = w_pBdr.append_child("w:between");
-    pugi::xml_node w_left = w_pBdr.append_child("w:left");
-    pugi::xml_node w_right = w_pBdr.append_child("w:right");
-
-    writeBorderProperties(w_top, borders.top_);
-    writeBorderProperties(w_bottom, borders.bottom_);
-    writeBorderProperties(w_between, borders.bottom_);
-    writeBorderProperties(w_left, borders.left_);
-    writeBorderProperties(w_right, borders.right_);
+    if (borders.top_.visible_)
+    {
+      pugi::xml_node w_top = w_pBdr.append_child("w:top");
+      writeBorderProperties(w_top, borders.top_);
+    }
+    if (borders.bottom_.visible_)
+    {
+      pugi::xml_node w_bottom = w_pBdr.append_child("w:bottom");
+      pugi::xml_node w_between = w_pBdr.append_child("w:between");
+      writeBorderProperties(w_bottom, borders.bottom_);
+      writeBorderProperties(w_between, borders.bottom_);
+    }
+    if (borders.left_.visible_)
+    {
+      pugi::xml_node w_left = w_pBdr.append_child("w:left");
+      writeBorderProperties(w_left, borders.left_);
+    }
+    if (borders.right_.visible_)
+    {
+      pugi::xml_node w_right = w_pBdr.append_child("w:right");
+      writeBorderProperties(w_right, borders.right_);
+    }
   }
 
   static void writeParagraphProperties(pugi::xml_node w_pPr, const ParagraphProperties& prop)
@@ -691,19 +707,36 @@ namespace MINIDOCX_NAMESPACE
   {
     pugi::xml_node w_tblBorders = w_tblPr.append_child("w:tblBorders");
 
-    pugi::xml_node w_top = w_tblBorders.append_child("w:top");
-    pugi::xml_node w_bottom = w_tblBorders.append_child("w:bottom");
-    pugi::xml_node w_start = w_tblBorders.append_child("w:start");
-    pugi::xml_node w_end = w_tblBorders.append_child("w:end");
-    pugi::xml_node w_insideH = w_tblBorders.append_child("w:insideH");
-    pugi::xml_node w_insideV = w_tblBorders.append_child("w:insideV");
-
-    writeBorderProperties(w_top, borders.top_);
-    writeBorderProperties(w_bottom, borders.bottom_);
-    writeBorderProperties(w_start, borders.left_);
-    writeBorderProperties(w_end, borders.right_);
-    writeBorderProperties(w_insideH, borders.insideHorizontal_);
-    writeBorderProperties(w_insideV, borders.insideVertical_);
+    if (borders.top_.visible_)
+    {
+      pugi::xml_node w_top = w_tblBorders.append_child("w:top");
+      writeBorderProperties(w_top, borders.top_);
+    }
+    if (borders.bottom_.visible_)
+    {
+      pugi::xml_node w_bottom = w_tblBorders.append_child("w:bottom");
+      writeBorderProperties(w_bottom, borders.bottom_);
+    }
+    if (borders.left_.visible_)
+    {
+      pugi::xml_node w_start = w_tblBorders.append_child("w:start");
+      writeBorderProperties(w_start, borders.left_);
+    }
+    if (borders.right_.visible_)
+    {
+      pugi::xml_node w_end = w_tblBorders.append_child("w:end");
+      writeBorderProperties(w_end, borders.right_);
+    }
+    if (borders.insideHorizontal_.visible_)
+    {
+      pugi::xml_node w_insideH = w_tblBorders.append_child("w:insideH");
+      writeBorderProperties(w_insideH, borders.insideHorizontal_);
+    }
+    if (borders.insideVertical_.visible_)
+    {
+      pugi::xml_node w_insideV = w_tblBorders.append_child("w:insideV");
+      writeBorderProperties(w_insideV, borders.insideVertical_);
+    }
   }
 
   static void writeTableProperties(pugi::xml_node w_tblPr, const TableProperties& prop)
@@ -775,6 +808,23 @@ namespace MINIDOCX_NAMESPACE
         pugi::xml_node w_tc = w_tr.append_child("w:tc");
         pugi::xml_node w_tcPr = w_tc.append_child("w:tcPr");
 
+        if (cell.prop_.wrap_.has_value() && (!cell.prop_.wrap_.value()))
+            w_tcPr.append_child("w:noWrap");
+        
+        if ((cell.prop_.shade_.has_value()))
+        {
+            pugi::xml_node w_shad = w_tcPr.append_child("w:shd");
+		    auto& shade = cell.prop_.shade_.value();
+            if (!shade.val_.empty())
+                w_shad.append_attribute("w:val") = shade.val_.c_str();
+            else
+                w_shad.append_attribute("w:val") = "clear";
+            if (shade.color_.has_value())
+                w_shad.append_attribute("w:color") = shade.color_.value().c_str();
+            if (shade.fill_.has_value())
+                w_shad.append_attribute("w:fill") = shade.fill_.value().c_str();
+        }
+
         if (cellRect.cols() > 1)
           w_tcPr.append_child("w:gridSpan").append_attribute("w:val") = cellRect.cols();
 
@@ -783,8 +833,34 @@ namespace MINIDOCX_NAMESPACE
             w_tcPr.append_child("w:vMerge").append_attribute("w:val") = "restart";
 
           pugi::xml_node w_tcW = w_tcPr.append_child("w:tcW");
-          w_tcW.append_attribute("w:type") = "pct";
-          w_tcW.append_attribute("w:w") = colWidth * cellRect.cols();
+          if (!cell.prop_.width_.has_value())
+          {
+              w_tcW.append_attribute("w:type") = "pct";
+              w_tcW.append_attribute("w:w") = colWidth * cellRect.cols();
+          }
+          else {
+			  auto width_val = cell.prop_.width_.value();
+              switch (width_val.type_)
+              {
+              case TableProperties::WidthType::Auto:
+                  w_tcW.append_attribute("w:type") = "auto";
+                  break;
+
+              case TableProperties::WidthType::Percent:
+                  w_tcW.append_attribute("w:type") = "pct";
+                  w_tcW.append_attribute("w:w") = width_val.value_;
+                  break;
+
+              case TableProperties::WidthType::Absolute:
+                  w_tcW.append_attribute("w:type") = "dxa";
+                  w_tcW.append_attribute("w:w") = width_val.value_;
+                  break;
+              default:
+                  w_tcW.append_attribute("w:type") = "pct";
+                  w_tcW.append_attribute("w:w") = colWidth * cellRect.cols();
+                  break;
+              }
+          }
 
           if (cell.blocks().size() == 0) {
             w_tc.append_child("w:p");

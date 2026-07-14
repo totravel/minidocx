@@ -16,7 +16,12 @@ int main()
     TablePointer tbl = sect->addTable(5, 7);
     tbl->prop_.width_.type_ = TableProperties::WidthType::Percent;
 
-    tbl->cellAt(0, 0)->addParagraph()->addRichText("AAA");
+    CellPointer cell = tbl->cellAt(0, 0);
+    cell->addParagraph()->addRichText("AAA");
+    CellProperties::Shade shade;
+    shade.val_ = "clear";
+    shade.fill_ = "C0C0C0";
+	cell->prop_.shade_ = shade;
 
     tbl->merge(1, 1, 2, 3);
     tbl->cellAt(1, 1)->addParagraph()->addRichText("BBB");
